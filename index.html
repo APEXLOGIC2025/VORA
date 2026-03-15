@@ -359,7 +359,7 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
 // Replace  YOUR_API_KEY_HERE  with your actual key
 // It looks like:  sk-ant-api03-xxxxxxxxxxxx
 // ═══════════════════════════════════════════════════════
-const ANTHROPIC_API_KEY = 'Y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';
+const ANTHROPIC_API_KEY = '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';
 // ═══════════════════════════════════════════════════════
 
 const SCREENS=['home','chats','scan','schedule','topics','reminders'];
@@ -392,13 +392,20 @@ function errCard(msg){return`<div class="error-card">Something went wrong: ${esc
 function unesc(s){return String(s||'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"');}
 
 async function callAI(prompt,useSearch=false){
-  const body={model:'claude-sonnet-4-20250514',max_tokens:1200,messages:[{role:'user',content:prompt}]};
+  const body={model:'claude-sonnet-4-20250514',max_tokens:1500,messages:[{role:'user',content:prompt}]};
   if(useSearch)body.tools=[{"type":"web_search_20250305","name":"web_search"}];
   const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify(body)});
+  if(!res.ok){const err=await res.json();throw new Error(err.error?.message||'API error '+res.status);}
   const data=await res.json();
-  let text='';for(const b of(data.content||[])){if(b.type==='text')text+=b.text;}
-  const m=text.match(/\{[\s\S]*\}/);if(!m)throw new Error('Parse error');
-  return JSON.parse(m[0]);
+  let text='';
+  for(const b of(data.content||[])){if(b.type==='text')text+=b.text;}
+  text=text.trim();
+  const fenced=text.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if(fenced)text=fenced[1].trim();
+  const brace=text.indexOf('{');const lastBrace=text.lastIndexOf('}');
+  if(brace===-1||lastBrace===-1)throw new Error('No JSON in response — try again');
+  try{return JSON.parse(text.slice(brace,lastBrace+1));}
+  catch(e){const m=text.match(/\{[\s\S]*\}/g);if(m){for(const c of m){try{return JSON.parse(c);}catch(_){}}}throw new Error('Could not read AI response — try again');}
 }
 
 /* ══════════════ CHATS ══════════════ */
@@ -470,8 +477,11 @@ async function processImage(b64,mime){
     ]}]};
     const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify(body)});
     const data=await res.json();let text='';for(const b of(data.content||[])){if(b.type==='text')text+=b.text;}
-    const m=text.match(/\{[\s\S]*\}/);if(!m)throw new Error('Parse error');
-    const r=JSON.parse(m[0]);hideStatus('scan');renderScanResults(r);
+    text=text.trim();const fenced3=text.match(/\`\`\`(?:json)?\s*([\s\S]*?)\`\`\`/);if(fenced3)text=fenced3[1].trim();
+    const bi2=text.indexOf('{');const li2=text.lastIndexOf('}');
+    if(bi2===-1||li2===-1)throw new Error('Could not read image text — please try again');
+    let r;try{r=JSON.parse(text.slice(bi2,li2+1));}catch(e){throw new Error('Image parse failed — try again');}
+    hideStatus('scan');renderScanResults(r);
   }catch(e){hideStatus('scan');document.getElementById('scan-results').innerHTML=errCard(e.message);}
 }
 
@@ -584,9 +594,15 @@ async function runTopic(){
       messages:[{role:'user',content:`Search the web and give a live brief on: "${topic}". Return ONLY JSON:
 {"topic":"display title","summary":"4-5 sentence factual brief for busy professional","date":"March 2026","sources":[{"title":"...","outlet":"...","url":"https://..."},{"title":"...","outlet":"...","url":"https://..."},{"title":"...","outlet":"...","url":"https://..."}],"related":["topic1","topic2","topic3","topic4"]}`}]};
     const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify(body)});
-    const data=await res.json();let text='';for(const b of(data.content||[])){if(b.type==='text')text+=b.text;}
-    const m=text.match(/\{[\s\S]*\}/);if(!m)throw new Error('Parse error');
-    const r=JSON.parse(m[0]);hideStatus('topic');renderTopic(r,topic);
+    if(!res.ok){const err=await res.json();throw new Error(err.error?.message||'API error '+res.status);}
+    const data=await res.json();
+    let text='';for(const b of(data.content||[])){if(b.type==='text')text+=b.text;}
+    text=text.trim();
+    const fenced2=text.match(/\`\`\`(?:json)?\s*([\s\S]*?)\`\`\`/);if(fenced2)text=fenced2[1].trim();
+    const bi=text.indexOf('{');const li=text.lastIndexOf('}');
+    if(bi===-1||li===-1)throw new Error('No content returned — please try again');
+    let r;try{r=JSON.parse(text.slice(bi,li+1));}catch(e){const ms=text.match(/\{[\s\S]*\}/g);if(ms){for(const c of ms){try{r=JSON.parse(c);break;}catch(_){}}}if(!r)throw new Error('Could not parse response — try again');}
+    hideStatus('topic');renderTopic(r,topic);
   }catch(e){hideStatus('topic');document.getElementById('topic-results').innerHTML=errCard(e.message);}
   btn.disabled=false;
 }
