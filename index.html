@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<meta name="theme-color" content="#0F1729"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="VORA"/>
+<meta name="description" content="VORA — Your AI personal assistant. Extract tasks from chats, scan images, build schedules, get topic briefs and smart reminders."/>
+<link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;VORA&quot;,&quot;short_name&quot;:&quot;VORA&quot;,&quot;start_url&quot;:&quot;/&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;%230F1729&quot;,&quot;theme_color&quot;:&quot;%230F1729&quot;,&quot;icons&quot;:[{&quot;src&quot;:&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%230F1729'/%3E%3Ctext x='96' y='130' font-family='Georgia' font-size='100' font-weight='bold' fill='%234FC3F7' text-anchor='middle'%3EV%3C/text%3E%3C/svg%3E&quot;,&quot;sizes&quot;:&quot;192x192&quot;,&quot;type&quot;:&quot;image/svg+xml&quot;}]}"/>
+<title>VORA — AI Personal Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Playfair+Display:wght@700&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #0F1729;
+  --bg2: #161F36;
+  --bg3: #1E2B47;
+  --card: #1A2540;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.14);
+  --accent: #4FC3F7;
+  --accent2: #38BDF8;
+  --green: #4ADE80;
+  --green-dim: rgba(74,222,128,0.12);
+  --green-border: rgba(74,222,128,0.3);
+  --amber: #FBBF24;
+  --amber-dim: rgba(251,191,36,0.12);
+  --red: #F87171;
+  --red-dim: rgba(248,113,113,0.12);
+  --purple: #A78BFA;
+  --purple-dim: rgba(167,139,250,0.12);
+  --text: #F0F4FF;
+  --text2: #8B9BBE;
+  --text3: #5A6A8A;
+  --mono: 'DM Mono', monospace;
+  --sans: 'DM Sans', sans-serif;
+  --serif: 'Playfair Display', serif;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --nav-h: 64px;
+  --header-h: 60px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  height: 100%;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Layout shell ── */
+#shell {
+  max-width: 480px;
+  margin: 0 auto;
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Header ── */
+.app-header {
+  height: var(--header-h);
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+}
+.logo {
+  font-family: var(--serif);
+  font-size: 24px;
+  color: var(--accent);
+  letter-spacing: 1px;
+}
+.logo span { color: var(--text2); font-size: 11px; font-family: var(--sans); font-weight: 300; display: block; margin-top: -4px; letter-spacing: 2px; text-transform: uppercase; }
+.header-date {
+  font-size: 11px;
+  color: var(--text3);
+  font-family: var(--mono);
+  text-align: right;
+}
+
+/* ── Scroll area ── */
+.screen-area {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+.screen-area::-webkit-scrollbar { width: 3px; }
+.screen-area::-webkit-scrollbar-track { background: transparent; }
+.screen-area::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* ── Screens ── */
+.screen { display: none; padding: 16px 16px 20px; animation: fadeIn .2s ease; }
+.screen.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── Bottom nav ── */
+.bottom-nav {
+  height: var(--nav-h);
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-shrink: 0;
+}
+.nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 8px 2px;
+  transition: opacity .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-btn:active { opacity: .6; }
+.nav-icon-wrap {
+  width: 32px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: background .2s;
+}
+.nav-btn.active .nav-icon-wrap { background: rgba(79,195,247,0.15); }
+.nav-icon { width: 18px; height: 18px; stroke-width: 1.8; stroke: var(--text3); fill: none; transition: stroke .2s; }
+.nav-btn.active .nav-icon { stroke: var(--accent); }
+.nav-label { font-size: 9px; font-weight: 500; color: var(--text3); letter-spacing: .3px; transition: color .2s; }
+.nav-btn.active .nav-label { color: var(--accent); }
+
+/* ── Section label ── */
+.sect {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin: 0 0 10px;
+  font-family: var(--mono);
+}
+
+/* ── Cards ── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+.card-accent { border-left: 2px solid var(--accent); }
+.card-green { border-left: 2px solid var(--green); }
+.card-amber { border-left: 2px solid var(--amber); }
+.card-purple { border-left: 2px solid var(--purple); }
+.card-red { border-left: 2px solid var(--red); }
+.card-title { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+.card-sub { font-size: 12px; color: var(--text2); line-height: 1.6; }
+
+/* ── Inputs ── */
+textarea, input[type=text] {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 11px 14px;
+  font-size: 13px;
+  font-family: var(--sans);
+  color: var(--text);
+  outline: none;
+  resize: vertical;
+  transition: border-color .2s;
+  -webkit-appearance: none;
+}
+textarea:focus, input[type=text]:focus { border-color: var(--accent); }
+textarea::placeholder, input::placeholder { color: var(--text3); }
+textarea { margin-bottom: 10px; }
+input[type=text] { margin-bottom: 8px; }
+
+/* ── Buttons ── */
+.btn {
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--sans);
+  cursor: pointer;
+  border: 1px solid var(--border2);
+  background: var(--bg3);
+  color: var(--text2);
+  transition: all .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:active { transform: scale(.97); }
+.btn:disabled { opacity: .35; cursor: not-allowed; }
+.btn-primary { background: var(--accent); color: #0F1729; border-color: var(--accent); font-weight: 600; }
+.btn-primary:hover { background: var(--accent2); }
+.btn-green { background: var(--green-dim); color: var(--green); border-color: var(--green-border); }
+.btn-amber { background: var(--amber-dim); color: var(--amber); border-color: rgba(251,191,36,0.3); }
+.btn-full { width: 100%; padding: 12px; font-size: 14px; }
+.btn-sm { padding: 6px 12px; font-size: 12px; }
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+
+/* ── Status ── */
+.status {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  font-size: 12px;
+  color: var(--text2);
+}
+.status.show { display: flex; }
+.s-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--amber); flex-shrink: 0; animation: blink 1s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+
+/* ── Tags / badges ── */
+.tag {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  display: inline-block;
+  font-family: var(--mono);
+}
+.tag-green { background: var(--green-dim); color: var(--green); }
+.tag-amber { background: var(--amber-dim); color: var(--amber); }
+.tag-red { background: var(--red-dim); color: var(--red); }
+.tag-blue { background: rgba(79,195,247,0.12); color: var(--accent); }
+.tag-purple { background: var(--purple-dim); color: var(--purple); }
+
+/* ── Todo items ── */
+.todo-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+  transition: border-color .2s;
+}
+.todo-item:hover { border-color: var(--border2); }
+.chk {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border2);
+  flex-shrink: 0;
+  cursor: pointer;
+  margin-top: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .15s;
+  font-size: 10px;
+  color: transparent;
+}
+.chk.done { background: var(--green); border-color: var(--green); color: #0F1729; }
+.todo-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+.todo-title.done { text-decoration: line-through; color: var(--text3); }
+.todo-meta { font-size: 11px; color: var(--text3); }
+
+/* ── Schedule items ── */
+.sched-item {
+  display: flex;
+  gap: 14px;
+  padding: 12px 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+}
+.sched-time {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 500;
+  min-width: 68px;
+  flex-shrink: 0;
+  padding-top: 1px;
+  line-height: 1.4;
+}
+.sched-dur { font-size: 10px; color: var(--text3); display: block; margin-top: 2px; }
+.sched-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+.sched-desc { font-size: 11px; color: var(--text2); }
+
+/* ── Sources ── */
+.source-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 8px 12px;
+  background: var(--bg3);
+  border-radius: var(--radius-sm);
+  margin-bottom: 6px;
+}
+.source-n { font-size: 10px; font-family: var(--mono); color: var(--text3); min-width: 14px; padding-top: 2px; }
+.source-title { font-size: 12px; font-weight: 500; color: var(--accent); margin-bottom: 1px; }
+.source-meta { font-size: 10px; color: var(--text3); }
+.source-link { font-size: 11px; color: var(--accent); text-decoration: none; margin-left: auto; flex-shrink: 0; padding-top: 2px; opacity: .8; }
+
+/* ── Chips ── */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; margin-bottom: 4px; }
+.chip {
+  font-size: 11px;
+  padding: 5px 11px;
+  border-radius: 20px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  cursor: pointer;
+  transition: all .15s;
+  font-family: var(--sans);
+}
+.chip:hover, .chip:active { background: rgba(79,195,247,0.1); border-color: rgba(79,195,247,0.3); color: var(--accent); }
+
+/* ── Upload zone ── */
+.upload-zone {
+  border: 1.5px dashed var(--border2);
+  border-radius: var(--radius);
+  padding: 32px 16px;
+  text-align: center;
+  cursor: pointer;
+  background: var(--bg3);
+  margin-bottom: 12px;
+  transition: all .2s;
+}
+.upload-zone:hover { border-color: var(--accent); background: rgba(79,195,247,0.04); }
+.upload-icon-svg { width: 36px; height: 36px; stroke: var(--text3); fill: none; stroke-width: 1.5; margin: 0 auto 10px; display: block; }
+.upload-text { font-size: 13px; color: var(--text2); }
+.upload-sub { font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+/* ── Reminder cards ── */
+.reminder-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+.reminder-label {
+  font-size: 9px;
+  font-weight: 600;
+  font-family: var(--mono);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.reminder-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+.reminder-body { font-size: 13px; color: var(--text2); line-height: 1.7; }
+
+/* ── Home quick-actions grid ── */
+.qa-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+.qa-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.qa-card:hover { border-color: var(--border2); background: var(--bg3); }
+.qa-card:active { transform: scale(.96); }
+.qa-card-icon { margin-bottom: 8px; }
+.qa-card-icon svg { width: 28px; height: 28px; stroke: var(--accent); fill: none; stroke-width: 1.5; }
+.qa-card-title { font-size: 12px; font-weight: 500; color: var(--text); }
+.qa-card-sub { font-size: 10px; color: var(--text3); margin-top: 2px; }
+
+/* ── Empty state ── */
+.empty { text-align: center; padding: 32px 16px; color: var(--text3); }
+.empty svg { width: 36px; height: 36px; stroke: var(--text3); fill: none; stroke-width: 1.2; margin: 0 auto 12px; display: block; opacity: .4; }
+.empty-text { font-size: 13px; line-height: 1.6; }
+
+/* ── Image preview ── */
+#img-preview { width: 100%; border-radius: var(--radius-sm); margin-bottom: 10px; display: none; border: 1px solid var(--border); max-height: 200px; object-fit: cover; }
+
+/* ── Split input row ── */
+.input-row { display: flex; gap: 8px; }
+.input-row input { flex: 1; }
+
+/* ── Info tip ── */
+.tip-box {
+  background: rgba(79,195,247,0.06);
+  border: 1px solid rgba(79,195,247,0.15);
+  border-radius: var(--radius-sm);
+  padding: 10px 13px;
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+/* ── Summary block ── */
+.summary-block {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--green);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 10px;
+}
+.summary-topic { font-size: 10px; font-family: var(--mono); color: var(--green); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+.summary-text { font-size: 14px; color: var(--text); line-height: 1.75; margin-bottom: 12px; }
+.summary-sources-label { font-size: 9px; font-family: var(--mono); color: var(--text3); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+
+/* ── Scrollbar for screen area ── */
+</style>
+</head>
+<body>
+<div id="shell">
+
+  <!-- ── HEADER ── -->
+  <div class="app-header">
+    <div>
+      <div class="logo">VORA <span>AI Personal Assistant</span></div>
+    </div>
+    <div class="header-date" id="hdate"></div>
+  </div>
+
+  <!-- ── SCREEN AREA ── -->
+  <div class="screen-area">
+
+    <!-- HOME -->
+    <div class="screen active" id="s-home">
+      <div class="sect" style="margin-top:4px">Your assistant</div>
+      <div class="card card-accent" style="margin-bottom:14px">
+        <div class="card-title">Welcome to VORA</div>
+        <div class="card-sub" style="margin-top:6px;line-height:1.9">
+          Extract tasks from chat messages &nbsp;·&nbsp; Scan images to Word/Excel &nbsp;·&nbsp;
+          Build smart schedules &nbsp;·&nbsp; Get live topic briefs &nbsp;·&nbsp; Generate contextual reminders
+        </div>
+      </div>
+      <div class="sect">Quick actions</div>
+      <div class="qa-grid">
+        <div class="qa-card" onclick="goTo('chats')">
+          <div class="qa-card-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          <div class="qa-card-title">Analyse chat</div>
+          <div class="qa-card-sub">Extract tasks &amp; dates</div>
+        </div>
+        <div class="qa-card" onclick="goTo('scan')">
+          <div class="qa-card-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+          <div class="qa-card-title">Scan image</div>
+          <div class="qa-card-sub">Photo → Word / Excel</div>
+        </div>
+        <div class="qa-card" onclick="goTo('schedule')">
+          <div class="qa-card-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+          <div class="qa-card-title">Build schedule</div>
+          <div class="qa-card-sub">Smart time-blocking</div>
+        </div>
+        <div class="qa-card" onclick="goTo('topics')">
+          <div class="qa-card-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+          <div class="qa-card-title">Topic snapshot</div>
+          <div class="qa-card-sub">Live AI brief</div>
+        </div>
+      </div>
+      <div id="home-tasks-area"></div>
+    </div>
+
+    <!-- CHATS -->
+    <div class="screen" id="s-chats">
+      <div class="sect" style="margin-top:4px">Chat analyser</div>
+      <div class="tip-box">Paste any WhatsApp conversation, SMS, or notes below. VORA will extract every task, meeting, and deadline automatically.</div>
+      <textarea id="chat-input" rows="7" placeholder="Paste your chat here...&#10;&#10;Example:&#10;Rajesh: Can we call Monday 11am about the proposal?&#10;Priya: Send the budget report by Friday evening&#10;Boss: Team meeting tomorrow 3pm sharp&#10;Amit: Submit project by next Wednesday EOD"></textarea>
+      <button class="btn btn-primary btn-full" id="chat-btn" onclick="analyseChat()">Extract tasks &amp; schedule</button>
+      <div class="status" id="chat-status"><div class="s-dot"></div><span id="chat-stxt">Analysing messages...</span></div>
+      <div id="chat-results"></div>
+    </div>
+
+    <!-- SCAN -->
+    <div class="screen" id="s-scan">
+      <div class="sect" style="margin-top:4px">Image scanner</div>
+      <div class="tip-box">Upload any photo — document, whiteboard, notes, receipt, business card. VORA reads all text and creates a downloadable file.</div>
+      <div class="upload-zone" onclick="document.getElementById('img-file').click()">
+        <input type="file" id="img-file" accept="image/*" style="display:none" onchange="handleImg(event)"/>
+        <svg class="upload-icon-svg" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        <div class="upload-text">Tap to upload image</div>
+        <div class="upload-sub">JPG · PNG · HEIC · WEBP</div>
+      </div>
+      <img id="img-preview" alt="preview"/>
+      <div class="status" id="scan-status"><div class="s-dot"></div><span id="scan-stxt">Reading image...</span></div>
+      <div id="scan-results"></div>
+    </div>
+
+    <!-- SCHEDULE -->
+    <div class="screen" id="s-schedule">
+      <div class="sect" style="margin-top:4px">Smart scheduler</div>
+      <div class="tip-box">Describe your tasks or day in plain English. VORA builds a time-blocked schedule and creates a calendar file you can add to Google Calendar.</div>
+      <textarea id="sched-input" rows="5" placeholder="Describe your tasks...&#10;&#10;Examples:&#10;• Call Rajesh at 11am, submit report by 3pm, team meeting 5pm&#10;• Gym morning, client presentation 2pm, dentist 4pm, dinner 8pm&#10;• Webinar on AI at 3pm, prepare notes before, send follow-up after"></textarea>
+      <input type="text" id="sched-date" placeholder="Date (e.g. Monday 16 March 2026 — leave blank for today)"/>
+      <button class="btn btn-primary btn-full" id="sched-btn" onclick="buildSchedule()">Build my schedule</button>
+      <div class="status" id="sched-status"><div class="s-dot"></div><span id="sched-stxt">Building schedule...</span></div>
+      <div id="sched-results"></div>
+    </div>
+
+    <!-- TOPICS -->
+    <div class="screen" id="s-topics">
+      <div class="sect" style="margin-top:4px">Topic snapshot</div>
+      <div class="tip-box">Type any topic and get a live 4–5 line AI brief with current web sources. Searches the internet in real time.</div>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <input type="text" id="topic-input" placeholder="e.g. India economy 2025, AI regulation, climate change..." style="flex:1;margin-bottom:0"/>
+        <button class="btn btn-primary" id="topic-btn" onclick="runTopic()" style="flex-shrink:0;padding:0 18px">Brief</button>
+      </div>
+      <div class="sect">Suggestions</div>
+      <div class="chips" id="topic-chips"></div>
+      <div class="status" id="topic-status"><div class="s-dot"></div><span id="topic-stxt">Searching web...</span></div>
+      <div id="topic-results"></div>
+    </div>
+
+    <!-- REMINDERS -->
+    <div class="screen" id="s-reminders">
+      <div class="sect" style="margin-top:4px">Smart reminder writer</div>
+      <div class="tip-box">Enter any event and VORA writes a contextual morning brief and 30-minute alert — exactly what the mobile app would send to your phone.</div>
+      <input type="text" id="rem-event" placeholder="Event name (e.g. AI Webinar on Use Cases)"/>
+      <div class="input-row">
+        <input type="text" id="rem-date" placeholder="Date (e.g. Today)"/>
+        <input type="text" id="rem-time" placeholder="Time (e.g. 3:00 PM)"/>
+      </div>
+      <input type="text" id="rem-notes" placeholder="Notes (optional — speaker, platform, topic details)"/>
+      <button class="btn btn-primary btn-full" id="rem-btn" onclick="generateReminder()">Generate reminders</button>
+      <div class="status" id="rem-status"><div class="s-dot"></div><span id="rem-stxt">Writing reminders...</span></div>
+      <div id="rem-results"></div>
+    </div>
+
+  </div><!-- /screen-area -->
+
+  <!-- ── BOTTOM NAV ── -->
+  <div class="bottom-nav">
+    <button class="nav-btn active" id="nb-home" onclick="goTo('home')">
+      <div class="nav-icon-wrap">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <span class="nav-label">Home</span>
+    </button>
+    <button class="nav-btn" id="nb-chats" onclick="goTo('chats')">
+      <div class="nav-icon-wrap">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <span class="nav-label">Chats</span>
+    </button>
+    <button class="nav-btn" id="nb-scan" onclick="goTo('scan')">
+      <div class="nav-icon-wrap">
+        <svg class="nav-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      </div>
+      <span class="nav-label">Scan</span>
+    </button>
+    <button class="nav-btn" id="nb-schedule" onclick="goTo('schedule')">
+      <div class="nav-icon-wrap">
+        <svg class="nav-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+      <span class="nav-label">Schedule</span>
+    </button>
+    <button class="nav-btn" id="nb-topics" onclick="goTo('topics')">
+      <div class="nav-icon-wrap">
+        <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </div>
+      <span class="nav-label">Topics</span>
+    </button>
+    <button class="nav-btn" id="nb-reminders" onclick="goTo('reminders')">
+      <div class="nav-icon-wrap">
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </div>
+      <span class="nav-label">Reminder</span>
+    </button>
+  </div>
+
+</div><!-- /shell -->
+
+<script>
+const SCREENS = ['home','chats','scan','schedule','topics','reminders'];
+const allTasks = [];
+
+/* ── Date ── */
+const now = new Date();
+document.getElementById('hdate').innerHTML = now.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'})+'<br>'+now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+
+/* ── Navigation ── */
+function goTo(name) {
+  SCREENS.forEach(s => {
+    document.getElementById('s-'+s).classList.toggle('active', s===name);
+    document.getElementById('nb-'+s)?.classList.toggle('active', s===name);
+  });
+  document.querySelector('.screen-area').scrollTop = 0;
+  if(name==='home') renderHomeTasks();
+}
+
+/* ── Topic chips ── */
+const TOPICS = ['India economy 2025','US China trade war','OpenAI GPT-5','NEET exam 2025','Gaza ceasefire','Budget 2025 India','Climate change 2025','Elon Musk news','AI regulation India','Stock market today'];
+const tc = document.getElementById('topic-chips');
+TOPICS.forEach(t => { const c = document.createElement('span'); c.className='chip'; c.textContent=t; c.onclick=()=>{document.getElementById('topic-input').value=t;runTopic();}; tc.appendChild(c); });
+document.getElementById('topic-input').addEventListener('keydown', e => { if(e.key==='Enter') runTopic(); });
+
+/* ── Helpers ── */
+const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function showSt(id,msg){const e=document.getElementById(id+'-status'),t=document.getElementById(id+'-stxt');if(e)e.classList.add('show');if(t)t.textContent=msg;}
+function hideSt(id){const e=document.getElementById(id+'-status');if(e)e.classList.remove('show');}
+function errHtml(msg){return `<div style="margin-top:10px;padding:10px 14px;border-radius:8px;border:1px solid rgba(248,113,113,0.3);background:rgba(248,113,113,0.08);color:#F87171;font-size:13px">Error: ${esc(msg)} — please try again.</div>`;}
+
+/* ── API call ── */
+async function callAI(userMsg, useSearch=false) {
+  const body = { model:'claude-sonnet-4-20250514', max_tokens:1200, messages:[{role:'user',content:userMsg}] };
+  if(useSearch) body.tools=[{"type":"web_search_20250305","name":"web_search"}];
+  const res = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const data = await res.json();
+  let text=''; for(const b of (data.content||[])){if(b.type==='text')text+=b.text;}
+  const m=text.match(/\{[\s\S]*\}/); if(!m) throw new Error('Could not parse response');
+  return JSON.parse(m[0]);
+}
+
+/* ══════════════════════════════════
+   MODULE 1 — CHAT ANALYSER
+══════════════════════════════════ */
+async function analyseChat() {
+  const txt = document.getElementById('chat-input').value.trim();
+  if(!txt){alert('Please paste some chat text first.');return;}
+  const btn = document.getElementById('chat-btn');
+  btn.disabled=true;
+  showSt('chat','Reading your messages...');
+  document.getElementById('chat-results').innerHTML='';
+  try {
+    const r = await callAI(`You are VORA's task extraction engine. Analyse this chat and extract every task, meeting, deadline, or commitment.
+
+Chat text:
+"""
+${txt}
+"""
+
+Return ONLY valid JSON (no markdown, no explanation):
+{
+  "tasks": [
+    {"title":"task title","date":"date/time string or No date","priority":"High|Medium|Low","person":"who assigned it or empty","type":"Meeting|Task|Deadline|Event"}
+  ],
+  "summary":"one sentence summary of what was found"
+}`);
+    hideSt('chat');
+    if(r.tasks?.length) allTasks.push(...r.tasks);
+    renderChatResults(r);
+  } catch(e){ hideSt('chat'); document.getElementById('chat-results').innerHTML=errHtml(e.message); }
+  btn.disabled=false;
+}
+
+function renderChatResults(r) {
+  const tasks = r.tasks||[];
+  if(!tasks.length){ document.getElementById('chat-results').innerHTML='<div class="empty"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><div class="empty-text">No tasks found.<br>Try pasting more chat content.</div></div>'; return; }
+  let h=`<div style="margin-top:14px"><div class="sect">${tasks.length} item${tasks.length!==1?'s':''} extracted</div>`;
+  tasks.forEach((t,i)=>{
+    const tc=t.priority==='High'?'tag-red':t.priority==='Medium'?'tag-amber':'tag-green';
+    const tt=t.type==='Meeting'?'tag-blue':t.type==='Deadline'?'tag-red':'tag-green';
+    h+=`<div class="todo-item" id="ti-${i}">
+      <div class="chk" id="ck-${i}" onclick="toggleTask(${i})"></div>
+      <div style="flex:1;min-width:0">
+        <div class="todo-title" id="tt-${i}">${esc(t.title)}</div>
+        <div class="todo-meta">${esc(t.date)}${t.person?' · '+esc(t.person):''}</div>
+        <div style="margin-top:4px;display:flex;gap:5px;flex-wrap:wrap">
+          <span class="tag ${tc}">${esc(t.priority)}</span>
+          <span class="tag ${tt}" style="font-size:9px">${esc(t.type)}</span>
+        </div>
+      </div>
+    </div>`;
+  });
+  h+=`<div class="btn-row">
+    <button class="btn btn-green btn-sm" onclick="goTo('schedule')">Build schedule ↗</button>
+    <button class="btn btn-sm" onclick="document.getElementById('chat-results').innerHTML=''">Clear</button>
+  </div></div>`;
+  document.getElementById('chat-results').innerHTML=h;
+}
+
+function toggleTask(i){
+  const c=document.getElementById('ck-'+i),t=document.getElementById('tt-'+i);
+  const d=c.classList.toggle('done');
+  c.textContent=d?'✓':'';
+  t.classList.toggle('done',d);
+}
+
+/* ══════════════════════════════════
+   MODULE 2 — IMAGE SCANNER
+══════════════════════════════════ */
+function handleImg(e){
+  const f=e.target.files[0]; if(!f) return;
+  const reader=new FileReader();
+  reader.onload=evt=>{
+    const b64=evt.target.result.split(',')[1];
+    const mime=f.type||'image/jpeg';
+    const prev=document.getElementById('img-preview');
+    prev.src=evt.target.result; prev.style.display='block';
+    processImg(b64,mime);
+  };
+  reader.readAsDataURL(f);
+}
+
+async function processImg(b64,mime){
+  showSt('scan','Reading image text...');
+  document.getElementById('scan-results').innerHTML='';
+  try {
+    const body={model:'claude-sonnet-4-20250514',max_tokens:1200,messages:[{role:'user',content:[
+      {type:'image',source:{type:'base64',media_type:mime,data:b64}},
+      {type:'text',text:`Extract ALL visible text from this image exactly as it appears. Return ONLY valid JSON:
+{"raw_text":"all text line by line","lines":["line1","line2"],"type":"Document|Notes|Whiteboard|Receipt|Table|Other","title":"suggested 3-5 word file title"}`}
+    ]}]};
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const data=await res.json();
+    let txt=''; for(const b of (data.content||[])){if(b.type==='text')txt+=b.text;}
+    const m=txt.match(/\{[\s\S]*\}/); if(!m) throw new Error('No JSON');
+    const r=JSON.parse(m[0]);
+    hideSt('scan');
+    renderScanResults(r);
+  } catch(e){ hideSt('scan'); document.getElementById('scan-results').innerHTML=errHtml(e.message); }
+}
+
+function renderScanResults(r){
+  const lines=r.lines||(r.raw_text||'').split('\n').filter(l=>l.trim());
+  const raw=r.raw_text||lines.join('\n');
+  const title=r.title||'VORA_Extract';
+  document.getElementById('scan-results').innerHTML=`
+    <div style="margin-top:10px">
+      <div class="sect">Extracted text · ${lines.length} lines</div>
+      <div class="card" style="font-family:var(--mono);font-size:12px;line-height:1.8;white-space:pre-wrap;max-height:180px;overflow-y:auto;color:var(--text2)">${esc(raw)}</div>
+      <div class="sect" style="margin-top:12px">Export as</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        <button class="btn btn-green" onclick="dlWord(${JSON.stringify(raw)},${JSON.stringify(title)})">Word document (.rtf)</button>
+        <button class="btn btn-amber" onclick="dlExcel(${JSON.stringify(lines)},${JSON.stringify(title)})">Excel file (.csv)</button>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-sm" onclick="navigator.clipboard.writeText(${JSON.stringify(raw)}).then(()=>alert('Copied!'))">Copy text</button>
+        <button class="btn btn-sm" onclick="document.getElementById('scan-results').innerHTML='';document.getElementById('img-preview').style.display='none'">Clear</button>
+      </div>
+    </div>`;
+}
+
+function dlWord(text,title){
+  const rtf=`{\\rtf1\\ansi\\deff0{\\fonttbl{\\f0 Calibri;}}\\f0\\fs24{\\b\\fs36 ${title.replace(/[\\{}]/g,'')}\\par}\\par ${text.replace(/\n/g,'\\par ').replace(/[\\{}]/g,'')}}`;
+  const a=document.createElement('a');
+  a.href='data:application/rtf;charset=utf-8,'+encodeURIComponent(rtf);
+  a.download=title.replace(/\s+/g,'_')+'.rtf'; a.click();
+}
+
+function dlExcel(lines,title){
+  const csv='Line,Content\n'+lines.map((l,i)=>`${i+1},"${String(l).replace(/"/g,'""')}"`).join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download=title.replace(/\s+/g,'_')+'.csv'; a.click();
+}
+
+/* ══════════════════════════════════
+   MODULE 3 — SCHEDULER
+══════════════════════════════════ */
+async function buildSchedule(){
+  const txt=document.getElementById('sched-input').value.trim();
+  if(!txt){alert('Please describe your tasks first.');return;}
+  const date=document.getElementById('sched-date').value.trim()||new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const btn=document.getElementById('sched-btn');
+  btn.disabled=true;
+  showSt('sched','Building your schedule...');
+  document.getElementById('sched-results').innerHTML='';
+  try {
+    const r=await callAI(`You are VORA's smart scheduler. Create a realistic time-blocked schedule.
+Date: ${date}
+Tasks: "${txt}"
+
+Return ONLY valid JSON:
+{"date":"${date}","schedule":[{"time":"9:00 AM","title":"task","duration":"30 min","description":"brief note","type":"Work|Meeting|Personal|Break"}],"tip":"one smart productivity tip"}`);
+    hideSt('sched');
+    renderSchedule(r,date);
+  } catch(e){ hideSt('sched'); document.getElementById('sched-results').innerHTML=errHtml(e.message); }
+  btn.disabled=false;
+}
+
+function renderSchedule(r,date){
+  const items=r.schedule||[];
+  if(!items.length){ document.getElementById('sched-results').innerHTML='<div class="empty"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg><div class="empty-text">No schedule generated.<br>Please describe your tasks more specifically.</div></div>'; return; }
+  let h=`<div style="margin-top:14px"><div class="sect">${esc(r.date||date)} · ${items.length} blocks</div>`;
+  items.forEach(s=>{
+    h+=`<div class="sched-item">
+      <div class="sched-time">${esc(s.time)}<span class="sched-dur">${esc(s.duration)}</span></div>
+      <div><div class="sched-title">${esc(s.title)}</div><div class="sched-desc">${esc(s.description)}</div></div>
+    </div>`;
+  });
+  if(r.tip) h+=`<div class="card card-purple" style="margin-top:8px"><div style="font-size:10px;font-family:var(--mono);color:var(--purple);letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px">Tip</div><div style="font-size:13px;color:var(--text2)">${esc(r.tip)}</div></div>`;
+  h+=`<div class="btn-row"><button class="btn btn-green btn-sm" onclick="dlICS(${JSON.stringify(r)})">Download .ics for Google Calendar</button><button class="btn btn-sm" onclick="document.getElementById('sched-results').innerHTML=''">Clear</button></div></div>`;
+  document.getElementById('sched-results').innerHTML=h;
+}
+
+function dlICS(r){
+  let ics='BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//VORA//EN\nCALSCALE:GREGORIAN\n';
+  (r.schedule||[]).forEach((s,i)=>{
+    ics+=`BEGIN:VEVENT\nUID:vora-${Date.now()}-${i}@vora.app\nSUMMARY:${s.title}\nDESCRIPTION:${s.description||''}\nDTSTART:${icsDate(s.time)}\nDTEND:${icsDate(s.time,s.duration)}\nEND:VEVENT\n`;
+  });
+  ics+='END:VCALENDAR';
+  const a=document.createElement('a');
+  a.href='data:text/calendar;charset=utf-8,'+encodeURIComponent(ics);
+  a.download='VORA_Schedule.ics'; a.click();
+}
+
+function icsDate(timeStr,durStr){
+  const d=new Date(); const t=(timeStr||'').match(/(\d+):(\d+)\s*(AM|PM)?/i);
+  let h=t?parseInt(t[1]):9,m=t?parseInt(t[2]):0;
+  if(t&&t[3]&&t[3].toUpperCase()==='PM'&&h!==12)h+=12;
+  if(t&&t[3]&&t[3].toUpperCase()==='AM'&&h===12)h=0;
+  if(durStr){const dm=(durStr.match(/(\d+)\s*min/)||[])[1];const dh=(durStr.match(/(\d+)\s*h/)||[])[1];h+=dh?parseInt(dh):0;m+=dm?parseInt(dm):0;}
+  return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}T${String(h%24).padStart(2,'0')}${String(m%60).padStart(2,'0')}00`;
+}
+
+/* ══════════════════════════════════
+   MODULE 4 — TOPIC SNAPSHOT
+══════════════════════════════════ */
+async function runTopic(){
+  const topic=document.getElementById('topic-input').value.trim();
+  if(!topic){alert('Please enter a topic first.');return;}
+  const btn=document.getElementById('topic-btn');
+  btn.disabled=true;
+  showSt('topic','Searching the web for: '+topic);
+  document.getElementById('topic-results').innerHTML='';
+  try {
+    const body={model:'claude-sonnet-4-20250514',max_tokens:1200,tools:[{"type":"web_search_20250305","name":"web_search"}],messages:[{role:'user',content:`Search the web and give a live brief on: "${topic}". Return ONLY valid JSON:
+{"topic":"display title","summary":"4-5 sentence factual brief for a busy professional. Current, accurate, plain English.","date":"March 2026","sources":[{"title":"...","outlet":"BBC|Reuters|etc","url":"https://..."},{"title":"...","outlet":"...","url":"https://..."},{"title":"...","outlet":"...","url":"https://..."}],"related":["topic1","topic2","topic3","topic4"]}`}]};
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const data=await res.json();
+    let txt=''; for(const b of (data.content||[])){if(b.type==='text')txt+=b.text;}
+    const mm=txt.match(/\{[\s\S]*\}/); if(!mm) throw new Error('No JSON returned');
+    const r=JSON.parse(mm[0]);
+    hideSt('topic');
+    renderTopic(r,topic);
+  } catch(e){ hideSt('topic'); document.getElementById('topic-results').innerHTML=errHtml(e.message); }
+  btn.disabled=false;
+}
+
+function renderTopic(r,raw){
+  const srcH=(r.sources||[]).map((s,i)=>`<div class="source-item"><span class="source-n">${i+1}</span><div style="flex:1;min-width:0"><div class="source-title">${esc(s.title)}</div><div class="source-meta">${esc(s.outlet)} · ${esc(r.date)}</div></div>${s.url&&s.url.startsWith('http')?`<a class="source-link" href="${esc(s.url)}" target="_blank">Read →</a>`:''}</div>`).join('');
+  const relH=(r.related||[]).map(t=>`<span class="chip" onclick="document.getElementById('topic-input').value=${JSON.stringify(t)};runTopic()">${esc(t)}</span>`).join('');
+  document.getElementById('topic-results').innerHTML=`
+    <div style="margin-top:12px">
+      <div class="summary-block">
+        <div class="summary-topic">Live brief · ${esc(r.date)}</div>
+        <div class="summary-text">${esc(r.summary)}</div>
+        <div class="summary-sources-label">Sources</div>
+        ${srcH}
+        ${relH?`<div style="margin-top:10px;font-size:9px;font-family:var(--mono);color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">Related topics</div><div class="chips" style="margin-top:0">${relH}</div>`:''}
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-sm" onclick="sendToSchedule(${JSON.stringify(raw)})">Add to schedule</button>
+        <button class="btn btn-sm" onclick="document.getElementById('topic-results').innerHTML=''">Clear</button>
+      </div>
+    </div>`;
+}
+
+function sendToSchedule(topic){ document.getElementById('sched-input').value='Research and prepare notes on: '+topic; goTo('schedule'); }
+
+/* ══════════════════════════════════
+   MODULE 5 — REMINDERS
+══════════════════════════════════ */
+async function generateReminder(){
+  const event=document.getElementById('rem-event').value.trim();
+  if(!event){alert('Please enter an event name first.');return;}
+  const date=document.getElementById('rem-date').value.trim()||'Today';
+  const time=document.getElementById('rem-time').value.trim()||'';
+  const notes=document.getElementById('rem-notes').value.trim()||'';
+  const btn=document.getElementById('rem-btn');
+  btn.disabled=true;
+  showSt('rem','Writing your reminders...');
+  document.getElementById('rem-results').innerHTML='';
+  try {
+    const r=await callAI(`You are VORA's smart reminder writer. Write contextual reminders for this event.
+Event: "${event}"
+Date: ${date}, Time: ${time}
+Notes: ${notes}
+
+Return ONLY valid JSON:
+{"event":"${event}","morning_title":"short notification title","morning_body":"2-3 sentence morning reminder — what the event is, what to prepare","alert_title":"30-min before title","alert_body":"3-4 sentence contextual brief — what they may learn/do, with one practical tip","prepare_now":"one action to do right now to prepare"}`);
+    hideSt('rem');
+    renderReminder(r,event,date,time);
+  } catch(e){ hideSt('rem'); document.getElementById('rem-results').innerHTML=errHtml(e.message); }
+  btn.disabled=false;
+}
+
+function renderReminder(r,event,date,time){
+  document.getElementById('rem-results').innerHTML=`
+    <div style="margin-top:14px">
+      <div class="sect">Morning reminder · 8:00 AM</div>
+      <div class="reminder-card">
+        <div class="reminder-label" style="color:var(--accent)">📅 ${esc(r.morning_title)}</div>
+        <div class="reminder-body">${esc(r.morning_body)}</div>
+      </div>
+      <div class="sect" style="margin-top:12px">30-minute alert</div>
+      <div class="reminder-card" style="border-left:2px solid var(--green)">
+        <div class="reminder-label" style="color:var(--green)">⏰ ${esc(r.alert_title)}</div>
+        <div class="reminder-body">${esc(r.alert_body)}</div>
+      </div>
+      ${r.prepare_now?`<div class="card card-amber" style="margin-top:8px"><div style="font-size:10px;font-family:var(--mono);color:var(--amber);letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px">Prepare now</div><div style="font-size:13px;color:var(--text2)">${esc(r.prepare_now)}</div></div>`:''}
+      <div class="btn-row">
+        <button class="btn btn-green btn-sm" onclick="addEventToSchedule(${JSON.stringify(event)},${JSON.stringify(date)},${JSON.stringify(time)})">Add to schedule</button>
+        <button class="btn btn-sm" onclick="copyReminders(${JSON.stringify((r.morning_body||'')+'\n\n'+r.alert_body)})">Copy text</button>
+        <button class="btn btn-sm" onclick="document.getElementById('rem-results').innerHTML=''">Clear</button>
+      </div>
+    </div>`;
+}
+
+function copyReminders(text){ navigator.clipboard.writeText(text).then(()=>alert('Reminder text copied!')); }
+function addEventToSchedule(event,date,time){ document.getElementById('sched-input').value=event+(time?' at '+time:''); document.getElementById('sched-date').value=date; goTo('schedule'); }
+
+/* ── HOME tasks ── */
+function renderHomeTasks(){
+  const area=document.getElementById('home-tasks-area');
+  if(!allTasks.length){area.innerHTML='';return;}
+  let h=`<div style="margin-top:4px"><div class="sect">Tasks from chat analysis</div>`;
+  allTasks.slice(0,5).forEach((t,i)=>{
+    const tc=t.priority==='High'?'tag-red':t.priority==='Medium'?'tag-amber':'tag-green';
+    h+=`<div class="todo-item"><div class="chk"></div><div style="flex:1;min-width:0"><div class="todo-title">${esc(t.title)}</div><div class="todo-meta">${esc(t.date)}</div></div><span class="tag ${tc}">${esc(t.priority)}</span></div>`;
+  });
+  if(allTasks.length>5) h+=`<div style="font-size:11px;color:var(--text3);text-align:center;padding:6px">+${allTasks.length-5} more — go to Chats tab</div>`;
+  h+='</div>';
+  area.innerHTML=h;
+}
+</script>
+</body>
+</html>
