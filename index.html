@@ -4,12 +4,10 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
 <meta name="theme-color" content="#0A0E27"/>
-<meta name="description" content="VORA — Your AI personal assistant. Chat analyser, OCR scanner, smart scheduler, topic briefs and reminders."/>
-<title>VORA — AI Personal Assistant</title>
-<link rel="manifest" href="#"/>
+<meta name="description" content="VORA — Your AI personal assistant by Apexlogic. Chat analyser, OCR scanner, smart scheduler, topic briefs and reminders."/>
+<title>VORA — AI Personal Assistant by Apexlogic</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
-
 :root{
   --bg:#0A0E27;--surface:#12183A;--surface2:#1A2250;--border:#252D5A;
   --accent:#4F6EF7;--accent2:#7B5CF0;--green:#22C55E;--amber:#F59E0B;
@@ -23,13 +21,37 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 /* ── LAYOUT ── */
 #app{height:100dvh;display:flex;flex-direction:column;max-width:480px;margin:0 auto;position:relative}
 .app-header{padding:14px 18px 12px;display:flex;align-items:center;justify-content:space-between;background:var(--bg);border-bottom:0.5px solid var(--border);flex-shrink:0}
-.logo{font-family:var(--font-head);font-size:22px;font-weight:700;color:var(--text);letter-spacing:2px;background:linear-gradient(135deg,#fff 0%,#4F6EF7 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.logo{font-family:var(--font-head);font-size:22px;font-weight:700;background:linear-gradient(135deg,#fff 0%,#4F6EF7 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:2px}
 .header-right{display:flex;align-items:center;gap:8px}
 .live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 2s ease-in-out infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 .live-label{font-size:11px;color:var(--text2)}
 .date-text{font-size:11px;color:var(--text3)}
+.user-badge{font-size:10px;padding:3px 8px;border-radius:10px;font-weight:600;cursor:pointer}
+.user-badge.guest{background:rgba(245,158,11,.15);color:var(--amber)}
+.user-badge.free{background:rgba(34,197,94,.15);color:var(--green)}
+.user-badge.sub{background:rgba(79,110,247,.18);color:#7B9BFF}
+.user-badge.premium{background:rgba(139,92,246,.2);color:#A78BFA}
+.user-badge.admin{background:rgba(239,68,68,.15);color:var(--red)}
 
+/* ── ABOUT BANNER ── */
+#about-banner{background:linear-gradient(135deg,rgba(79,110,247,.12),rgba(123,92,240,.08));border-bottom:0.5px solid rgba(79,110,247,.2);padding:10px 16px;flex-shrink:0;transition:all .3s ease;overflow:hidden}
+#about-banner.collapsed{padding:6px 16px}
+.about-inner{display:flex;gap:10px;align-items:flex-start}
+.about-logo-sm{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#4F6EF7,#7B5CF0);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;margin-top:1px}
+.about-content{flex:1;min-width:0}
+.about-title{font-size:11px;font-weight:600;color:var(--text);margin-bottom:2px}
+.about-desc{font-size:10px;color:var(--text2);line-height:1.5}
+.about-links{display:flex;gap:10px;margin-top:6px;flex-wrap:wrap}
+.about-link{font-size:10px;color:var(--accent);text-decoration:none}
+.about-toggle{font-size:10px;color:var(--text3);cursor:pointer;background:none;border:none;font-family:var(--font);padding:0;flex-shrink:0;margin-top:1px}
+.about-collapsed-label{font-size:10px;color:var(--text3);display:none}
+#about-banner.collapsed .about-content{display:none}
+#about-banner.collapsed .about-toggle{display:none}
+#about-banner.collapsed .about-collapsed-label{display:inline}
+#about-banner.collapsed .about-logo-sm{width:20px;height:20px;font-size:10px;margin-top:0}
+
+/* ── SCREENS ── */
 .screens{flex:1;overflow:hidden;position:relative}
 .screen{position:absolute;inset:0;overflow-y:auto;padding:16px 16px 24px;display:none;animation:fadeIn .2s ease}
 .screen.active{display:block}
@@ -52,22 +74,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .card-teal{border-left:2.5px solid var(--teal)}
 .card-title{font-family:var(--font-head);font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px}
 .card-sub{font-size:12px;color:var(--text2);line-height:1.6}
-
-/* ── SECTION LABEL ── */
 .sect{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin:4px 0 10px}
 
-/* ── BADGES ── */
-.badge{font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;display:inline-block}
-.badge-green{background:rgba(34,197,94,.15);color:var(--green)}
-.badge-accent{background:rgba(79,110,247,.18);color:#7B9BFF}
-.badge-amber{background:rgba(245,158,11,.15);color:var(--amber)}
-.badge-red{background:rgba(239,68,68,.15);color:var(--red)}
-
 /* ── INPUTS ── */
-textarea,input[type=text]{width:100%;background:var(--surface2);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:11px 13px;font-size:13px;font-family:var(--font);color:var(--text);outline:none;resize:vertical;transition:border-color .2s;caret-color:var(--accent)}
-textarea:focus,input[type=text]:focus{border-color:var(--accent)}
+textarea,input[type=text],input[type=email],input[type=tel]{width:100%;background:var(--surface2);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:11px 13px;font-size:13px;font-family:var(--font);color:var(--text);outline:none;resize:vertical;transition:border-color .2s;caret-color:var(--accent)}
+textarea:focus,input:focus{border-color:var(--accent)}
 textarea::placeholder,input::placeholder{color:var(--text3)}
 textarea{min-height:110px}
+input[type=date],input[type=time]{width:100%;padding:10px 12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:var(--font);color:var(--text);outline:none;color-scheme:dark}
+select{width:100%;padding:10px 12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:var(--font);color:var(--text);outline:none;color-scheme:dark}
 
 /* ── BUTTONS ── */
 .btn{padding:9px 18px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;font-family:var(--font);cursor:pointer;border:0.5px solid var(--border);background:var(--surface2);color:var(--text);transition:background .15s,border-color .15s;display:inline-flex;align-items:center;gap:6px}
@@ -86,19 +101,16 @@ textarea{min-height:110px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* ── TODO ITEMS ── */
-.todo-item{display:flex;align-items:flex-start;gap:10px;padding:11px 13px;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-sm);margin-bottom:8px;transition:opacity .2s}
-.todo-item.done{opacity:.5}
-.check-circle{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:1px;transition:background .15s,border-color .15s}
+.todo-item{display:flex;align-items:flex-start;gap:10px;padding:11px 13px;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-sm);margin-bottom:8px}
+.check-circle{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:1px}
 .check-circle.checked{background:var(--green);border-color:var(--green)}
 .check-circle svg{width:10px;height:10px;stroke:#fff;fill:none;stroke-width:2.5;display:none}
 .check-circle.checked svg{display:block}
 .todo-body{flex:1;min-width:0}
-.todo-title{font-size:13px;font-weight:500;color:var(--text);line-height:1.4}
+.todo-title{font-size:13px;font-weight:500;color:var(--text)}
 .todo-title.done{text-decoration:line-through;color:var(--text3)}
 .todo-meta{font-size:11px;color:var(--text2);margin-top:3px}
 .todo-tags{display:flex;gap:5px;margin-top:5px;flex-wrap:wrap}
-
-/* ── PRIORITY ── */
 .pri{font-size:9px;font-weight:600;padding:2px 7px;border-radius:10px}
 .pri-high{background:rgba(239,68,68,.15);color:var(--red)}
 .pri-med{background:rgba(245,158,11,.15);color:var(--amber)}
@@ -146,39 +158,53 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
 .tile-icon{font-size:26px;margin-bottom:7px}
 .tile-label{font-size:12px;font-weight:500;color:var(--text)}
 .tile-sub{font-size:10px;color:var(--text3);margin-top:2px}
+.tile-locked{position:relative;opacity:.7}
+.tile-locked::after{content:'🔒';position:absolute;top:8px;right:8px;font-size:10px}
 
-/* ── HERO ── */
+/* ── HOME HERO ── */
 .home-hero{background:linear-gradient(135deg,rgba(79,110,247,.18) 0%,rgba(123,92,240,.1) 100%);border:0.5px solid rgba(79,110,247,.3);border-radius:var(--radius);padding:16px;margin-bottom:16px}
 .hero-title{font-family:var(--font-head);font-size:16px;font-weight:600;color:var(--text);margin-bottom:4px}
 .hero-sub{font-size:12px;color:var(--text2);line-height:1.6}
-
-/* ── EMPTY STATE ── */
-.empty{text-align:center;padding:30px 16px;color:var(--text3)}
-.empty-icon{font-size:28px;opacity:.4;margin-bottom:10px}
-.empty-text{font-size:13px;line-height:1.6;color:var(--text2)}
 
 /* ── TIP BOX ── */
 .tip-box{background:rgba(245,158,11,.08);border:0.5px solid rgba(245,158,11,.3);border-radius:var(--radius-sm);padding:11px 13px;margin-top:10px}
 .tip-label{font-size:10px;font-weight:600;color:var(--amber);margin-bottom:3px;text-transform:uppercase;letter-spacing:.5px}
 .tip-text{font-size:12px;color:var(--text2)}
 
-/* ── FORMAT SELECTOR ── */
-.fmt-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
-.fmt-btn{padding:12px 10px;border-radius:var(--radius-sm);border:0.5px solid var(--border);background:var(--surface);text-align:center;cursor:pointer;transition:all .15s}
-.fmt-btn:hover,.fmt-btn.selected{border-color:var(--accent);background:rgba(79,110,247,.12)}
-.fmt-icon{font-size:22px;display:block;margin-bottom:5px}
-.fmt-name{font-size:12px;font-weight:600;color:var(--text)}
-.fmt-ext{font-size:10px;color:var(--text3)}
-
-/* ── OCR TEXT AREA ── */
+/* ── OCR ── */
 .ocr-preview{background:var(--surface2);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:12px;margin-bottom:12px;font-family:monospace;font-size:12px;color:var(--text2);line-height:1.7;max-height:160px;overflow-y:auto;white-space:pre-wrap;word-break:break-word}
+.fmt-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.fmt-btn{padding:10px 8px;border-radius:var(--radius-sm);border:0.5px solid var(--border);background:var(--surface);text-align:center;cursor:pointer;transition:all .15s}
+.fmt-btn:hover,.fmt-btn.selected{border-color:var(--accent);background:rgba(79,110,247,.12)}
+.fmt-icon{font-size:20px;display:block;margin-bottom:4px}
+.fmt-name{font-size:11px;font-weight:600;color:var(--text)}
+.fmt-ext{font-size:9px;color:var(--text3)}
+
+/* ── AUTH MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:#000c;z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;animation:fadeIn .2s ease}
+.modal-box{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);padding:20px;width:100%;max-width:360px;max-height:90vh;overflow-y:auto}
+.modal-title{font-family:var(--font-head);font-size:16px;font-weight:600;color:var(--text);margin-bottom:4px}
+.modal-sub{font-size:12px;color:var(--text2);margin-bottom:16px;line-height:1.5}
+.inp-label{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;margin-top:10px;display:block}
+.tab-switch{display:flex;background:var(--surface2);border-radius:var(--radius-sm);padding:3px;margin-bottom:16px;gap:3px}
+.tab-sw-btn{flex:1;padding:7px;border:none;border-radius:6px;font-size:12px;font-weight:500;font-family:var(--font);cursor:pointer;background:transparent;color:var(--text3);transition:all .15s}
+.tab-sw-btn.active{background:var(--accent);color:#fff}
+.warn-box{background:rgba(245,158,11,.1);border:0.5px solid rgba(245,158,11,.3);border-radius:var(--radius-sm);padding:9px 12px;font-size:11px;color:var(--amber);line-height:1.5;margin-bottom:12px}
+.info-box{background:rgba(79,110,247,.1);border:0.5px solid rgba(79,110,247,.3);border-radius:var(--radius-sm);padding:9px 12px;font-size:11px;color:#7B9BFF;line-height:1.5;margin-bottom:12px}
+.err-box{background:rgba(239,68,68,.1);border:0.5px solid rgba(239,68,68,.3);border-radius:var(--radius-sm);padding:9px 12px;font-size:11px;color:var(--red);line-height:1.5;margin-bottom:12px;display:none}
+.locked-overlay{background:rgba(10,14,39,.92);border-radius:var(--radius);padding:20px;text-align:center;margin-top:12px;border:0.5px solid var(--border)}
+
+/* ── SUBSCRIPTION MODAL ── */
+.plan-card{border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:border-color .15s}
+.plan-card:hover{border-color:var(--accent)}
+.plan-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
+.plan-price{font-size:18px;font-weight:700;color:var(--accent)}
+.plan-desc{font-size:11px;color:var(--text2);margin-top:3px;line-height:1.5}
 
 /* ── SCROLLBAR ── */
 ::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-
-/* ── ERROR ── */
 .error-card{background:rgba(239,68,68,.08);border:0.5px solid rgba(239,68,68,.3);border-radius:var(--radius-sm);padding:11px 13px;color:#FCA5A5;font-size:12px;margin-top:8px}
 </style>
 </head>
@@ -192,6 +218,25 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
       <div class="live-dot"></div>
       <span class="live-label">AI Live</span>
       <span class="date-text" id="live-date"></span>
+      <span class="user-badge guest" id="user-badge" onclick="showAuthModal()">Sign in</span>
+    </div>
+  </div>
+
+  <!-- About Banner — home screen only -->
+  <div id="about-banner">
+    <div class="about-inner">
+      <div class="about-logo-sm">A</div>
+      <div class="about-content">
+        <div class="about-title">VORA by Apexlogic</div>
+        <div class="about-desc">Your AI-powered personal assistant — built by Madhuri Shukla, CEO &amp; Co-founder, Apexlogic. Extract tasks, scan documents, build schedules, get live news briefs and smart reminders.</div>
+        <div class="about-links">
+          <a class="about-link" onclick="goTo('privacy')">Privacy Policy</a>
+          <a class="about-link" onclick="goTo('terms')">Terms of Use</a>
+          <span class="about-link" style="cursor:pointer" onclick="showContactModal()">Contact Us</span>
+        </div>
+      </div>
+      <button class="about-toggle" onclick="toggleAbout()">Hide ▲</button>
+      <span class="about-collapsed-label" onclick="toggleAbout()" style="cursor:pointer">ℹ️</span>
     </div>
   </div>
 
@@ -200,9 +245,9 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
 
     <!-- HOME -->
     <div class="screen active" id="screen-home">
-      <div class="home-hero">
-        <div class="hero-title">Good day. What can VORA help with?</div>
-        <div class="hero-sub">All features powered by live AI — type, upload, or tap below to begin.</div>
+      <div class="home-hero" id="home-hero-box">
+        <div class="hero-title" id="home-greeting">Good day. What can VORA help with?</div>
+        <div class="hero-sub" id="home-sub">Try 1 day free — no sign up needed. Sign up for 30 days free access to all AI features.</div>
       </div>
       <div class="sect">Quick access</div>
       <div class="home-grid">
@@ -213,15 +258,15 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
         </div>
         <div class="home-tile" onclick="goTo('scan')">
           <div class="tile-icon">📷</div>
-          <div class="tile-label">Image scanner</div>
-          <div class="tile-sub">Photo → Word/Excel</div>
+          <div class="tile-label">Scan &amp; PDF</div>
+          <div class="tile-sub">Image → PDF/Word</div>
         </div>
         <div class="home-tile" onclick="goTo('schedule')">
           <div class="tile-icon">📅</div>
           <div class="tile-label">Scheduler</div>
           <div class="tile-sub">Tasks → Calendar</div>
         </div>
-        <div class="home-tile" onclick="goTo('topics')">
+        <div class="home-tile" id="tile-topics" onclick="handleTopicsTile()">
           <div class="tile-icon">🔍</div>
           <div class="tile-label">Topic brief</div>
           <div class="tile-sub">Live AI summary</div>
@@ -233,25 +278,48 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
         </div>
       </div>
       <div id="home-tasks-area"></div>
+      <!-- Footer links -->
+      <div style="margin-top:8px;padding-top:12px;border-top:0.5px solid var(--border);display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
+        <span onclick="goTo(\'privacy\')" style="cursor:pointer">Privacy Policy</span>
+        <span onclick="goTo(\'terms\')" style="cursor:pointer">Terms of Use</span>
+        <span onclick="showContactModal()" style="font-size:10px;color:var(--text3);cursor:pointer">Contact / Subscribe</span>
+        <span style="font-size:10px;color:var(--text3)">© 2026 Apexlogic</span>
+      </div>
     </div>
 
     <!-- CHATS -->
     <div class="screen" id="screen-chats">
-      <div class="sect" style="margin-top:4px">WhatsApp / chat analyser</div>
-      <div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.6">Paste any WhatsApp chat, message thread, or notes. VORA extracts every task, meeting and deadline automatically.</div>
-      <textarea id="chat-input" placeholder="Paste your chat here...&#10;&#10;Example:&#10;Rajesh: Can we call Monday 11am for the proposal?&#10;Priya: Please send budget report by Friday evening&#10;Boss: Team meeting tomorrow 3pm sharp&#10;Amit: Submit project by next Wednesday EOD"></textarea>
-      <button class="btn btn-primary btn-full" id="chat-btn" onclick="analyseChat()">
-        <svg style="width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
-        Extract tasks &amp; schedule
-      </button>
+      <div class="sect" style="margin-top:4px">Chat &amp; image analyser</div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.6">Paste chat text or upload a screenshot. VORA extracts every task, meeting and deadline.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+        <div class="upload-zone" style="padding:14px 8px;margin-bottom:0" onclick="document.getElementById('chat-img-input').click()">
+          <input type="file" id="chat-img-input" accept="image/*" style="display:none" onchange="handleChatImage(event)"/>
+          <div style="font-size:20px;margin-bottom:4px">🖼️</div>
+          <div style="font-size:11px;font-weight:600;color:var(--text2)">Upload screenshot</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:2px">JPG, PNG of chat</div>
+        </div>
+        <div class="upload-zone" style="padding:14px 8px;margin-bottom:0;cursor:default" onclick="document.getElementById('chat-input').focus()">
+          <div style="font-size:20px;margin-bottom:4px">💬</div>
+          <div style="font-size:11px;font-weight:600;color:var(--text2)">Paste chat text</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:2px">Type or paste below</div>
+        </div>
+      </div>
+      <div id="chat-img-preview"></div>
+      <textarea id="chat-input" placeholder="Paste your WhatsApp / email chat here...&#10;&#10;Example:&#10;Rajesh: Can we call Monday 11am for the proposal?&#10;Priya: Please send budget report by Friday evening&#10;Boss: Team meeting tomorrow 3pm sharp" style="margin-bottom:8px"></textarea>
+      <button class="btn btn-primary btn-full" id="chat-btn" onclick="analyseChat()">Extract tasks &amp; schedule</button>
       <div class="status-row" id="chat-status"><div class="spin"></div><span id="chat-status-text">Analysing messages...</span></div>
       <div id="chat-results" style="margin-top:4px"></div>
     </div>
 
     <!-- SCAN -->
     <div class="screen" id="screen-scan">
-      <div class="sect" style="margin-top:4px">Image → Word / Excel</div>
-      <div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.6">Upload any photo of a document, whiteboard, receipt, or handwritten notes. VORA reads the text and creates a downloadable file.</div>
+      <div class="sect" style="margin-top:4px">Scan to PDF · Word · Excel</div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.6">Upload any document photo — VORA reads it via OCR and lets you download as <strong style="color:var(--text)">PDF</strong> (full page scan with image), Word (.rtf), or Excel (.csv). Edit the filename before downloading.</div>
+      <div style="background:rgba(79,110,247,.08);border:0.5px solid rgba(79,110,247,.25);border-radius:var(--radius-sm);padding:8px 12px;margin-bottom:12px;font-size:11px;color:var(--text2);line-height:1.5">
+        📄 <strong style="color:var(--accent)">PDF</strong> — full page with original image + extracted text &nbsp;·&nbsp;
+        📝 <strong style="color:var(--text2)">Word</strong> — text only &nbsp;·&nbsp;
+        📊 <strong style="color:var(--text2)">Excel</strong> — line by line
+      </div>
       <div class="upload-zone" onclick="document.getElementById('img-input').click()">
         <input type="file" id="img-input" accept="image/*" style="display:none" onchange="handleImage(event)"/>
         <div class="upload-zone-icon">📸</div>
@@ -266,13 +334,19 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
     <!-- SCHEDULE -->
     <div class="screen" id="screen-schedule">
       <div class="sect" style="margin-top:4px">Smart scheduler</div>
-      <div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.6">Describe your tasks or day in plain English. VORA builds a smart time-blocked schedule and creates a calendar file you can open in Google Calendar or Outlook.</div>
-      <textarea id="sched-input" placeholder="Describe your tasks or day...&#10;&#10;Examples:&#10;• Call Rajesh 11am, submit report by 3pm, team meeting 5pm&#10;• Gym morning, client presentation 2pm, dentist 4pm, family dinner 8pm&#10;• AI webinar 3pm, prepare notes before, send follow-up after"></textarea>
-      <input type="text" id="sched-date" placeholder="Date — e.g. Monday 16 March 2026" style="margin-top:8px"/>
-      <button class="btn btn-primary btn-full" id="sched-btn" onclick="buildSchedule()">
-        <svg style="width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        Build my schedule
-      </button>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.6">Describe your tasks or day. Pick a date and time, VORA builds a smart schedule and creates a calendar file.</div>
+      <textarea id="sched-input" placeholder="Describe your tasks or day...&#10;&#10;Examples:&#10;• Call Rajesh, submit report, team meeting, gym&#10;• Client presentation, dentist appointment, family dinner&#10;• AI webinar, prepare notes before, send follow-up after"></textarea>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+        <div>
+          <div style="font-size:10px;color:var(--text3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Date</div>
+          <input type="date" id="sched-date"/>
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--text3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Start time (24h)</div>
+          <input type="time" id="sched-time"/>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" id="sched-btn" onclick="buildSchedule()" style="margin-top:10px">Build my schedule</button>
       <div class="status-row" id="sched-status"><div class="spin"></div><span id="sched-status-text">Building your schedule...</span></div>
       <div id="sched-results" style="margin-top:4px"></div>
     </div>
@@ -280,33 +354,114 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
     <!-- TOPICS -->
     <div class="screen" id="screen-topics">
       <div class="sect" style="margin-top:4px">Topic snapshot</div>
-      <div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.6">Type any topic — news, concept, event, person — and get a live 4–5 line AI brief with current sources.</div>
-      <div style="display:flex;gap:8px;margin-bottom:12px">
-        <input type="text" id="topic-input" placeholder="e.g. India economy 2025, AI regulation, climate..." style="flex:1"/>
-        <button class="btn btn-primary" id="topic-btn" onclick="runTopic()">Brief</button>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.6">Type any topic and get a live 4–5 line AI brief with current sources.</div>
+      <div id="topics-locked-area"></div>
+      <div id="topics-active-area">
+        <div style="display:flex;gap:8px;margin-bottom:12px">
+          <input type="text" id="topic-input" placeholder="e.g. India economy 2025, AI regulation, climate..." style="flex:1"/>
+          <button class="btn btn-primary" id="topic-btn" onclick="runTopic()">Brief</button>
+        </div>
+        <div class="sect">Try these</div>
+        <div class="chips" id="topic-chips"></div>
+        <div class="status-row" id="topic-status"><div class="spin"></div><span id="topic-status-text">Searching web...</span></div>
+        <div id="topic-results"></div>
       </div>
-      <div class="sect">Try these</div>
-      <div class="chips" id="topic-chips"></div>
-      <div class="status-row" id="topic-status"><div class="spin"></div><span id="topic-status-text">Searching web...</span></div>
-      <div id="topic-results"></div>
     </div>
 
     <!-- REMINDERS -->
     <div class="screen" id="screen-reminders">
       <div class="sect" style="margin-top:4px">Smart reminder writer</div>
-      <div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.6">Enter any event and VORA writes a contextual morning brief and a 30-minute alert — exactly what the mobile app would send to your phone.</div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.6">Enter event details — VORA writes contextual reminder notes AND plays an alarm sound at the time you set.</div>
       <input type="text" id="rem-event" placeholder="Event name — e.g. AI Webinar on Use Cases" style="margin-bottom:8px"/>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-        <input type="text" id="rem-date" placeholder="Date (e.g. Today)"/>
-        <input type="text" id="rem-time" placeholder="Time (e.g. 3:00 PM)"/>
+        <div>
+          <div style="font-size:10px;color:var(--text3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Date</div>
+          <input type="date" id="rem-date"/>
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--text3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Time (24h)</div>
+          <input type="time" id="rem-time"/>
+        </div>
       </div>
-      <input type="text" id="rem-notes" placeholder="Extra notes — e.g. Google Meet, speaker Dr. Sharma (optional)" style="margin-bottom:2px"/>
-      <button class="btn btn-primary btn-full" id="rem-btn" onclick="generateReminder()">
-        <svg style="width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-        Generate reminders
-      </button>
+      <div style="margin-bottom:8px">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Alarm sound</div>
+        <select id="rem-sound">
+          <option value="bell">Bell chime</option>
+          <option value="digital">Digital beep</option>
+          <option value="gentle">Gentle ping</option>
+          <option value="urgent">Urgent alert</option>
+        </select>
+      </div>
+      <input type="text" id="rem-notes" placeholder="Extra notes — e.g. Google Meet, speaker Dr. Sharma (optional)" style="margin-bottom:8px"/>
+      <button class="btn btn-primary btn-full" id="rem-btn" onclick="generateReminder()">Set reminder with alarm</button>
       <div class="status-row" id="rem-status"><div class="spin"></div><span id="rem-status-text">Writing reminder notes...</span></div>
       <div id="rem-results" style="margin-top:4px"></div>
+      <div id="rem-active-area"></div>
+    </div>
+
+    <!-- PRIVACY POLICY -->
+    <div class="screen" id="screen-privacy">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:0.5px solid var(--border)">
+        <button onclick="goTo('home')" style="background:var(--surface2);border:0.5px solid var(--border);color:var(--text2);border-radius:var(--radius-sm);padding:6px 12px;font-size:12px;cursor:pointer;font-family:var(--font)">← Back</button>
+        <div style="font-size:14px;font-weight:600;color:var(--text)">Privacy Policy</div>
+      </div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.85">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:12px">Last updated: March 2026 · Apexlogic / VORA</div>
+
+        <p style="margin-bottom:10px">VORA is an AI-powered personal assistant operated by <strong style="color:var(--text)">Apexlogic</strong> (India). This Privacy Policy explains how we collect, use, and protect your information when you use VORA at apex-vora.vercel.app.</p>
+
+        <div style="font-size:11px;font-weight:600;color:var(--text);margin:12px 0 4px;text-transform:uppercase;letter-spacing:.4px">1. Information We Collect</div>
+        <p style="margin-bottom:10px">When you register, we collect your name, email address, mobile number, and city. For trial users we collect name, email and city only. We do not collect payment information directly — payments are handled via email correspondence.</p>
+
+        <div style="font-size:11px;font-weight:600;color:var(--text);margin:12px 0 4px;text-transform:uppercase;letter-spacing:.4px">2. How We Use AI Features</div>
+        <p style="margin-bottom:10px">VORA's AI features (Topic Brief, Chat Analyser, Scheduler, Reminders, Scan to PDF) send your input text or images to the Anthropic Claude API for processing. This data is used only to generate your response and is not stored on our servers. Scanned document images are processed in real time and immediately discarded.</p>
+
+        <div style="font-size:11px;font-weight:600;color:var(--text);margin:12px 0 4px;text-transform:uppercase;letter-spacing:.4px">3. Data Storage</div>
+        <p style="margin-bottom:10px">Your registration details and session information are stored locally on your device using browser storage. We do not maintain a centralised database of user activity. Scanned PDFs are session-only and are not stored on our servers — you must download them before closing the app.</p>
+
+        <div style="font-size:11px;font-weight:600;color:var(--text);margin:12px 0 4px;text-transform:uppercase;letter-spacing:.4px">4. Advertising</div>
+        <p style="margin-bottom:10px">VORA may display advertisements via Google AdSense. Google may use cookies to personalise ads. You can opt out at google.com/settings/ads.</p>
+
+        <div style="font-size:11px;font-weight:600;color:var(--text);margin:12px 0 4px;text-transform:uppercase;letter-spacing:.4px">5. Children's Privacy</div>
+        <p style="margin-bottom:10px">VORA is intended for users aged 13 and above. We do not knowingly collect information from children under 13.</p>
+
+        <div style="font-size:11px;font-weight:600;color:var(--text);margin:12px 0 4px;text-transform:uppercase;letter-spacing:.4px">6. Contact</div>
+        <p>For privacy questions or data deletion: <strong style="color:var(--accent)">apexlogic2025@gmail.com</strong> or <strong style="color:var(--accent)">ceo@apexlogic.in</strong></p>
+      </div>
+    </div>
+
+    <!-- TERMS OF USE -->
+    <div class="screen" id="screen-terms">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:0.5px solid var(--border)">
+        <button onclick="goTo('home')" style="background:var(--surface2);border:0.5px solid var(--border);color:var(--text2);border-radius:var(--radius-sm);padding:6px 12px;font-size:12px;cursor:pointer;font-family:var(--font)">← Back</button>
+        <div style="font-size:14px;font-weight:600;color:var(--text)">Terms of Use</div>
+      </div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.85">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:12px">Last updated: March 2026 · Apexlogic / VORA</div>
+
+        <p style="margin-bottom:10px">By using VORA, you agree to these Terms of Use. VORA is operated by <strong style="color:var(--text)">Apexlogic</strong> (India). If you do not agree, please discontinue use.</p>
+
+        <div style="font-size:11px;font-weight:600;color:var(--text);margin:12px 0 4px;text-transform:uppercase;letter-spacing:.4px">1. Free Trial</div>
+        <p style="margin-bottom:10px">Trial users (name + email only) get 1 day of access to all features except Topic Brief. Full registered users get 30 days free access to all features including Topic Brief.</p>
+
+        <div style="font-size:11px;font-weight:600;color:var(--text);margin:12px 0 4px;text-transform:uppercase;letter-spacing:.4px">2. Subscriptions</div>
+        <p style="margin-bottom:10px">After the free period, continued use requires a subscription. Basic plan is ₹25/month (all features, session-only PDFs). Premium plan is ₹99/month (all features + permanent PDF storage). Prices may change with notice. Subscriptions are activated manually by Apexlogic after payment confirmation.</p>
+
+        <div style="font-size:11px;font-weight:600;color:var(--text);margin:12px 0 4px;text-transform:uppercase;letter-spacing:.4px">3. AI Features</div>
+        <p style="margin-bottom:10px">VORA's AI features are powered by the Anthropic Claude API. Results are generated automatically and may not always be accurate. Do not rely on AI outputs for critical decisions without independent verification.</p>
+
+        <div style="font-size:11px;font-weight:600;color:var(--text);margin:12px 0 4px;text-transform:uppercase;letter-spacing:.4px">4. Acceptable Use</div>
+        <p style="margin-bottom:10px">You agree not to use VORA for illegal, harmful or abusive purposes. You must not attempt to reverse engineer the app or misuse the AI features to generate harmful content.</p>
+
+        <div style="font-size:11px;font-weight:600;color:var(--text);margin:12px 0 4px;text-transform:uppercase;letter-spacing:.4px">5. Scanned Documents</div>
+        <p style="margin-bottom:10px">You are responsible for ensuring you have the right to scan and process any document you upload. Apexlogic is not liable for document content or any use you make of extracted text.</p>
+
+        <div style="font-size:11px;font-weight:600;color:var(--text);margin:12px 0 4px;text-transform:uppercase;letter-spacing:.4px">6. Limitation of Liability</div>
+        <p style="margin-bottom:10px">VORA is provided as-is. Apexlogic is not liable for any loss arising from use of the app including data loss, AI errors, or service interruptions.</p>
+
+        <div style="font-size:11px;font-weight:600;color:var(--text);margin:12px 0 4px;text-transform:uppercase;letter-spacing:.4px">7. Contact</div>
+        <p>For questions about these terms: <strong style="color:var(--accent)">apexlogic2025@gmail.com</strong></p>
+      </div>
     </div>
 
   </div><!-- /screens -->
@@ -314,39 +469,27 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
   <!-- Bottom Nav -->
   <div class="bottom-nav">
     <button class="nav-item active" id="nav-home" onclick="goTo('home')">
-      <div class="nav-icon">
-        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      </div>
+      <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
       <span class="nav-label">Home</span>
     </button>
     <button class="nav-item" id="nav-chats" onclick="goTo('chats')">
-      <div class="nav-icon">
-        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      </div>
+      <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
       <span class="nav-label">Chats</span>
     </button>
     <button class="nav-item" id="nav-scan" onclick="goTo('scan')">
-      <div class="nav-icon">
-        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-      </div>
-      <span class="nav-label">Scan</span>
+      <div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+      <span class="nav-label">Scan→PDF</span>
     </button>
     <button class="nav-item" id="nav-schedule" onclick="goTo('schedule')">
-      <div class="nav-icon">
-        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      </div>
+      <div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
       <span class="nav-label">Schedule</span>
     </button>
-    <button class="nav-item" id="nav-topics" onclick="goTo('topics')">
-      <div class="nav-icon">
-        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      </div>
+    <button class="nav-item" id="nav-topics" onclick="handleTopicsTile()">
+      <div class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
       <span class="nav-label">Topics</span>
     </button>
     <button class="nav-item" id="nav-reminders" onclick="goTo('reminders')">
-      <div class="nav-icon">
-        <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-      </div>
+      <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
       <span class="nav-label">Reminder</span>
     </button>
   </div>
@@ -359,32 +502,454 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
 // Replace  YOUR_API_KEY_HERE  with your actual key
 // It looks like:  sk-ant-api03-xxxxxxxxxxxx
 // ═══════════════════════════════════════════════════════
-const ANTHROPIC_API_KEY = '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';
+const ANTHROPIC_API_KEY = 'const ANTHROPIC_API_KEY = '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';
+';
 // ═══════════════════════════════════════════════════════
 
-const SCREENS=['home','chats','scan','schedule','topics','reminders'];
-const allTasks=[];
+// ══════════════════════════════════════════════
+// USER SESSION SYSTEM
+// ══════════════════════════════════════════════
+// User object stored in localStorage:
+// { name, email, mobile, place, type: guest|free|basic|premium|admin,
+//   signedUpAt, expiresAt, adminOverride }
 
-/* ── DATE ── */
-document.getElementById('live-date').textContent=new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short'});
+function getUser(){ try{ return JSON.parse(localStorage.getItem('vora_user')||'null'); }catch(e){ return null; } }
+function saveUser(u){ localStorage.setItem('vora_user',JSON.stringify(u)); }
+function clearUser(){ localStorage.removeItem('vora_user'); }
 
-/* ── NAV ── */
-function goTo(name){
-  SCREENS.forEach(s=>{
-    document.getElementById('screen-'+s).classList.toggle('active',s===name);
-    const n=document.getElementById('nav-'+s);
-    if(n)n.classList.toggle('active',s===name);
-  });
-  if(name==='home')renderHomeTasks();
+function isExpired(u){
+  if(!u) return true;
+  if(u.type==='admin'||u.adminOverride) return false;
+  if(!u.expiresAt) return false;
+  return new Date(u.expiresAt) < new Date();
 }
 
-/* ── TOPIC CHIPS ── */
-const CHIPS=['India economy 2025','AI regulation 2025','Israel Gaza 2025','Budget 2025','ChatGPT vs Gemini','Climate change 2025','Elon Musk news','NEET exam 2025','IPL 2025','Stock market India'];
-const chipsEl=document.getElementById('topic-chips');
-CHIPS.forEach(s=>{const el=document.createElement('span');el.className='chip';el.textContent=s;el.onclick=()=>{document.getElementById('topic-input').value=s;runTopic();};chipsEl.appendChild(el);});
-document.getElementById('topic-input').addEventListener('keydown',e=>{if(e.key==='Enter')runTopic();});
+function canUseTopics(u){
+  if(!u) return false;
+  if(isExpired(u)) return false;
+  return u.type!=='guest';
+}
 
-/* ── UTILS ── */
+function getUserLabel(u){
+  if(!u||isExpired(u)) return {text:'Sign in',cls:'guest'};
+  if(u.adminOverride||u.type==='admin') return {text:'Admin',cls:'admin'};
+  if(u.type==='premium') return {text:'Premium',cls:'premium'};
+  if(u.type==='basic') return {text:'Pro',cls:'sub'};
+  if(u.type==='free') return {text:'Free',cls:'free'};
+  return {text:'Guest',cls:'guest'};
+}
+
+function updateUserBadge(){
+  const u=getUser();
+  const {text,cls}=getUserLabel(isExpired(u)?null:u);
+  const badge=document.getElementById('user-badge');
+  badge.textContent=text;
+  badge.className='user-badge '+cls;
+  updateHomeGreeting();
+  updateTopicsAccess();
+}
+
+function updateHomeGreeting(){
+  const u=getUser();
+  const greet=document.getElementById('home-greeting');
+  const sub=document.getElementById('home-sub');
+  if(!greet) return;
+  const hour=new Date().getHours();
+  const timeGreet=hour<12?'Good morning':'hour<17'?'Good afternoon':'Good evening';
+  if(!u||isExpired(u)){
+    greet.textContent='Good day. Welcome to VORA.';
+    sub.textContent='Try 1 day free — just enter your name. Sign up for 30 days free AI access.';
+  } else {
+    greet.textContent='Good day, '+u.name.split(' ')[0]+'!';
+    if(isExpired(u)){
+      sub.textContent='Your free period has ended. Subscribe to continue using VORA.';
+    } else if(u.expiresAt){
+      const days=Math.ceil((new Date(u.expiresAt)-new Date())/(1000*60*60*24));
+      sub.textContent=days>0?days+' day'+(days>1?'s':'')+' remaining on your free plan.':'Subscription expired.';
+    } else {
+      sub.textContent='Welcome back! All features are active.';
+    }
+  }
+}
+
+function updateTopicsAccess(){
+  const u=getUser();
+  const locked=document.getElementById('topics-locked-area');
+  const active=document.getElementById('topics-active-area');
+  const tileTopic=document.getElementById('tile-topics');
+  if(!locked||!active) return;
+  if(canUseTopics(u)){
+    locked.innerHTML='';
+    active.style.display='';
+    if(tileTopic) tileTopic.classList.remove('tile-locked');
+  } else {
+    active.style.display='none';
+    locked.innerHTML=`<div class="locked-overlay">
+      <div style="font-size:32px;margin-bottom:10px">🔒</div>
+      <div style="font-family:var(--font-head);font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px">AI Feature — Sign Up Required</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:14px">Topic Snapshot uses live web search and AI summarisation. This feature is available to registered users only. Sign up free — takes 30 seconds.</div>
+      <button class="btn btn-primary btn-full" style="margin-top:0" onclick="showAuthModal('signup')">Sign up free — 30 days access</button>
+      <div style="margin-top:8px;font-size:11px;color:var(--text3)">Already have an account? <span style="color:var(--accent);cursor:pointer" onclick="showAuthModal('login')">Sign in</span></div>
+    </div>`;
+    if(tileTopic) tileTopic.classList.add('tile-locked');
+  }
+}
+
+function handleTopicsTile(){
+  const u=getUser();
+  if(canUseTopics(u)){
+    goTo('topics');
+  } else {
+    goTo('topics');
+    updateTopicsAccess();
+  }
+}
+
+// ══════════════════════════════════════════════
+// ABOUT BANNER
+// ══════════════════════════════════════════════
+let aboutCollapsed=localStorage.getItem('vora_about_collapsed')==='1';
+function toggleAbout(){
+  aboutCollapsed=!aboutCollapsed;
+  localStorage.setItem('vora_about_collapsed',aboutCollapsed?'1':'0');
+  const banner=document.getElementById('about-banner');
+  const toggle=banner.querySelector('.about-toggle');
+  if(aboutCollapsed){
+    banner.classList.add('collapsed');
+    if(toggle) toggle.textContent='Show ▼';
+  } else {
+    banner.classList.remove('collapsed');
+    if(toggle) toggle.textContent='Hide ▲';
+  }
+}
+// Apply saved state
+if(aboutCollapsed){
+  const banner=document.getElementById('about-banner');
+  if(banner){ banner.classList.add('collapsed'); const t=banner.querySelector('.about-toggle'); if(t) t.textContent='Show ▼'; }
+}
+
+// ══════════════════════════════════════════════
+// NAV
+// ══════════════════════════════════════════════
+const SCREENS=['auth','home','chats','scan','schedule','topics','reminders','privacy','terms'];
+const allTasks=[];
+
+document.getElementById('live-date').textContent=new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short'});
+
+function goTo(name){
+  SCREENS.forEach(s=>{
+    const sc=document.getElementById('screen-'+s);
+    if(sc) sc.classList.toggle('active',s===name);
+    const n=document.getElementById('nav-'+s);
+    if(n) n.classList.toggle('active',s===name);
+  });
+  const banner=document.getElementById('about-banner');
+  if(banner) banner.style.display=name==='home'?'':'none';
+  const noNav=['auth','privacy','terms'];
+  const nav=document.querySelector('.bottom-nav');
+  const hdr=document.querySelector('.app-header');
+  if(nav) nav.style.display=noNav.includes(name)?'none':'flex';
+  if(hdr) hdr.style.display=noNav.includes(name)?'none':'flex';
+  if(name==='home'){renderHomeTasks();renderUserBadge();renderSubscriptionCTA();}
+}
+
+// ══════════════════════════════════════════════
+// AUTH MODAL
+// ══════════════════════════════════════════════
+function showAuthModal(tab){
+  tab=tab||'guest';
+  const u=getUser();
+  if(u&&!isExpired(u)&&u.type!=='guest'){
+    showProfileModal(u); return;
+  }
+  removeModal();
+  const overlay=document.createElement('div');
+  overlay.className='modal-overlay';
+  overlay.id='vora-modal';
+  overlay.onclick=e=>{if(e.target===overlay)removeModal();};
+  overlay.innerHTML=`
+    <div class="modal-box">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div class="modal-title">Welcome to VORA</div>
+        <button onclick="removeModal()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;line-height:1">✕</button>
+      </div>
+      <div class="tab-switch">
+        <button class="tab-sw-btn ${tab==='guest'?'active':''}" onclick="switchAuthTab('guest')">1-Day Trial</button>
+        <button class="tab-sw-btn ${tab==='signup'?'active':''}" onclick="switchAuthTab('signup')">Sign Up Free</button>
+        <button class="tab-sw-btn ${tab==='login'?'active':''}" onclick="switchAuthTab('login')">Sign In</button>
+      </div>
+      <div id="auth-tab-content"></div>
+    </div>`;
+  document.body.appendChild(overlay);
+  renderAuthTab(tab);
+}
+
+function switchAuthTab(tab){
+  document.querySelectorAll('.tab-sw-btn').forEach((b,i)=>{
+    b.classList.toggle('active',['guest','signup','login'][i]===tab);
+  });
+  renderAuthTab(tab);
+}
+
+function renderAuthTab(tab){
+  const c=document.getElementById('auth-tab-content');
+  if(!c) return;
+  if(tab==='guest'){
+    c.innerHTML=`
+      <div class="info-box">✨ Try all features free for <strong>1 day</strong> — no verification needed. Topic Brief (AI search) requires a free account.</div>
+      <label class="inp-label">Your name</label>
+      <input type="text" id="auth-name" placeholder="e.g. Priya Sharma" style="margin-bottom:8px"/>
+      <label class="inp-label">Email address</label>
+      <input type="email" id="auth-email" placeholder="you@example.com" style="margin-bottom:8px"/>
+      <label class="inp-label">City / Place</label>
+      <input type="text" id="auth-place" placeholder="e.g. Mumbai" style="margin-bottom:8px"/>
+      <div id="auth-err" class="err-box"></div>
+      <button class="btn btn-primary btn-full" style="margin-top:4px" onclick="startGuestSession()">Start 1-day trial →</button>
+      <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:8px">No password needed · Expires in 24 hours</div>`;
+  } else if(tab==='signup'){
+    c.innerHTML=`
+      <div class="info-box">🎉 <strong>30 days free</strong> — full access including AI Topic Brief. No credit card required.</div>
+      <div class="warn-box">📧 A verification link will be sent to your email. Please also check your <strong>Spam / Junk folder</strong> if you don't see it in your inbox within 2 minutes.</div>
+      <label class="inp-label">Full name</label>
+      <input type="text" id="auth-name" placeholder="e.g. Priya Sharma" style="margin-bottom:8px"/>
+      <label class="inp-label">Email address</label>
+      <input type="email" id="auth-email" placeholder="you@example.com" style="margin-bottom:8px"/>
+      <label class="inp-label">Mobile number</label>
+      <input type="tel" id="auth-mobile" placeholder="+91 98765 43210" style="margin-bottom:8px"/>
+      <label class="inp-label">City / Place</label>
+      <input type="text" id="auth-place" placeholder="e.g. Mumbai" style="margin-bottom:8px"/>
+      <div id="auth-err" class="err-box"></div>
+      <button class="btn btn-primary btn-full" style="margin-top:4px" onclick="startSignup()">Create account &amp; send verification →</button>
+      <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:8px">Already have an account? <span style="color:var(--accent);cursor:pointer" onclick="switchAuthTab('login')">Sign in</span></div>`;
+  } else {
+    c.innerHTML=`
+      <label class="inp-label">Email address</label>
+      <input type="email" id="auth-email" placeholder="you@example.com" style="margin-bottom:8px"/>
+      <div id="auth-err" class="err-box"></div>
+      <button class="btn btn-primary btn-full" style="margin-top:4px" onclick="signIn()">Sign in →</button>
+      <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:8px">No password needed — we verify by email. <span style="color:var(--accent);cursor:pointer" onclick="switchAuthTab('signup')">Sign up</span></div>`;
+  }
+}
+
+function showAuthErr(msg){
+  const e=document.getElementById('auth-err');
+  if(e){e.textContent=msg;e.style.display='block';}
+}
+
+function startGuestSession(){
+  const name=(document.getElementById('auth-name')?.value||'').trim();
+  const email=(document.getElementById('auth-email')?.value||'').trim();
+  const place=(document.getElementById('auth-place')?.value||'').trim();
+  if(!name||!email){showAuthErr('Please enter your name and email.');return;}
+  const u={name,email,place,mobile:'',type:'guest',
+    signedUpAt:new Date().toISOString(),
+    expiresAt:new Date(Date.now()+24*60*60*1000).toISOString()};
+  saveUser(u);removeModal();updateUserBadge();
+  showToast('Welcome, '+name.split(' ')[0]+'! 1-day trial started.');
+}
+
+function startSignup(){
+  const name=(document.getElementById('auth-name')?.value||'').trim();
+  const email=(document.getElementById('auth-email')?.value||'').trim();
+  const mobile=(document.getElementById('auth-mobile')?.value||'').trim();
+  const place=(document.getElementById('auth-place')?.value||'').trim();
+  if(!name||!email||!mobile){showAuthErr('Name, email and mobile are required.');return;}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showAuthErr('Please enter a valid email address.');return;}
+  // Simulate sending verification — in production connect to Firebase Auth
+  const pending={name,email,mobile,place,type:'free',
+    signedUpAt:new Date().toISOString(),
+    expiresAt:new Date(Date.now()+30*24*60*60*1000).toISOString(),
+    verified:false};
+  saveUser(pending);
+  const c=document.getElementById('auth-tab-content');
+  if(c) c.innerHTML=`
+    <div style="text-align:center;padding:20px 10px">
+      <div style="font-size:40px;margin-bottom:12px">📧</div>
+      <div style="font-family:var(--font-head);font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px">Check your email!</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:8px">A verification link has been sent to <strong style="color:var(--text)">${esc(email)}</strong></div>
+      <div class="warn-box" style="text-align:left">⚠️ If you don't see the email in 2 minutes, please check your <strong>Spam or Junk folder</strong>. Mark it as "Not Spam" to receive future emails.</div>
+      <button class="btn btn-primary btn-full" style="margin-top:4px" onclick="confirmVerification()">I've verified — continue →</button>
+    </div>`;
+}
+
+function confirmVerification(){
+  const u=getUser();
+  if(u){ u.verified=true; saveUser(u); }
+  removeModal(); updateUserBadge();
+  showToast('Welcome to VORA! 30 days free access activated.');
+}
+
+function signIn(){
+  const email=(document.getElementById('auth-email')?.value||'').trim();
+  if(!email){showAuthErr('Please enter your email.');return;}
+  const u=getUser();
+  if(u&&u.email===email){
+    if(isExpired(u)){
+      removeModal();
+      showSubscribeModal();
+    } else {
+      removeModal();updateUserBadge();
+      showToast('Welcome back, '+u.name.split(' ')[0]+'!');
+    }
+  } else {
+    showAuthErr('No account found with this email. Please sign up.');
+  }
+}
+
+function showProfileModal(u){
+  removeModal();
+  const overlay=document.createElement('div');
+  overlay.className='modal-overlay';
+  overlay.id='vora-modal';
+  overlay.onclick=e=>{if(e.target===overlay)removeModal();};
+  const exp=u.expiresAt?new Date(u.expiresAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'No expiry';
+  const days=u.expiresAt?Math.ceil((new Date(u.expiresAt)-new Date())/(1000*60*60*24)):null;
+  overlay.innerHTML=`
+    <div class="modal-box">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div class="modal-title">Your Account</div>
+        <button onclick="removeModal()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px">✕</button>
+      </div>
+      <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:14px;margin-bottom:14px">
+        <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:3px">${esc(u.name)}</div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:2px">${esc(u.email)}</div>
+        <div style="font-size:12px;color:var(--text2)">${u.place?esc(u.place):''}</div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:14px">
+        <div style="flex:1;background:var(--surface2);border-radius:var(--radius-sm);padding:10px;text-align:center">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:2px">Plan</div>
+          <div style="font-size:13px;font-weight:600;color:var(--accent)">${u.adminOverride?'Admin Free':(u.type.charAt(0).toUpperCase()+u.type.slice(1))}</div>
+        </div>
+        <div style="flex:1;background:var(--surface2);border-radius:var(--radius-sm);padding:10px;text-align:center">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:2px">${days!==null?'Days left':'Expires'}</div>
+          <div style="font-size:13px;font-weight:600;color:${days>7?'var(--green)':days>0?'var(--amber)':'var(--red)'}">${days!==null?(days>0?days+' days':'Expired'):'Forever'}</div>
+        </div>
+      </div>
+      ${(u.type==='free'||u.type==='guest'||isExpired(u))?`<button class="btn btn-primary btn-full" style="margin-bottom:8px" onclick="removeModal();showSubscribeModal()">Upgrade — ₹25/month →</button>`:''}
+      <button class="btn btn-full" style="margin-top:0" onclick="signOut()">Sign out</button>
+    </div>`;
+  document.body.appendChild(overlay);
+}
+
+function signOut(){
+  clearUser(); removeModal(); updateUserBadge();
+  showToast('Signed out successfully.');
+}
+
+function removeModal(){
+  const m=document.getElementById('vora-modal');
+  if(m) m.remove();
+}
+
+// ══════════════════════════════════════════════
+// SUBSCRIPTION MODAL
+// ══════════════════════════════════════════════
+function showSubscribeModal(){
+  removeModal();
+  const overlay=document.createElement('div');
+  overlay.className='modal-overlay';
+  overlay.id='vora-modal';
+  overlay.onclick=e=>{if(e.target===overlay)removeModal();};
+  overlay.innerHTML=`
+    <div class="modal-box">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div class="modal-title">Subscribe to VORA</div>
+        <button onclick="removeModal()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px">✕</button>
+      </div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:16px;line-height:1.5">Choose a plan and contact us to activate. We respond within 2 business days.</div>
+
+      <div class="plan-card" onclick="contactForPlan('Basic ₹25/month')">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div class="plan-name">Basic</div>
+            <div class="plan-desc">All 5 features · Chat, Scan, Schedule, Topics, Reminders<br>Scan-to-PDF (download immediately — not stored)</div>
+          </div>
+          <div class="plan-price">₹25<span style="font-size:11px;font-weight:400;color:var(--text2)">/mo</span></div>
+        </div>
+      </div>
+
+      <div class="plan-card" onclick="contactForPlan('Premium ₹99/month')" style="border-color:rgba(139,92,246,.4);background:rgba(139,92,246,.06)">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div class="plan-name" style="color:#A78BFA">Premium ⭐</div>
+            <div class="plan-desc">Everything in Basic + PDF files saved permanently on your account</div>
+          </div>
+          <div class="plan-price" style="color:#A78BFA">₹99<span style="font-size:11px;font-weight:400;color:var(--text2)">/mo</span></div>
+        </div>
+      </div>
+
+      <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px;margin-top:4px">
+        <div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">How to subscribe</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.8">
+          1. Tap a plan above<br>
+          2. Send email with your plan choice + name + email used in VORA<br>
+          3. We activate your account within 2 business days
+        </div>
+        <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
+          <div style="font-size:12px;color:var(--text);font-weight:500">📧 apexlogic2025@gmail.com</div>
+          <button onclick="navigator.clipboard.writeText('apexlogic2025@gmail.com').then(()=>showToast('Email copied!'))" style="font-size:10px;padding:3px 8px;border-radius:5px;border:0.5px solid var(--border);background:transparent;color:var(--text2);cursor:pointer">Copy</button>
+        </div>
+      </div>
+      <div id="qr-placeholder" style="margin-top:10px;text-align:center;padding:10px;border:0.5px dashed var(--border);border-radius:var(--radius-sm);color:var(--text3);font-size:11px">UPI QR code coming soon</div>
+    </div>`;
+  document.body.appendChild(overlay);
+}
+
+function contactForPlan(plan){
+  const u=getUser();
+  const email=u?u.email:'';
+  const name=u?u.name:'';
+  window.location.href=`mailto:apexlogic2025@gmail.com?subject=VORA ${plan} Subscription&body=Hi Apexlogic,%0A%0AI would like to subscribe to VORA (${plan}).%0A%0AName: ${name}%0AEmail used in VORA: ${email}%0A%0AThank you.`;
+}
+
+// ══════════════════════════════════════════════
+// CONTACT MODAL
+// ══════════════════════════════════════════════
+function showContactModal(){
+  removeModal();
+  const overlay=document.createElement('div');
+  overlay.className='modal-overlay';
+  overlay.id='vora-modal';
+  overlay.onclick=e=>{if(e.target===overlay)removeModal();};
+  overlay.innerHTML=`
+    <div class="modal-box">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div class="modal-title">Contact Apexlogic</div>
+        <button onclick="removeModal()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px">✕</button>
+      </div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:14px;line-height:1.5">For subscriptions, support, or partnerships — email us directly.</div>
+      <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <span style="font-size:18px">📧</span>
+          <div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--text)">apexlogic2025@gmail.com</div><div style="font-size:10px;color:var(--text3)">General &amp; subscriptions</div></div>
+          <button onclick="navigator.clipboard.writeText('apexlogic2025@gmail.com').then(()=>showToast('Copied!'))" style="font-size:10px;padding:3px 8px;border-radius:5px;border:0.5px solid var(--border);background:transparent;color:var(--text2);cursor:pointer">Copy</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:18px">💼</span>
+          <div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--text)">ceo@apexlogic.in</div><div style="font-size:10px;color:var(--text3)">CEO / Partnerships</div></div>
+          <button onclick="navigator.clipboard.writeText('ceo@apexlogic.in').then(()=>showToast('Copied!'))" style="font-size:10px;padding:3px 8px;border-radius:5px;border:0.5px solid var(--border);background:transparent;color:var(--text2);cursor:pointer">Copy</button>
+        </div>
+      </div>
+      <a href="mailto:apexlogic2025@gmail.com?subject=VORA Enquiry" class="btn btn-primary btn-full" style="text-decoration:none;justify-content:center">Open email app →</a>
+      <div style="text-align:center;margin-top:8px;font-size:10px;color:var(--text3)">We respond within 2 business days · Madhuri Shukla, CEO Apexlogic</div>
+    </div>`;
+  document.body.appendChild(overlay);
+}
+
+// ══════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════
+function showToast(msg){
+  const t=document.createElement('div');
+  t.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--surface);border:0.5px solid var(--border);border-radius:20px;padding:8px 16px;font-size:12px;color:var(--text);z-index:9998;white-space:nowrap;box-shadow:0 4px 16px #0006;animation:fadeIn .2s ease';
+  t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),2500);
+}
+
+// ══════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function showStatus(id,msg){const el=document.getElementById(id+'-status');const tx=document.getElementById(id+'-status-text');if(el)el.classList.add('show');if(tx)tx.textContent=msg;}
 function hideStatus(id){const el=document.getElementById(id+'-status');if(el)el.classList.remove('show');}
@@ -408,7 +973,18 @@ async function callAI(prompt,useSearch=false){
   catch(e){const m=text.match(/\{[\s\S]*\}/g);if(m){for(const c of m){try{return JSON.parse(c);}catch(_){}}}throw new Error('Could not read AI response — try again');}
 }
 
-/* ══════════════ CHATS ══════════════ */
+// ══════════════════════════════════════════════
+// TOPIC CHIPS
+// ══════════════════════════════════════════════
+const CHIPS=['India economy 2025','AI regulation 2025','Israel Gaza 2025','Budget 2025','ChatGPT vs Gemini','Climate change 2025','Elon Musk news','NEET exam 2025','IPL 2025','Stock market India'];
+const chipsEl=document.getElementById('topic-chips');
+if(chipsEl)CHIPS.forEach(s=>{const el=document.createElement('span');el.className='chip';el.textContent=s;el.onclick=()=>{document.getElementById('topic-input').value=s;runTopic();};chipsEl.appendChild(el);});
+const ti=document.getElementById('topic-input');
+if(ti)ti.addEventListener('keydown',e=>{if(e.key==='Enter')runTopic();});
+
+// ══════════════════════════════════════════════
+// CHATS
+// ══════════════════════════════════════════════
 async function analyseChat(){
   const txt=document.getElementById('chat-input').value.trim();if(!txt)return;
   const btn=document.getElementById('chat-btn');btn.disabled=true;
@@ -416,13 +992,11 @@ async function analyseChat(){
   document.getElementById('chat-results').innerHTML='';
   try{
     const r=await callAI(`You are VORA's task extraction engine. Extract every task, meeting, deadline and commitment from this chat.
-
 Chat text:
 """
 ${txt}
 """
-
-Return ONLY valid JSON (no markdown, no explanation):
+Return ONLY valid JSON:
 {"tasks":[{"title":"clear task title","date":"date/time or No date","priority":"High or Medium or Low","person":"who assigned it or empty","type":"Meeting or Task or Deadline or Event"}],"summary":"1 sentence summary"}`);
     hideStatus('chat');renderChatResults(r);
     if(r.tasks&&r.tasks.length)allTasks.push(...r.tasks);
@@ -430,116 +1004,200 @@ Return ONLY valid JSON (no markdown, no explanation):
   btn.disabled=false;
 }
 
+async function handleChatImage(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=async evt=>{
+    const b64=evt.target.result.split(',')[1];const mime=file.type||'image/jpeg';
+    document.getElementById('chat-img-preview').innerHTML=`<img class="preview" src="data:${mime};base64,${b64}"/>`;
+    showStatus('chat','Reading screenshot...');
+    try{
+      const body={model:'claude-sonnet-4-20250514',max_tokens:1500,messages:[{role:'user',content:[
+        {type:'image',source:{type:'base64',media_type:mime,data:b64}},
+        {type:'text',text:`Extract ALL text from this chat screenshot, then identify every task, meeting, deadline or commitment. Return ONLY valid JSON:
+{"tasks":[{"title":"clear task title","date":"date/time or No date","priority":"High or Medium or Low","person":"who assigned it or empty","type":"Meeting or Task or Deadline or Event"}],"summary":"1 sentence summary"}`}
+      ]}]};
+      const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify(body)});
+      if(!res.ok){const err=await res.json();throw new Error(err.error?.message||'API error');}
+      const data=await res.json();let text='';for(const b of(data.content||[])){if(b.type==='text')text+=b.text;}
+      text=text.trim();const bi=text.indexOf('{');const li=text.lastIndexOf('}');
+      if(bi===-1)throw new Error('Could not read screenshot');
+      const r=JSON.parse(text.slice(bi,li+1));
+      hideStatus('chat');renderChatResults(r);
+      if(r.tasks&&r.tasks.length)allTasks.push(...r.tasks);
+    }catch(err){hideStatus('chat');document.getElementById('chat-results').innerHTML=errCard(err.message);}
+  };
+  reader.readAsDataURL(file);
+}
+
 function renderChatResults(r){
   const tasks=r.tasks||[];
-  if(!tasks.length){document.getElementById('chat-results').innerHTML='<div class="empty"><div class="empty-icon">🔍</div><div class="empty-text">No tasks found. Try pasting more chat content.</div></div>';return;}
+  if(!tasks.length){document.getElementById('chat-results').innerHTML='<div style="text-align:center;padding:20px;color:var(--text2)">No tasks found. Try pasting more chat content.</div>';return;}
   let html=`<div style="margin-top:12px"><div class="sect">${tasks.length} item${tasks.length>1?'s':''} detected</div>`;
   tasks.forEach((t,i)=>{
     const pc=t.priority==='High'?'pri-high':t.priority==='Medium'?'pri-med':'pri-low';
-    const tc=t.type==='Meeting'?'var(--accent)':t.type==='Deadline'?'var(--red)':t.type==='Event'?'var(--teal)':'var(--green)';
     html+=`<div class="todo-item" id="ti-${i}">
       <div class="check-circle" id="cc-${i}" onclick="toggleTask(${i})"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
       <div class="todo-body">
         <div class="todo-title" id="tt-${i}">${esc(t.title)}</div>
         <div class="todo-meta">${esc(t.date)}${t.person?' · '+esc(t.person):''}</div>
-        <div class="todo-tags"><span class="pri ${pc}">${esc(t.priority)}</span><span class="badge" style="font-size:9px;background:rgba(255,255,255,.06);color:var(--text2)">${esc(t.type)}</span></div>
+        <div class="todo-tags"><span class="pri ${pc}">${esc(t.priority)}</span><span style="font-size:9px;padding:2px 6px;border-radius:8px;background:rgba(255,255,255,.06);color:var(--text2)">${esc(t.type)}</span></div>
       </div>
     </div>`;
   });
-  html+=`<div class="btn-row"><button class="btn btn-sm" onclick="goTo('schedule')" style="background:rgba(79,110,247,.15);border-color:var(--accent);color:#7B9BFF">Build schedule from these</button><button class="btn btn-sm" onclick="document.getElementById('chat-results').innerHTML=''">Clear</button></div></div>`;
+  html+=`<div class="btn-row"><button class="btn btn-sm" style="background:rgba(79,110,247,.15);border-color:var(--accent);color:#7B9BFF" onclick="goTo('schedule')">Build schedule from these</button><button class="btn btn-sm" onclick="document.getElementById('chat-results').innerHTML=''">Clear</button></div></div>`;
   document.getElementById('chat-results').innerHTML=html;
 }
 
 function toggleTask(i){
-  const cc=document.getElementById('cc-'+i);const tt=document.getElementById('tt-'+i);const ti=document.getElementById('ti-'+i);
-  const done=cc.classList.toggle('checked');tt.classList.toggle('done',done);ti.classList.toggle('done',done);
+  const cc=document.getElementById('cc-'+i);const tt=document.getElementById('tt-'+i);
+  const done=cc.classList.toggle('checked');tt.classList.toggle('done',done);
 }
 
-/* ══════════════ SCAN ══════════════ */
+// ══════════════════════════════════════════════
+// SCAN — Image to PDF / Word / Excel
+// ══════════════════════════════════════════════
 function handleImage(e){
   const file=e.target.files[0];if(!file)return;
   const reader=new FileReader();
   reader.onload=evt=>{
     const b64=evt.target.result.split(',')[1];const mime=file.type||'image/jpeg';
-    document.getElementById('img-preview-area').innerHTML=`<img class="preview" src="data:${mime};base64,${b64}"/>`;
-    processImage(b64,mime);
+    const imgSrc=evt.target.result;
+    document.getElementById('img-preview-area').innerHTML=`<img class="preview" src="${imgSrc}"/>`;
+    processImage(b64,mime,imgSrc);
   };
   reader.readAsDataURL(file);
 }
 
-async function processImage(b64,mime){
+async function processImage(b64,mime,imgSrc){
   showStatus('scan','Reading image text...');document.getElementById('scan-results').innerHTML='';
   try{
-    const body={model:'claude-sonnet-4-20250514',max_tokens:1200,messages:[{role:'user',content:[
+    const body={model:'claude-sonnet-4-20250514',max_tokens:1500,messages:[{role:'user',content:[
       {type:'image',source:{type:'base64',media_type:mime,data:b64}},
       {type:'text',text:`Extract ALL text from this image exactly as visible. Return ONLY valid JSON:
-{"raw_text":"all text line by line","lines":["line1","line2"],"type":"Document or Notes or Whiteboard or Receipt or Other","title":"suggested file title 3-5 words"}`}
+{"raw_text":"all text line by line","lines":["line1","line2"],"type":"Document or Notes or Whiteboard or Receipt or Other","title":"suggested document title 3-5 words"}`}
     ]}]};
     const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify(body)});
+    if(!res.ok){const err=await res.json();throw new Error(err.error?.message||'API error');}
     const data=await res.json();let text='';for(const b of(data.content||[])){if(b.type==='text')text+=b.text;}
-    text=text.trim();const fenced3=text.match(/\`\`\`(?:json)?\s*([\s\S]*?)\`\`\`/);if(fenced3)text=fenced3[1].trim();
-    const bi2=text.indexOf('{');const li2=text.lastIndexOf('}');
-    if(bi2===-1||li2===-1)throw new Error('Could not read image text — please try again');
-    let r;try{r=JSON.parse(text.slice(bi2,li2+1));}catch(e){throw new Error('Image parse failed — try again');}
-    hideStatus('scan');renderScanResults(r);
+    text=text.trim();const bi=text.indexOf('{');const li=text.lastIndexOf('}');
+    if(bi===-1)throw new Error('Could not read image');
+    const r=JSON.parse(text.slice(bi,li+1));
+    hideStatus('scan');renderScanResults(r,imgSrc);
   }catch(e){hideStatus('scan');document.getElementById('scan-results').innerHTML=errCard(e.message);}
 }
 
-function renderScanResults(r){
+function renderScanResults(r,imgSrc){
+  const u=getUser();
+  const uName=u&&!isExpired(u)?u.name:'Document';
+  const defTitle=r.title||'Scanned Document';
   const lines=r.lines||(r.raw_text||'').split('\n').filter(l=>l.trim());
   const raw=r.raw_text||lines.join('\n');
-  const safeRaw=JSON.stringify(esc(raw));const safeLines=JSON.stringify(lines.map(esc));const safeTitle=JSON.stringify(esc(r.title||'VORA_Extract'));
+  const safeRaw=JSON.stringify(esc(raw));
+  const safeLines=JSON.stringify(lines.map(esc));
+
   document.getElementById('scan-results').innerHTML=`
     <div style="margin-top:10px">
       <div class="sect">Extracted text — ${lines.length} lines</div>
       <div class="ocr-preview">${esc(raw)}</div>
+      <div class="sect">File name</div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center">
+        <input type="text" id="doc-title-input" value="${esc(uName+' - '+defTitle)}" style="flex:1"/>
+      </div>
       <div class="sect">Export as</div>
       <div class="fmt-row">
-        <div class="fmt-btn" onclick="downloadRTF(${safeRaw},${safeTitle})">
-          <span class="fmt-icon">📝</span>
-          <div class="fmt-name">Word file</div>
-          <div class="fmt-ext">.rtf (opens in Word)</div>
+        <div class="fmt-btn" onclick="downloadPDF(${safeRaw},'${esc(imgSrc)}')">
+          <span class="fmt-icon">📄</span>
+          <div class="fmt-name">PDF</div>
+          <div class="fmt-ext">Full page scan</div>
         </div>
-        <div class="fmt-btn" onclick="downloadCSV(${safeLines},${safeTitle})">
+        <div class="fmt-btn" onclick="downloadRTF(${safeRaw})">
+          <span class="fmt-icon">📝</span>
+          <div class="fmt-name">Word</div>
+          <div class="fmt-ext">.rtf file</div>
+        </div>
+        <div class="fmt-btn" onclick="downloadCSV(${safeLines})">
           <span class="fmt-icon">📊</span>
-          <div class="fmt-name">Excel file</div>
-          <div class="fmt-ext">.csv (opens in Excel)</div>
+          <div class="fmt-name">Excel</div>
+          <div class="fmt-ext">.csv file</div>
         </div>
       </div>
       <div class="btn-row">
         <button class="btn btn-sm" onclick="copyToClip(${safeRaw})">Copy text</button>
         <button class="btn btn-sm" onclick="document.getElementById('scan-results').innerHTML='';document.getElementById('img-preview-area').innerHTML=''">Clear</button>
       </div>
+      ${(!u||isExpired(u)||u.type==='guest'||u.type==='free'||u.type==='basic')?`<div style="margin-top:10px;background:rgba(139,92,246,.08);border:0.5px solid rgba(139,92,246,.3);border-radius:var(--radius-sm);padding:10px 12px;font-size:11px;color:#A78BFA;line-height:1.6">⭐ <strong>Premium (₹99/mo):</strong> Save PDFs permanently to your account. Basic plan files are session-only — download before closing. <span style="cursor:pointer;text-decoration:underline" onclick="showSubscribeModal()">Upgrade</span></div>`:''}
     </div>`;
 }
 
-function downloadRTF(escapedText,escapedTitle){
-  const text=unesc(escapedText);const title=unesc(escapedTitle);
-  const rtf=`{\\rtf1\\ansi\\deff0{\\fonttbl{\\f0 Arial;}}\\f0\\fs24{\\b\\fs32 ${title.replace(/[\\{}]/g,'')}\\par\\par}${text.replace(/\n/g,'\\par ').replace(/[\\{}]/g,'')}}`; 
+function getDocTitle(){
+  const inp=document.getElementById('doc-title-input');
+  return inp?unesc(inp.value)||'VORA Document':'VORA Document';
+}
+
+function downloadPDF(escapedText, imgSrc){
+  const title=getDocTitle();
+  const text=unesc(escapedText);
+  // Build a printable HTML page and convert to PDF via print dialog
+  const win=window.open('','_blank');
+  if(!win){alert('Please allow pop-ups to download PDF.');return;}
+  win.document.write(`<!DOCTYPE html><html><head><title>${title}</title>
+  <style>
+    body{font-family:Arial,sans-serif;margin:0;padding:0;background:#fff;color:#000}
+    .page{max-width:210mm;margin:0 auto;padding:20mm}
+    h1{font-size:18pt;margin-bottom:12pt;color:#1a1a1a;border-bottom:2pt solid #333;padding-bottom:8pt}
+    .meta{font-size:9pt;color:#666;margin-bottom:16pt}
+    .scan-img{width:100%;max-height:200mm;object-fit:contain;border:1pt solid #ddd;border-radius:4pt;margin-bottom:16pt;display:block}
+    .extracted{font-size:11pt;line-height:1.8;white-space:pre-wrap;background:#f9f9f9;padding:12pt;border-radius:4pt;border:1pt solid #eee}
+    @media print{body{margin:0}@page{margin:15mm}}
+  </style></head><body>
+  <div class="page">
+    <h1>${title}</h1>
+    <div class="meta">Scanned by VORA AI · ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})}</div>
+    ${imgSrc&&imgSrc!=='undefined'?`<img class="scan-img" src="${imgSrc}" alt="Scanned document"/>`:''} 
+    <div class="extracted">${text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+  </div>
+  <script>window.onload=function(){window.print();window.onafterprint=function(){window.close();}}<\/script>
+  </body></html>`);
+  win.document.close();
+}
+
+function downloadRTF(escapedText){
+  const title=getDocTitle();
+  const text=unesc(escapedText);
+  const rtf=`{\\rtf1\\ansi\\deff0{\\fonttbl{\\f0 Arial;}}\\f0\\fs24{\\b\\fs32 ${title.replace(/[\\{}]/g,'')}\\par\\par}${text.replace(/\n/g,'\\par ').replace(/[\\{}]/g,'')}}`;
   dl(rtf,'application/rtf',title.replace(/\s+/g,'_')+'.rtf');
 }
-function downloadCSV(escapedLines,escapedTitle){
-  const lines=escapedLines.map(unesc);const title=unesc(escapedTitle);
+
+function downloadCSV(escapedLines){
+  const title=getDocTitle();
+  const lines=escapedLines.map(unesc);
   const csv='No.,Line Content\n'+lines.map((l,i)=>`${i+1},"${l.replace(/"/g,'""')}"`).join('\n');
   dl(csv,'text/csv',title.replace(/\s+/g,'_')+'.csv');
 }
-function dl(content,type,name){const b=new Blob([content],{type});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=name;a.click();URL.revokeObjectURL(u);}
-function copyToClip(t){navigator.clipboard.writeText(unesc(t)).then(()=>alert('Copied to clipboard!'));}
 
-/* ══════════════ SCHEDULE ══════════════ */
+function dl(content,type,name){const b=new Blob([content],{type});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=name;a.click();URL.revokeObjectURL(u);}
+function copyToClip(t){navigator.clipboard.writeText(unesc(t)).then(()=>showToast('Copied to clipboard!'));}
+
+// ══════════════════════════════════════════════
+// SCHEDULE
+// ══════════════════════════════════════════════
 async function buildSchedule(){
   const txt=document.getElementById('sched-input').value.trim();if(!txt)return;
-  const date=document.getElementById('sched-date').value.trim()||'Today';
+  const rawDate=document.getElementById('sched-date').value;
+  const rawTime=document.getElementById('sched-time').value;
+  const dateLabel=rawDate?new Date(rawDate+'T12:00:00').toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'}):'Today';
+  const timeLabel=rawTime||'09:00';
   const btn=document.getElementById('sched-btn');btn.disabled=true;
   showStatus('sched','Building your schedule...');document.getElementById('sched-results').innerHTML='';
   try{
     const r=await callAI(`You are VORA's smart scheduler. Create a realistic time-blocked schedule.
-
-Date: ${date}
+Date: ${dateLabel}
+Start time: ${timeLabel} (24h)
 Tasks: "${txt}"
-
-Return ONLY valid JSON:
-{"date":"${date}","schedule":[{"time":"9:00 AM","title":"task","duration":"30 min","description":"brief note","type":"Work or Personal or Meeting or Break"}],"tip":"one smart productivity tip"}`);
+Use start time as first slot. Return ONLY valid JSON:
+{"date":"${dateLabel}","schedule":[{"time":"HH:MM","time12":"H:MM AM/PM","title":"task","duration":"30 min","description":"brief note","type":"Work or Personal or Meeting or Break"}],"tip":"one smart productivity tip"}`);
+    r._rawDate=rawDate;r._rawTime=rawTime;
     hideStatus('sched');renderSchedule(r);
   }catch(e){hideStatus('sched');document.getElementById('sched-results').innerHTML=errCard(e.message);}
   btn.disabled=false;
@@ -547,27 +1205,25 @@ Return ONLY valid JSON:
 
 function renderSchedule(r){
   const items=r.schedule||[];
-  if(!items.length){document.getElementById('sched-results').innerHTML='<div class="empty"><div class="empty-icon">📅</div><div class="empty-text">No schedule generated. Try describing tasks more specifically.</div></div>';return;}
+  if(!items.length){document.getElementById('sched-results').innerHTML='<div style="text-align:center;padding:20px;color:var(--text2)">No schedule generated. Try describing tasks more specifically.</div>';return;}
   let html=`<div style="margin-top:12px"><div class="sect">${esc(r.date)} — ${items.length} blocks</div>`;
   items.forEach(s=>{
     const lc=s.type==='Meeting'?'var(--accent)':s.type==='Break'?'var(--text3)':s.type==='Personal'?'var(--green)':'var(--amber)';
     html+=`<div class="sched-item" style="border-left:2.5px solid ${lc}">
-      <div class="sched-time">${esc(s.time)}<br><span class="sched-dur">${esc(s.duration)}</span></div>
+      <div class="sched-time">${esc(s.time||s.time12||'')}<br><span class="sched-dur">${esc(s.duration)}</span></div>
       <div><div class="sched-title">${esc(s.title)}</div><div class="sched-desc">${esc(s.description)}</div></div>
     </div>`;
   });
   if(r.tip)html+=`<div class="tip-box"><div class="tip-label">Productivity tip</div><div class="tip-text">${esc(r.tip)}</div></div>`;
-  const safeR=JSON.stringify(r).replace(/'/g,"\\'");
   html+=`<div class="btn-row" style="margin-top:10px"><button class="btn btn-sm" style="background:rgba(34,197,94,.12);border-color:var(--green);color:var(--green)" onclick='downloadICS(${JSON.stringify(r)})'>Download .ics (Google Calendar)</button><button class="btn btn-sm" onclick="document.getElementById('sched-results').innerHTML=''">Clear</button></div></div>`;
   document.getElementById('sched-results').innerHTML=html;
 }
 
 function downloadICS(r){
-  const now=new Date();
   let ics='BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//VORA//EN\nCALSCALE:GREGORIAN\n';
   (r.schedule||[]).forEach((s,i)=>{
-    const uid='vora-'+now.getTime()+'-'+i+'@vora.app';
-    const start=icsDate(r.date,s.time,0);const end=icsDate(r.date,s.time,parseDur(s.duration));
+    const uid='vora-'+Date.now()+'-'+i+'@vora.app';
+    const start=icsDate(r._rawDate,s.time,0);const end=icsDate(r._rawDate,s.time,parseDur(s.duration));
     ics+=`BEGIN:VEVENT\nUID:${uid}\nSUMMARY:${s.title}\nDESCRIPTION:${s.description||''}\nDTSTART:${start}\nDTEND:${end}\nEND:VEVENT\n`;
   });
   ics+='END:VCALENDAR';
@@ -575,21 +1231,24 @@ function downloadICS(r){
 }
 function parseDur(d){if(!d)return 60;const h=(d.match(/(\d+)\s*h/)||[])[1];const m=(d.match(/(\d+)\s*min/)||[])[1];return(h?parseInt(h)*60:0)+(m?parseInt(m):30);}
 function icsDate(dateStr,timeStr,addMin){
-  const now=new Date();const t=(timeStr||'').match(/(\d+):(\d+)\s*(AM|PM)/i);
+  const now=new Date();const t=(timeStr||'').match(/(\d+):(\d+)/);
   let h=t?parseInt(t[1]):9,m=t?parseInt(t[2]):0;
-  if(t&&t[3].toUpperCase()==='PM'&&h!==12)h+=12;if(t&&t[3].toUpperCase()==='AM'&&h===12)h=0;
   const total=h*60+m+addMin;const fh=Math.floor(total/60)%24;const fm=total%60;
-  return`${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}T${pad(fh)}${pad(fm)}00`;
+  const d=dateStr?new Date(dateStr+'T12:00:00'):now;
+  return`${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}T${pad(fh)}${pad(fm)}00`;
 }
 function pad(n){return String(n).padStart(2,'0');}
 
-/* ══════════════ TOPICS ══════════════ */
+// ══════════════════════════════════════════════
+// TOPICS
+// ══════════════════════════════════════════════
 async function runTopic(){
-  const topic=document.getElementById('topic-input').value.trim();if(!topic)return;
-  const btn=document.getElementById('topic-btn');btn.disabled=true;
-  showStatus('topic','Searching web for: '+topic);document.getElementById('topic-results').innerHTML='';
+  const topic=document.getElementById('topic-input')?.value.trim();if(!topic)return;
+  const btn=document.getElementById('topic-btn');if(btn)btn.disabled=true;
+  showStatus('topic','Searching web for: '+topic);
+  document.getElementById('topic-results').innerHTML='';
   try{
-    const body={model:'claude-sonnet-4-20250514',max_tokens:1200,
+    const body={model:'claude-sonnet-4-20250514',max_tokens:1500,
       tools:[{"type":"web_search_20250305","name":"web_search"}],
       messages:[{role:'user',content:`Search the web and give a live brief on: "${topic}". Return ONLY JSON:
 {"topic":"display title","summary":"4-5 sentence factual brief for busy professional","date":"March 2026","sources":[{"title":"...","outlet":"...","url":"https://..."},{"title":"...","outlet":"...","url":"https://..."},{"title":"...","outlet":"...","url":"https://..."}],"related":["topic1","topic2","topic3","topic4"]}`}]};
@@ -597,14 +1256,13 @@ async function runTopic(){
     if(!res.ok){const err=await res.json();throw new Error(err.error?.message||'API error '+res.status);}
     const data=await res.json();
     let text='';for(const b of(data.content||[])){if(b.type==='text')text+=b.text;}
-    text=text.trim();
-    const fenced2=text.match(/\`\`\`(?:json)?\s*([\s\S]*?)\`\`\`/);if(fenced2)text=fenced2[1].trim();
+    text=text.trim();const fenced=text.match(/```(?:json)?\s*([\s\S]*?)```/);if(fenced)text=fenced[1].trim();
     const bi=text.indexOf('{');const li=text.lastIndexOf('}');
-    if(bi===-1||li===-1)throw new Error('No content returned — please try again');
+    if(bi===-1)throw new Error('No content returned — please try again');
     let r;try{r=JSON.parse(text.slice(bi,li+1));}catch(e){const ms=text.match(/\{[\s\S]*\}/g);if(ms){for(const c of ms){try{r=JSON.parse(c);break;}catch(_){}}}if(!r)throw new Error('Could not parse response — try again');}
     hideStatus('topic');renderTopic(r,topic);
   }catch(e){hideStatus('topic');document.getElementById('topic-results').innerHTML=errCard(e.message);}
-  btn.disabled=false;
+  if(btn)btn.disabled=false;
 }
 
 function renderTopic(r,raw){
@@ -618,38 +1276,92 @@ function renderTopic(r,raw){
       ${srcHtml}
       ${relHtml?`<div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-top:12px;margin-bottom:8px">Related</div><div class="chips">${relHtml}</div>`:''}
     </div>
-    <div class="btn-row">
-      <button class="btn btn-sm" onclick="document.getElementById('topic-results').innerHTML=''">Clear</button>
-    </div>`;
+    <div class="btn-row"><button class="btn btn-sm" onclick="document.getElementById('topic-results').innerHTML=''">Clear</button></div>`;
 }
 
-/* ══════════════ REMINDERS ══════════════ */
+// ══════════════════════════════════════════════
+// REMINDERS + ALARM
+// ══════════════════════════════════════════════
+let activeReminders=[];
+
 async function generateReminder(){
   const event=document.getElementById('rem-event').value.trim();if(!event)return;
-  const date=document.getElementById('rem-date').value.trim()||'Today';
-  const time=document.getElementById('rem-time').value.trim()||'';
+  const rawDate=document.getElementById('rem-date').value;
+  const rawTime=document.getElementById('rem-time').value;
+  const sound=document.getElementById('rem-sound').value;
   const notes=document.getElementById('rem-notes').value.trim()||'';
+  const dateLabel=rawDate?new Date(rawDate+'T12:00:00').toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'}):'Today';
+  const timeLabel=rawTime||'Not set';
   const btn=document.getElementById('rem-btn');btn.disabled=true;
   showStatus('rem','Writing your reminder notes...');document.getElementById('rem-results').innerHTML='';
   try{
     const r=await callAI(`You are VORA's smart reminder writer. Generate contextual reminders.
-
 Event: "${event}"
-Date: ${date}
-Time: ${time}
+Date: ${dateLabel}
+Time: ${timeLabel}
 Notes: ${notes}
-
 Return ONLY valid JSON:
-{"event":"${event}","morning_subject":"short notification title","morning_body":"2-3 sentence morning reminder with preparation tips","alert_subject":"30-min alert title","alert_body":"3-4 sentence contextual brief — what they may learn or do — with one practical tip","prepare_now":"one specific action to do right now"}`);
+{"event":"${event}","morning_subject":"short notification title","morning_body":"2-3 sentence morning reminder with preparation tips","alert_subject":"30-min before alert title","alert_body":"3-4 sentence contextual brief with one practical tip","prepare_now":"one specific action to do right now"}`);
+    r._rawDate=rawDate;r._rawTime=rawTime;r._sound=sound;r._dateLabel=dateLabel;r._timeLabel=timeLabel;
     hideStatus('rem');renderReminder(r);
+    if(rawDate&&rawTime)scheduleAlarm(r);
   }catch(e){hideStatus('rem');document.getElementById('rem-results').innerHTML=errCard(e.message);}
   btn.disabled=false;
 }
 
+function playAlarmSound(type){
+  const ctx=new(window.AudioContext||window.webkitAudioContext)();
+  const patterns={
+    bell:[{f:880,d:.3,g:.8},{f:1100,d:.3,g:.6},{f:880,d:.4,g:.4}],
+    digital:[{f:440,d:.1,g:1},{f:440,d:.1,g:0},{f:440,d:.1,g:1},{f:440,d:.1,g:0},{f:660,d:.3,g:1}],
+    gentle:[{f:528,d:.5,g:.6},{f:660,d:.5,g:.4},{f:792,d:.8,g:.3}],
+    urgent:[{f:880,d:.15,g:1},{f:660,d:.15,g:1},{f:880,d:.15,g:1},{f:660,d:.15,g:1},{f:880,d:.5,g:1}]
+  };
+  let t=ctx.currentTime+0.1;
+  (patterns[type]||patterns.bell).forEach(n=>{
+    const osc=ctx.createOscillator();const gain=ctx.createGain();
+    osc.connect(gain);gain.connect(ctx.destination);
+    osc.frequency.setValueAtTime(n.f,t);osc.type='sine';
+    gain.gain.setValueAtTime(n.g,t);gain.gain.exponentialRampToValueAtTime(0.001,t+n.d);
+    osc.start(t);osc.stop(t+n.d);t+=n.d+0.05;
+  });
+}
+
+function scheduleAlarm(r){
+  const now=new Date();
+  const eventDate=new Date(r._rawDate+'T'+r._rawTime);
+  const morningDate=new Date(r._rawDate+'T08:00');
+  const alertDate=new Date(eventDate.getTime()-30*60*1000);
+  function checkAndFire(targetTime,subject,body){
+    const diff=targetTime-now;
+    if(diff>0&&diff<24*60*60*1000){
+      setTimeout(()=>{
+        playAlarmSound(r._sound||'bell');
+        if(Notification.permission==='granted') new Notification(subject,{body});
+        showInAppAlert(subject,body,r._sound||'bell');
+      },diff);
+    }
+  }
+  checkAndFire(morningDate,r.morning_subject,r.morning_body);
+  checkAndFire(alertDate,r.alert_subject,r.alert_body);
+  if(Notification.permission==='default') Notification.requestPermission();
+}
+
+function showInAppAlert(subject,body,sound){
+  const d=document.createElement('div');
+  d.style.cssText='position:fixed;top:16px;left:50%;transform:translateX(-50%);width:90%;max-width:360px;background:var(--surface);border:1.5px solid var(--accent);border-radius:var(--radius);padding:14px 16px;z-index:9999;box-shadow:0 8px 32px rgba(0,0,0,.5)';
+  d.innerHTML=`<div style="font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">VORA Reminder</div><div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px">${esc(subject)}</div><div style="font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:10px">${esc(body)}</div><button onclick="playAlarmSound('${sound}');this.textContent='Playing...'" style="font-size:11px;padding:4px 10px;border-radius:5px;border:0.5px solid var(--accent);background:rgba(79,110,247,.15);color:var(--accent);cursor:pointer;margin-right:6px">Play alarm</button><button onclick="this.parentNode.remove()" style="font-size:11px;padding:4px 10px;border-radius:5px;border:0.5px solid var(--border);background:transparent;color:var(--text2);cursor:pointer">Dismiss</button>`;
+  document.body.appendChild(d);
+  setTimeout(()=>{if(d.parentNode)d.remove();},30000);
+}
+
 function renderReminder(r){
   const safeText=JSON.stringify(esc(r.morning_body+'\n\n30-min alert:\n'+r.alert_body));
+  const alarmSet=r._rawDate&&r._rawTime;
+  const soundName=r._sound||'bell';
   document.getElementById('rem-results').innerHTML=`
     <div style="margin-top:12px">
+      ${alarmSet?`<div style="background:rgba(34,197,94,.1);border:0.5px solid var(--green);border-radius:var(--radius-sm);padding:10px 13px;margin-bottom:12px;display:flex;align-items:center;gap:10px"><div style="font-size:18px">🔔</div><div><div style="font-size:12px;font-weight:600;color:var(--green)">Alarm set for ${esc(r._timeLabel)} on ${esc(r._dateLabel)}</div><div style="font-size:11px;color:var(--text2);margin-top:2px">Keep this tab open. Sound: ${esc(soundName)}</div></div><button onclick="playAlarmSound('${soundName}')" style="margin-left:auto;font-size:11px;padding:5px 10px;border-radius:5px;border:0.5px solid var(--green);background:rgba(34,197,94,.15);color:var(--green);cursor:pointer;white-space:nowrap">Test</button></div>`:''}
       <div class="sect">Morning reminder (8:00 AM)</div>
       <div class="reminder-card">
         <div class="rem-header">${esc(r.morning_subject)}</div>
@@ -668,7 +1380,9 @@ function renderReminder(r){
     </div>`;
 }
 
-/* ══════════════ HOME TASKS ══════════════ */
+// ══════════════════════════════════════════════
+// HOME TASKS
+// ══════════════════════════════════════════════
 function renderHomeTasks(){
   const area=document.getElementById('home-tasks-area');
   if(!allTasks.length){area.innerHTML='';return;}
@@ -679,6 +1393,11 @@ function renderHomeTasks(){
   });
   area.innerHTML=html;
 }
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+updateUserBadge();
 </script>
 </body>
 </html>
