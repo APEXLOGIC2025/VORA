@@ -856,7 +856,7 @@ async function startSignup(){
   const place=(document.getElementById('auth-place')?.value||'').trim();
   if(!name||!email||!mobile){showAuthErr('Name, email and mobile are required.');return;}
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showAuthErr('Please enter a valid email address.');return;}
-  if(!window._fbReady){showAuthErr('App still loading — please wait a moment and try again.');return;}
+  if(!window._createUser){showAuthErr('App still loading — please wait 2 seconds and try again.');return;}
   const btn=document.querySelector('#auth-tab-content .btn-primary');
   if(btn){btn.disabled=true;btn.textContent='Creating account...';}
   try{
@@ -926,7 +926,7 @@ async function signIn(){
   const email=(document.getElementById('auth-email')?.value||'').trim();
   const pass=(document.getElementById('auth-pass')?.value||'').trim();
   if(!email||!pass){showAuthErr('Please enter your email and password.');return;}
-  if(!window._fbReady){showAuthErr('App still loading — please wait.');return;}
+  if(!window._signInFb){showAuthErr('App still loading — please wait 2 seconds and try again.');return;}
   const btn=document.querySelector('#auth-tab-content .btn-primary');
   if(btn){btn.disabled=true;btn.textContent='Signing in...';}
   try{
@@ -967,31 +967,39 @@ function showProfileModal(u){
   overlay.onclick=e=>{if(e.target===overlay)removeModal();};
   const exp=u.expiresAt?new Date(u.expiresAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'No expiry';
   const days=u.expiresAt?Math.ceil((new Date(u.expiresAt)-new Date())/(1000*60*60*24)):null;
-  overlay.innerHTML=`
-    <div class="modal-box">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-        <div class="modal-title">Your Account</div>
-        <button onclick="removeModal()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px">✕</button>
-      </div>
-      <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:14px;margin-bottom:14px">
-        <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:3px">${esc(u.name)}</div>
-        <div style="font-size:12px;color:var(--text2);margin-bottom:2px">${esc(u.email)}</div>
-        <div style="font-size:12px;color:var(--text2)">${u.place?esc(u.place):''}</div>
-      </div>
-      <div style="display:flex;gap:8px;margin-bottom:14px">
-        <div style="flex:1;background:var(--surface2);border-radius:var(--radius-sm);padding:10px;text-align:center">
-          <div style="font-size:11px;color:var(--text3);margin-bottom:2px">Plan</div>
-          <div style="font-size:13px;font-weight:600;color:var(--accent)">${u.adminOverride?'Admin Free':(u.type.charAt(0).toUpperCase()+u.type.slice(1))}</div>
-        </div>
-        <div style="flex:1;background:var(--surface2);border-radius:var(--radius-sm);padding:10px;text-align:center">
-          <div style="font-size:11px;color:var(--text3);margin-bottom:2px">${days!==null?'Days left':'Expires'}</div>
-          <div style="font-size:13px;font-weight:600;color:${days>7?'var(--green)':days>0?'var(--amber)':'var(--red)'}">${days!==null?(days>0?days+' days':'Expired'):'Forever'}</div>
-        </div>
-      </div>
-      ${(u.type==='free'||u.type==='guest'||isExpired(u))?`<button class="btn btn-primary btn-full" style="margin-bottom:8px" onclick="removeModal();showSubscribeModal()">Upgrade — ₹25/month →</button>`:''}
-      ${(u.adminOverride||u.type==='admin')?`<button class="btn btn-full" style="margin-bottom:8px;border-color:var(--amber);color:var(--amber)" onclick="removeModal();showAdminPanel()">🛡️ Admin Panel</button>`:''}}
-      <button class="btn btn-full" style="margin-top:0" onclick="signOut()">Sign out</button>
-    </div>`;
+  const dayColor=days===null?'var(--green)':days>7?'var(--green)':days>0?'var(--amber)':'var(--red)';
+  const dayText=days===null?'Forever':days>0?days+' days':'Expired';
+  const planLabel=u.adminOverride?'Admin Free':(u.type.charAt(0).toUpperCase()+u.type.slice(1));
+
+  let html='<div class="modal-box">';
+  html+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">';
+  html+='<div class="modal-title">Your Account</div>';
+  html+='<button onclick="removeModal()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px">&#x2715;</button>';
+  html+='</div>';
+  html+='<div style="background:var(--surface2);border-radius:var(--radius-sm);padding:14px;margin-bottom:14px">';
+  html+='<div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:3px">'+esc(u.name)+'</div>';
+  html+='<div style="font-size:12px;color:var(--text2);margin-bottom:2px">'+esc(u.email)+'</div>';
+  html+='<div style="font-size:12px;color:var(--text2)">'+(u.place?esc(u.place):'')+'</div>';
+  html+='</div>';
+  html+='<div style="display:flex;gap:8px;margin-bottom:14px">';
+  html+='<div style="flex:1;background:var(--surface2);border-radius:var(--radius-sm);padding:10px;text-align:center">';
+  html+='<div style="font-size:11px;color:var(--text3);margin-bottom:2px">Plan</div>';
+  html+='<div style="font-size:13px;font-weight:600;color:var(--accent)">'+planLabel+'</div>';
+  html+='</div>';
+  html+='<div style="flex:1;background:var(--surface2);border-radius:var(--radius-sm);padding:10px;text-align:center">';
+  html+='<div style="font-size:11px;color:var(--text3);margin-bottom:2px">Days left</div>';
+  html+='<div style="font-size:13px;font-weight:600;color:'+dayColor+'">'+dayText+'</div>';
+  html+='</div>';
+  html+='</div>';
+  if(u.type==='free'||u.type==='guest'||isExpired(u)){
+    html+='<button class="btn btn-primary btn-full" style="margin-bottom:8px" onclick="removeModal();showSubscribeModal()">Upgrade &#8212; &#8377;25/month &#8594;</button>';
+  }
+  if(u.adminOverride||u.type==='admin'){
+    html+='<button class="btn btn-full" style="margin-bottom:8px;border-color:var(--amber);color:var(--amber)" onclick="removeModal();showAdminPanel()">&#128737; Admin Panel</button>';
+  }
+  html+='<button class="btn btn-full" style="margin-top:0" onclick="signOut()">Sign out</button>';
+  html+='</div>';
+  overlay.innerHTML=html;
   document.body.appendChild(overlay);
 }
 
@@ -1034,6 +1042,16 @@ async function showAdminPanel(){
 }
 
 async function loadAdminUsers(){
+  // Wait for Firebase to be ready (module loads asynchronously)
+  let attempts=0;
+  while(!window._voraGet && attempts<20){
+    await new Promise(r=>setTimeout(r,200));
+    attempts++;
+  }
+  if(!window._voraGet){
+    document.getElementById('admin-body').innerHTML='<div style="color:var(--red);font-size:12px;padding:10px">Firebase not ready. Please refresh and try again.</div>';
+    return;
+  }
   try{
     const snap=await window._voraGet(window._voraRef(window._voraDb,'users'));
     const users=snap.val()||{};
@@ -1100,6 +1118,7 @@ async function loadAdminUsers(){
 }
 
 async function adminSetPlan(uid,plan){
+  if(!window._voraUpd){showToast('Firebase not ready — try again in a moment.');return;}
   const expiry=plan==='free'?new Date(Date.now()+30*24*60*60*1000).toISOString():
     new Date(Date.now()+31*24*60*60*1000).toISOString();
   await window._voraUpd(window._voraRef(window._voraDb,'users/'+uid),
@@ -1109,6 +1128,7 @@ async function adminSetPlan(uid,plan){
 }
 
 async function adminGrantFree(uid){
+  if(!window._voraUpd){showToast('Firebase not ready — try again in a moment.');return;}
   await window._voraUpd(window._voraRef(window._voraDb,'users/'+uid),
     {adminOverride:true,type:'free',expiresAt:null});
   await window._voraSet(window._voraRef(window._voraDb,'admins/'+uid),true);
