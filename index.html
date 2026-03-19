@@ -46,26 +46,27 @@
   window._onAuthChange = onAuthStateChanged;
   window._updateProfile= updateProfile;
   window._fbReady = true;
+  // Signal regular scripts that Firebase is ready
+  window.dispatchEvent(new Event('voraFbReady'));
 
   // Auto restore session on page load
   onAuthStateChanged(auth, async user => {
     if(user) {
-      const snap = await get(ref(db, 'users/' + user.uid));
-      const profile = snap.val();
-      if(profile) {
-        profile.uid = user.uid;
-        profile.emailVerified = user.emailVerified;
-        // Check admin override from DB
-        const adminSnap = await get(ref(db, 'admins/' + user.uid));
-        if(adminSnap.val()) profile.adminOverride = true;
-        window._voraCurrentUser = profile;
-        saveUser(profile);
-        if(typeof updateUserBadge === 'function') {
-          updateUserBadge();
-          if(typeof updateTopicsAccess === 'function') updateTopicsAccess();
-          if(typeof renderSubscriptionCTA === 'function') renderSubscriptionCTA();
+      try{
+        const snap = await get(ref(db, 'users/' + user.uid));
+        const profile = snap.val();
+        if(profile) {
+          profile.uid = user.uid;
+          profile.emailVerified = user.emailVerified;
+          const adminSnap = await get(ref(db, 'admins/' + user.uid));
+          if(adminSnap.val()) profile.adminOverride = true;
+          window._voraCurrentUser = profile;
+          // Signal to regular script that auth is ready
+          window.dispatchEvent(new CustomEvent('voraAuthReady', {detail: profile}));
         }
-      }
+      }catch(e){ console.error('Auth restore error:', e); }
+    } else {
+      window.dispatchEvent(new CustomEvent('voraAuthReady', {detail: null}));
     }
   });
 </script>
@@ -348,6 +349,19 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
         <span onclick="showContactModal()" style="font-size:10px;color:var(--text3);cursor:pointer">Contact / Subscribe</span>
         <span style="font-size:10px;color:var(--text3)">© 2026 Apexlogic</span>
       </div>
+      <div id="home-tasks-area-end"></div>
+
+      <!-- Subscription CTA + footer -->
+      <div style="margin-top:16px;padding-top:14px;border-top:0.5px solid var(--border)">
+        <div id="subscription-cta"></div>
+        <div style="display:flex;gap:12px;justify-content:center;margin-bottom:6px;flex-wrap:wrap">
+          <span onclick="goTo('privacy')" style="font-size:11px;color:var(--text3);cursor:pointer;text-decoration:underline">Privacy Policy</span>
+          <span onclick="goTo('terms')" style="font-size:11px;color:var(--text3);cursor:pointer;text-decoration:underline">Terms of Use</span>
+          <span onclick="showContactModal()" style="font-size:10px;color:var(--text3);cursor:pointer">Contact / Subscribe</span>
+          <span onclick="showAuthModal()" style="font-size:10px;color:var(--text3);cursor:pointer">Account</span>
+        </div>
+        <div style="font-size:10px;color:var(--text3);text-align:center">© 2026 VORA by Apexlogic</div>
+      </div>
     </div>
 
     <!-- CHATS -->
@@ -565,7 +579,7 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
 // Replace  YOUR_API_KEY_HERE  with your actual key
 // It looks like:  sk-ant-api03-xxxxxxxxxxxx
 // ═══════════════════════════════════════════════════════
-const ANTHROPIC_API_KEY = 'Y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';
+const ANTHROPIC_API_KEY = 'Yindex.html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';
 // ═══════════════════════════════════════════════════════
 
 // ══════════════════════════════════════════════
@@ -599,6 +613,24 @@ function getUserLabel(u){
   if(u.type==='basic') return {text:'Pro',cls:'sub'};
   if(u.type==='free') return {text:'Free',cls:'free'};
   return {text:'Guest',cls:'guest'};
+}
+
+function renderUserBadge(){ updateUserBadge(); }
+function renderSubscriptionCTA(){
+  const u=getUser();
+  const el=document.getElementById('subscription-cta');
+  if(!el) return;
+  if(!u||u.adminOverride||u.type==='basic'||u.type==='premium'){el.innerHTML='';return;}
+  const days=u.expiresAt?Math.ceil((new Date(u.expiresAt)-new Date())/(1000*60*60*24)):0;
+  if(days<=5&&!u.adminOverride){
+    el.innerHTML=`<div style="background:rgba(245,158,11,.1);border:0.5px solid var(--amber);border-radius:var(--radius-sm);padding:10px 13px;margin-bottom:12px;text-align:center">
+      <div style="font-size:12px;color:var(--amber);font-weight:600;margin-bottom:4px">${days<=0?'Free period ended':'Only '+days+' day'+(days!==1?'s':'')+' left'}</div>
+      <div style="font-size:11px;color:var(--text2);margin-bottom:8px">Subscribe to keep using all VORA features</div>
+      <button onclick="showSubscribeModal()" style="background:var(--accent);border:none;color:#fff;padding:7px 18px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font)">Subscribe from ₹25/month →</button>
+    </div>`;
+  } else {
+    el.innerHTML='';
+  }
 }
 
 function updateUserBadge(){
@@ -707,6 +739,9 @@ function goTo(name){
   });
   const banner=document.getElementById('about-banner');
   if(banner) banner.style.display=name==='home'?'':'none';
+  // Scroll screen to top
+  const activeScreen=document.getElementById('screen-'+name);
+  if(activeScreen) activeScreen.scrollTop=0;
   const noNav=['privacy','terms'];
   const nav=document.querySelector('.bottom-nav');
   const hdr=document.querySelector('.app-header');
@@ -1056,7 +1091,8 @@ async function loadAdminUsers(){
     });
 
     html+=`</div>
-      <button class="btn btn-full" style="margin-top:10px;font-size:12px" onclick="exportUsers(${JSON.stringify(list).replace(/'/g,"&#39;")})">Export user list (.csv)</button>`;
+      <button class="btn btn-full" style="margin-top:10px;font-size:12px" onclick="exportStoredUsers()">Export user list (.csv)</button>`;
+    window._adminUserList=list;
     document.getElementById('admin-body').innerHTML=html;
   }catch(e){
     document.getElementById('admin-body').innerHTML=`<div style="color:var(--red);font-size:12px;padding:10px">Error loading users: ${esc(e.message)}</div>`;
@@ -1080,11 +1116,20 @@ async function adminGrantFree(uid){
   await loadAdminUsers();
 }
 
+function exportStoredUsers(){
+  exportUsers(window._adminUserList||[]);
+}
 function exportUsers(users){
-  const csv='Name,Email,Mobile,Place,Type,Joined,Expires
-'+
-    users.map(u=>`"${(u.name||'').replace(/"/g,'""')}","${u.email||''}","${u.mobile||''}","${u.place||''}","${u.type||''}","${u.signedUpAt?u.signedUpAt.slice(0,10):''}","${u.expiresAt?u.expiresAt.slice(0,10):'Forever'}"`).join('
-');
+  const rows=users.map(u=>[
+    (u.name||'').replace(/,/g,' '),
+    u.email||'',
+    u.mobile||'',
+    u.place||'',
+    u.type||'',
+    u.signedUpAt?u.signedUpAt.slice(0,10):'',
+    u.expiresAt?u.expiresAt.slice(0,10):'Forever'
+  ].join(','));
+  const csv=['Name,Email,Mobile,Place,Type,Joined,Expires'].concat(rows).join('\n');
   const blob=new Blob([csv],{type:'text/csv'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download='VORA_Users.csv';a.click();
@@ -1648,6 +1693,19 @@ function renderHomeTasks(){
 // INIT
 // ══════════════════════════════════════════════
 updateUserBadge();
+
+// Listen for Firebase auth restore
+window.addEventListener('voraAuthReady', function(e){
+  const profile = e.detail;
+  if(profile){
+    try{ localStorage.setItem('vora_user', JSON.stringify(profile)); }catch(err){}
+    updateUserBadge();
+    if(typeof updateTopicsAccess === 'function') updateTopicsAccess();
+    if(typeof renderSubscriptionCTA === 'function') renderSubscriptionCTA();
+  } else {
+    updateUserBadge();
+  }
+});
 </script>
 </body>
 </html>
