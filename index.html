@@ -6,6 +6,69 @@
 <meta name="theme-color" content="#0A0E27"/>
 <meta name="description" content="VORA — Your AI personal assistant by Apexlogic. Chat analyser, OCR scanner, smart scheduler, topic briefs and reminders."/>
 <title>VORA — AI Personal Assistant by Apexlogic</title>
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, set, get, update, onValue, push, remove }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+           sendEmailVerification, signOut, onAuthStateChanged, updateProfile }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey:            "AIzaSyDu0XN5QTMDhuablMSS_6ZOnabgz6sc5VM",
+    authDomain:        "vora-bcc0b.firebaseapp.com",
+    databaseURL:       "https://vora-bcc0b-default-rtdb.firebaseio.com",
+    projectId:         "vora-bcc0b",
+    storageBucket:     "vora-bcc0b.firebasestorage.app",
+    messagingSenderId: "377852324423",
+    appId:             "1:377852324423:web:943b4aff0e57f4f4d45f62"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const db   = getDatabase(app);
+  const auth = getAuth(app);
+
+  // Expose to global scope for use in regular scripts
+  window._voraDb   = db;
+  window._voraAuth = auth;
+  window._voraRef  = ref;
+  window._voraSet  = set;
+  window._voraGet  = get;
+  window._voraUpd  = update;
+  window._voraOn   = onValue;
+  window._voraPush = push;
+  window._voraRem  = remove;
+  window._createUser   = createUserWithEmailAndPassword;
+  window._signInFb     = signInWithEmailAndPassword;
+  window._sendVerify   = sendEmailVerification;
+  window._signOutFb    = signOut;
+  window._onAuthChange = onAuthStateChanged;
+  window._updateProfile= updateProfile;
+  window._fbReady = true;
+
+  // Auto restore session on page load
+  onAuthStateChanged(auth, async user => {
+    if(user) {
+      const snap = await get(ref(db, 'users/' + user.uid));
+      const profile = snap.val();
+      if(profile) {
+        profile.uid = user.uid;
+        profile.emailVerified = user.emailVerified;
+        // Check admin override from DB
+        const adminSnap = await get(ref(db, 'admins/' + user.uid));
+        if(adminSnap.val()) profile.adminOverride = true;
+        window._voraCurrentUser = profile;
+        saveUser(profile);
+        if(typeof updateUserBadge === 'function') {
+          updateUserBadge();
+          if(typeof updateTopicsAccess === 'function') updateTopicsAccess();
+          if(typeof renderSubscriptionCTA === 'function') renderSubscriptionCTA();
+        }
+      }
+    }
+  });
+</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 :root{
@@ -502,8 +565,7 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
 // Replace  YOUR_API_KEY_HERE  with your actual key
 // It looks like:  sk-ant-api03-xxxxxxxxxxxx
 // ═══════════════════════════════════════════════════════
-const ANTHROPIC_API_KEY = 'const ANTHROPIC_API_KEY = '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';
-';
+const ANTHROPIC_API_KEY = 'Y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';
 // ═══════════════════════════════════════════════════════
 
 // ══════════════════════════════════════════════
@@ -555,7 +617,7 @@ function updateHomeGreeting(){
   const sub=document.getElementById('home-sub');
   if(!greet) return;
   const hour=new Date().getHours();
-  const timeGreet=hour<12?'Good morning':'hour<17'?'Good afternoon':'Good evening';
+  const timeGreet=hour<12?'Good morning':hour<17?'Good afternoon':'Good evening';
   if(!u||isExpired(u)){
     greet.textContent='Good day. Welcome to VORA.';
     sub.textContent='Try 1 day free — just enter your name. Sign up for 30 days free AI access.';
@@ -631,7 +693,7 @@ if(aboutCollapsed){
 // ══════════════════════════════════════════════
 // NAV
 // ══════════════════════════════════════════════
-const SCREENS=['auth','home','chats','scan','schedule','topics','reminders','privacy','terms'];
+const SCREENS=['home','chats','scan','schedule','topics','reminders','privacy','terms'];
 const allTasks=[];
 
 document.getElementById('live-date').textContent=new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short'});
@@ -645,7 +707,7 @@ function goTo(name){
   });
   const banner=document.getElementById('about-banner');
   if(banner) banner.style.display=name==='home'?'':'none';
-  const noNav=['auth','privacy','terms'];
+  const noNav=['privacy','terms'];
   const nav=document.querySelector('.bottom-nav');
   const hdr=document.querySelector('.app-header');
   if(nav) nav.style.display=noNav.includes(name)?'none':'flex';
@@ -718,6 +780,8 @@ function renderAuthTab(tab){
       <input type="tel" id="auth-mobile" placeholder="+91 98765 43210" style="margin-bottom:8px"/>
       <label class="inp-label">City / Place</label>
       <input type="text" id="auth-place" placeholder="e.g. Mumbai" style="margin-bottom:8px"/>
+      <label class="inp-label">Password (min 6 characters)</label>
+      <input type="password" id="auth-pass" placeholder="Create a password" style="margin-bottom:8px"/>
       <div id="auth-err" class="err-box"></div>
       <button class="btn btn-primary btn-full" style="margin-top:4px" onclick="startSignup()">Create account &amp; send verification →</button>
       <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:8px">Already have an account? <span style="color:var(--accent);cursor:pointer" onclick="switchAuthTab('login')">Sign in</span></div>`;
@@ -725,9 +789,11 @@ function renderAuthTab(tab){
     c.innerHTML=`
       <label class="inp-label">Email address</label>
       <input type="email" id="auth-email" placeholder="you@example.com" style="margin-bottom:8px"/>
+      <label class="inp-label">Password</label>
+      <input type="password" id="auth-pass" placeholder="Your password" style="margin-bottom:8px" onkeydown="if(event.key==='Enter')signIn()"/>
       <div id="auth-err" class="err-box"></div>
       <button class="btn btn-primary btn-full" style="margin-top:4px" onclick="signIn()">Sign in →</button>
-      <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:8px">No password needed — we verify by email. <span style="color:var(--accent);cursor:pointer" onclick="switchAuthTab('signup')">Sign up</span></div>`;
+      <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:8px">No account? <span style="color:var(--accent);cursor:pointer" onclick="switchAuthTab('signup')">Sign up free</span></div>`;
   }
 }
 
@@ -748,52 +814,114 @@ function startGuestSession(){
   showToast('Welcome, '+name.split(' ')[0]+'! 1-day trial started.');
 }
 
-function startSignup(){
+async function startSignup(){
   const name=(document.getElementById('auth-name')?.value||'').trim();
   const email=(document.getElementById('auth-email')?.value||'').trim();
   const mobile=(document.getElementById('auth-mobile')?.value||'').trim();
   const place=(document.getElementById('auth-place')?.value||'').trim();
   if(!name||!email||!mobile){showAuthErr('Name, email and mobile are required.');return;}
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showAuthErr('Please enter a valid email address.');return;}
-  // Simulate sending verification — in production connect to Firebase Auth
-  const pending={name,email,mobile,place,type:'free',
-    signedUpAt:new Date().toISOString(),
-    expiresAt:new Date(Date.now()+30*24*60*60*1000).toISOString(),
-    verified:false};
-  saveUser(pending);
-  const c=document.getElementById('auth-tab-content');
-  if(c) c.innerHTML=`
-    <div style="text-align:center;padding:20px 10px">
-      <div style="font-size:40px;margin-bottom:12px">📧</div>
-      <div style="font-family:var(--font-head);font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px">Check your email!</div>
-      <div style="font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:8px">A verification link has been sent to <strong style="color:var(--text)">${esc(email)}</strong></div>
-      <div class="warn-box" style="text-align:left">⚠️ If you don't see the email in 2 minutes, please check your <strong>Spam or Junk folder</strong>. Mark it as "Not Spam" to receive future emails.</div>
-      <button class="btn btn-primary btn-full" style="margin-top:4px" onclick="confirmVerification()">I've verified — continue →</button>
-    </div>`;
-}
-
-function confirmVerification(){
-  const u=getUser();
-  if(u){ u.verified=true; saveUser(u); }
-  removeModal(); updateUserBadge();
-  showToast('Welcome to VORA! 30 days free access activated.');
-}
-
-function signIn(){
-  const email=(document.getElementById('auth-email')?.value||'').trim();
-  if(!email){showAuthErr('Please enter your email.');return;}
-  const u=getUser();
-  if(u&&u.email===email){
-    if(isExpired(u)){
-      removeModal();
-      showSubscribeModal();
-    } else {
-      removeModal();updateUserBadge();
-      showToast('Welcome back, '+u.name.split(' ')[0]+'!');
+  if(!window._fbReady){showAuthErr('App still loading — please wait a moment and try again.');return;}
+  const btn=document.querySelector('#auth-tab-content .btn-primary');
+  if(btn){btn.disabled=true;btn.textContent='Creating account...';}
+  try{
+    const pass=(document.getElementById('auth-pass')?.value||'').trim();
+    if(pass.length<6){showAuthErr('Password must be at least 6 characters.');if(btn){btn.disabled=false;btn.textContent='Create account & send verification →';}return;}
+    const cred=await window._createUser(window._voraAuth,email,pass);
+    // Use email as password base — user logs in via email link
+    await window._updateProfile(cred.user,{displayName:name});
+    await window._sendVerify(cred.user);
+    const profile={
+      uid:cred.user.uid,name,email,mobile,place,
+      type:'free',
+      signedUpAt:new Date().toISOString(),
+      expiresAt:new Date(Date.now()+30*24*60*60*1000).toISOString(),
+      emailVerified:false,adminOverride:false
+    };
+    // Check admin
+    if(['apexlogic2025@gmail.com','ceo@apexlogic.in'].includes(email.toLowerCase())){
+      profile.adminOverride=true;profile.type='admin';profile.expiresAt=null;
+      await window._voraSet(window._voraRef(window._voraDb,'admins/'+cred.user.uid),true);
     }
-  } else {
-    showAuthErr('No account found with this email. Please sign up.');
+    await window._voraSet(window._voraRef(window._voraDb,'users/'+cred.user.uid),profile);
+    saveUser(profile);
+    const tc=document.getElementById('auth-tab-content');
+    if(tc) tc.innerHTML=`
+      <div style="text-align:center;padding:20px 10px">
+        <div style="font-size:40px;margin-bottom:12px">📧</div>
+        <div style="font-family:var(--font-head);font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px">Check your email!</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:8px">A verification link has been sent to <strong style="color:var(--text)">${esc(email)}</strong></div>
+        <div class="warn-box" style="text-align:left">⚠️ If you don't see it in 2 minutes please check your <strong>Spam / Junk folder</strong> and mark it as Not Spam.</div>
+        <button class="btn btn-primary btn-full" style="margin-top:12px" onclick="confirmVerification()">I've verified my email — continue →</button>
+        <div style="margin-top:8px;font-size:11px;color:var(--text3)">Didn't get it? <span style="color:var(--accent);cursor:pointer" onclick="resendVerification()">Resend email</span></div>
+      </div>`;
+  }catch(e){
+    const msg=e.code==='auth/email-already-in-use'?'This email is already registered. Please sign in instead.':
+              e.code==='auth/invalid-email'?'Please enter a valid email address.':
+              'Sign up failed: '+e.message;
+    showAuthErr(msg);
+    if(btn){btn.disabled=false;btn.textContent='Create account & send verification →';}
   }
+}
+
+async function confirmVerification(){
+  if(!window._voraAuth?.currentUser){
+    showToast('Please sign in to continue.');
+    switchAuthTab('login'); return;
+  }
+  await window._voraAuth.currentUser.reload();
+  if(window._voraAuth.currentUser.emailVerified){
+    const u=getUser();
+    if(u){u.emailVerified=true;saveUser(u);await window._voraUpd(window._voraRef(window._voraDb,'users/'+u.uid),{emailVerified:true});}
+    removeModal();updateUserBadge();
+    showToast('Welcome to VORA! 30 days free access activated ✓');
+  } else {
+    showAuthErr('Email not verified yet. Please click the link in your email first.');
+  }
+}
+
+async function resendVerification(){
+  try{
+    if(window._voraAuth?.currentUser) await window._sendVerify(window._voraAuth.currentUser);
+    showToast('Verification email resent — check spam too.');
+  }catch(e){showToast('Could not resend: '+e.message);}
+}
+
+async function signIn(){
+  const email=(document.getElementById('auth-email')?.value||'').trim();
+  const pass=(document.getElementById('auth-pass')?.value||'').trim();
+  if(!email||!pass){showAuthErr('Please enter your email and password.');return;}
+  if(!window._fbReady){showAuthErr('App still loading — please wait.');return;}
+  const btn=document.querySelector('#auth-tab-content .btn-primary');
+  if(btn){btn.disabled=true;btn.textContent='Signing in...';}
+  try{
+    const cred=await window._signInFb(window._voraAuth,email,pass);
+    const snap=await window._voraGet(window._voraRef(window._voraDb,'users/'+cred.user.uid));
+    let profile=snap.val()||{name:cred.user.displayName||email,email,type:'free',
+      expiresAt:new Date(Date.now()+30*24*60*60*1000).toISOString()};
+    profile.uid=cred.user.uid;
+    // Check admin override
+    const adminSnap=await window._voraGet(window._voraRef(window._voraDb,'admins/'+cred.user.uid));
+    if(adminSnap.val()||['apexlogic2025@gmail.com','ceo@apexlogic.in'].includes(email.toLowerCase())){
+      profile.adminOverride=true;profile.type='admin';profile.expiresAt=null;
+    }
+    saveUser(profile);removeModal();updateUserBadge();updateTopicsAccess();
+    showToast('Welcome back, '+profile.name.split(' ')[0]+'! ✓');
+    if(profile.adminOverride) setTimeout(()=>checkAdminPanel(),500);
+  }catch(e){
+    const msg=e.code==='auth/user-not-found'||e.code==='auth/invalid-credential'?'No account found. Please sign up first.':
+              e.code==='auth/wrong-password'?'Incorrect password.':
+              e.code==='auth/too-many-requests'?'Too many attempts. Please wait a few minutes.':
+              'Sign in failed: '+e.message;
+    showAuthErr(msg);
+    if(btn){btn.disabled=false;btn.textContent='Sign in →';}
+  }
+}
+
+function signOut(){
+  if(window._voraAuth?.currentUser) window._signOutFb(window._voraAuth).catch(()=>{});
+  clearUser();removeModal();updateUserBadge();
+  showToast('Signed out successfully.');
 }
 
 function showProfileModal(u){
@@ -826,6 +954,7 @@ function showProfileModal(u){
         </div>
       </div>
       ${(u.type==='free'||u.type==='guest'||isExpired(u))?`<button class="btn btn-primary btn-full" style="margin-bottom:8px" onclick="removeModal();showSubscribeModal()">Upgrade — ₹25/month →</button>`:''}
+      ${(u.adminOverride||u.type==='admin')?`<button class="btn btn-full" style="margin-bottom:8px;border-color:var(--amber);color:var(--amber)" onclick="removeModal();showAdminPanel()">🛡️ Admin Panel</button>`:''}}
       <button class="btn btn-full" style="margin-top:0" onclick="signOut()">Sign out</button>
     </div>`;
   document.body.appendChild(overlay);
@@ -839,6 +968,127 @@ function signOut(){
 function removeModal(){
   const m=document.getElementById('vora-modal');
   if(m) m.remove();
+}
+
+// ══════════════════════════════════════════════
+// ADMIN PANEL
+// ══════════════════════════════════════════════
+function checkAdminPanel(){
+  const u=getUser();
+  if(!u||(!u.adminOverride&&u.type!=='admin')) return;
+  // Show admin button in header
+  const hdr=document.getElementById('user-badge');
+  if(hdr) hdr.style.outline='1.5px solid var(--amber)';
+}
+
+async function showAdminPanel(){
+  if(!window._fbReady){showToast('Firebase not ready — please wait.');return;}
+  removeModal();
+  const overlay=document.createElement('div');
+  overlay.className='modal-overlay';overlay.id='vora-modal';
+  overlay.onclick=e=>{if(e.target===overlay)removeModal();};
+  overlay.innerHTML=`<div class="modal-box" style="max-width:460px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div class="modal-title">🛡️ Admin Panel</div>
+      <button onclick="removeModal()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px">✕</button>
+    </div>
+    <div id="admin-body"><div style="text-align:center;padding:20px;color:var(--text2)">Loading users...</div></div>
+  </div>`;
+  document.body.appendChild(overlay);
+  await loadAdminUsers();
+}
+
+async function loadAdminUsers(){
+  try{
+    const snap=await window._voraGet(window._voraRef(window._voraDb,'users'));
+    const users=snap.val()||{};
+    const list=Object.values(users).sort((a,b)=>(b.signedUpAt||'').localeCompare(a.signedUpAt||''));
+    const total=list.length;
+    const active=list.filter(u=>!isExpired(u)).length;
+    const subs=list.filter(u=>u.type==='basic'||u.type==='premium').length;
+    const free=list.filter(u=>u.adminOverride).length;
+
+    let html=`
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:14px">
+        <div style="background:var(--surface2);border-radius:8px;padding:8px;text-align:center">
+          <div style="font-size:18px;font-weight:700;color:var(--text)">${total}</div>
+          <div style="font-size:9px;color:var(--text3)">Total</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:8px;padding:8px;text-align:center">
+          <div style="font-size:18px;font-weight:700;color:var(--green)">${active}</div>
+          <div style="font-size:9px;color:var(--text3)">Active</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:8px;padding:8px;text-align:center">
+          <div style="font-size:18px;font-weight:700;color:var(--accent)">${subs}</div>
+          <div style="font-size:9px;color:var(--text3)">Paid</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:8px;padding:8px;text-align:center">
+          <div style="font-size:18px;font-weight:700;color:var(--amber)">${free}</div>
+          <div style="font-size:9px;color:var(--text3)">Free∞</div>
+        </div>
+      </div>
+      <div style="max-height:320px;overflow-y:auto;display:grid;gap:6px">`;
+
+    list.forEach(u=>{
+      const expired=isExpired(u);
+      const days=u.expiresAt?Math.ceil((new Date(u.expiresAt)-new Date())/(1000*60*60*24)):null;
+      const statusColor=u.adminOverride?'var(--amber)':expired?'var(--red)':days<=5?'var(--amber)':'var(--green)';
+      const statusText=u.adminOverride?'Free ∞':expired?'Expired':days+'d left';
+      html+=`<div style="background:var(--surface2);border-radius:8px;padding:10px 12px">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(u.name||'—')}</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:1px">${esc(u.email||'—')}</div>
+            <div style="font-size:10px;color:var(--text3)">${esc(u.mobile||'')}${u.place?' · '+esc(u.place):''}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-size:10px;font-weight:600;color:${statusColor}">${statusText}</div>
+            <div style="font-size:9px;color:var(--text3);margin-top:1px;text-transform:capitalize">${u.type||'free'}</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:5px;margin-top:8px;flex-wrap:wrap">
+          <button onclick="adminSetPlan('${u.uid}','basic')" style="font-size:9px;padding:3px 8px;border-radius:5px;border:0.5px solid var(--accent);background:rgba(79,110,247,.12);color:var(--accent);cursor:pointer">Basic ₹25</button>
+          <button onclick="adminSetPlan('${u.uid}','premium')" style="font-size:9px;padding:3px 8px;border-radius:5px;border:0.5px solid var(--green);background:rgba(34,197,94,.12);color:var(--green);cursor:pointer">Premium ₹99</button>
+          <button onclick="adminGrantFree('${u.uid}')" style="font-size:9px;padding:3px 8px;border-radius:5px;border:0.5px solid var(--amber);background:rgba(245,158,11,.12);color:var(--amber);cursor:pointer">Free ∞</button>
+          <button onclick="adminSetPlan('${u.uid}','free')" style="font-size:9px;padding:3px 8px;border-radius:5px;border:0.5px solid var(--border);background:transparent;color:var(--text3);cursor:pointer">Reset</button>
+        </div>
+      </div>`;
+    });
+
+    html+=`</div>
+      <button class="btn btn-full" style="margin-top:10px;font-size:12px" onclick="exportUsers(${JSON.stringify(list).replace(/'/g,"&#39;")})">Export user list (.csv)</button>`;
+    document.getElementById('admin-body').innerHTML=html;
+  }catch(e){
+    document.getElementById('admin-body').innerHTML=`<div style="color:var(--red);font-size:12px;padding:10px">Error loading users: ${esc(e.message)}</div>`;
+  }
+}
+
+async function adminSetPlan(uid,plan){
+  const expiry=plan==='free'?new Date(Date.now()+30*24*60*60*1000).toISOString():
+    new Date(Date.now()+31*24*60*60*1000).toISOString();
+  await window._voraUpd(window._voraRef(window._voraDb,'users/'+uid),
+    {type:plan,expiresAt:expiry,adminOverride:false});
+  showToast('Plan updated to '+plan);
+  await loadAdminUsers();
+}
+
+async function adminGrantFree(uid){
+  await window._voraUpd(window._voraRef(window._voraDb,'users/'+uid),
+    {adminOverride:true,type:'free',expiresAt:null});
+  await window._voraSet(window._voraRef(window._voraDb,'admins/'+uid),true);
+  showToast('Free forever granted ✓');
+  await loadAdminUsers();
+}
+
+function exportUsers(users){
+  const csv='Name,Email,Mobile,Place,Type,Joined,Expires
+'+
+    users.map(u=>`"${(u.name||'').replace(/"/g,'""')}","${u.email||''}","${u.mobile||''}","${u.place||''}","${u.type||''}","${u.signedUpAt?u.signedUpAt.slice(0,10):''}","${u.expiresAt?u.expiresAt.slice(0,10):'Forever'}"`).join('
+');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='VORA_Users.csv';a.click();
+  URL.revokeObjectURL(url);
 }
 
 // ══════════════════════════════════════════════
