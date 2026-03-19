@@ -14,6 +14,8 @@
   import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
            sendEmailVerification, signOut, onAuthStateChanged, updateProfile }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getMessaging, getToken, onMessage }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js";
 
   const firebaseConfig = {
     apiKey:            "AIzaSyDu0XN5QTMDhuablMSS_6ZOnabgz6sc5VM",
@@ -45,8 +47,18 @@
   window._signOutFb    = signOut;
   window._onAuthChange = onAuthStateChanged;
   window._updateProfile= updateProfile;
+  // Init messaging
+  let messaging = null;
+  try {
+    messaging = getMessaging(app);
+    window._voraMessaging = messaging;
+    window._voraGetToken = getToken;
+    window._voraOnMessage = onMessage;
+  } catch(e) {
+    console.log('FCM not available:', e.message);
+  }
+
   window._fbReady = true;
-  // Signal regular scripts that Firebase is ready
   window.dispatchEvent(new Event('voraFbReady'));
 
   // Auto restore session on page load
@@ -700,6 +712,118 @@ function handleTopicsTile(){
 }
 
 // ══════════════════════════════════════════════
+// PUSH NOTIFICATIONS
+// ══════════════════════════════════════════════
+const VAPID_KEY = 'BFCYzDnvANmQxP8qRTNB0LvOLvIRloSgkfdE5XNxOc6EYSxaGrwGQq5-SEAQhkwTXPRw84vWUio9FZIqRx6unzc';
+
+async function registerServiceWorker(){
+  if(!('serviceWorker' in navigator)){
+    console.log('Service workers not supported');
+    return null;
+  }
+  try{
+    const reg = await navigator.serviceWorker.register('/sw.js');
+    console.log('SW registered:', reg.scope);
+    return reg;
+  }catch(e){
+    console.log('SW registration failed:', e);
+    return null;
+  }
+}
+
+async function requestPushPermission(){
+  if(!('Notification' in window)){
+    showToast('Push notifications not supported on this browser.');
+    return false;
+  }
+  if(Notification.permission === 'granted') return true;
+  if(Notification.permission === 'denied'){
+    showToast('Notifications blocked. Please enable in browser settings.');
+    return false;
+  }
+  const permission = await Notification.requestPermission();
+  return permission === 'granted';
+}
+
+async function getFCMToken(){
+  // Wait for messaging to be ready
+  let attempts = 0;
+  while(!window._voraMessaging && attempts < 20){
+    await new Promise(r => setTimeout(r, 300));
+    attempts++;
+  }
+  if(!window._voraMessaging) return null;
+  try{
+    const reg = await navigator.serviceWorker.ready;
+    const token = await window._voraGetToken(window._voraMessaging, {
+      vapidKey: VAPID_KEY,
+      serviceWorkerRegistration: reg
+    });
+    return token;
+  }catch(e){
+    console.log('FCM token error:', e);
+    return null;
+  }
+}
+
+async function saveFCMToken(uid, token){
+  if(!window._voraSet || !uid || !token) return;
+  try{
+    await window._voraSet(window._voraRef(window._voraDb, 'fcmTokens/' + uid), {
+      token, updatedAt: new Date().toISOString()
+    });
+  }catch(e){ console.log('Token save error:', e); }
+}
+
+async function saveReminderToFirebase(uid, fcmToken, reminder){
+  if(!window._voraSet || !uid || !fcmToken) return;
+  const remId = 'rem_' + Date.now();
+  try{
+    // Save morning reminder
+    if(reminder.morningTime){
+      await window._voraSet(window._voraRef(window._voraDb, 'reminders/'+uid+'/'+remId+'_morning'), {
+        fcmToken,
+        title: reminder.morning_subject || 'VORA Morning Brief',
+        body: reminder.morning_body || '',
+        fireAt: reminder.morningTime,
+        sent: false,
+        createdAt: new Date().toISOString()
+      });
+    }
+    // Save 30-min alert
+    if(reminder.alertTime){
+      await window._voraSet(window._voraRef(window._voraDb, 'reminders/'+uid+'/'+remId+'_alert'), {
+        fcmToken,
+        title: reminder.alert_subject || 'VORA Reminder — 30 min',
+        body: reminder.alert_body || '',
+        fireAt: reminder.alertTime,
+        sent: false,
+        createdAt: new Date().toISOString()
+      });
+    }
+    showToast('Push reminder saved ✓ You will get a notification at the set time.');
+  }catch(e){
+    console.log('Reminder save error:', e);
+    showToast('Reminder saved locally. Push may not fire if tab is closed.');
+  }
+}
+
+async function initPushNotifications(){
+  const u = getUser();
+  if(!u || isExpired(u)) return;
+  const sw = await registerServiceWorker();
+  if(!sw) return;
+  const granted = await requestPushPermission();
+  if(!granted) return;
+  const token = await getFCMToken();
+  if(token && u.uid){
+    await saveFCMToken(u.uid, token);
+    // Store token locally for reminder saving
+    try{ localStorage.setItem('vora_fcm_token', token); }catch(e){}
+  }
+}
+
+// ══════════════════════════════════════════════
 // ABOUT BANNER
 // ══════════════════════════════════════════════
 let aboutCollapsed=localStorage.getItem('vora_about_collapsed')==='1';
@@ -847,6 +971,7 @@ function startGuestSession(){
     expiresAt:new Date(Date.now()+24*60*60*1000).toISOString()};
   saveUser(u);removeModal();updateUserBadge();
   showToast('Welcome, '+name.split(' ')[0]+'! 1-day trial started.');
+  setTimeout(()=>initPushNotifications(), 1000);
 }
 
 async function startSignup(){
@@ -943,6 +1068,7 @@ async function signIn(){
     saveUser(profile);removeModal();updateUserBadge();updateTopicsAccess();
     showToast('Welcome back, '+profile.name.split(' ')[0]+'! ✓');
     if(profile.adminOverride) setTimeout(()=>checkAdminPanel(),500);
+    setTimeout(()=>initPushNotifications(), 1000);
   }catch(e){
     const msg=e.code==='auth/user-not-found'||e.code==='auth/invalid-credential'?'No account found. Please sign up first.':
               e.code==='auth/wrong-password'?'Incorrect password.':
@@ -1619,7 +1745,25 @@ Return ONLY valid JSON:
 {"event":"${event}","morning_subject":"short notification title","morning_body":"2-3 sentence morning reminder with preparation tips","alert_subject":"30-min before alert title","alert_body":"3-4 sentence contextual brief with one practical tip","prepare_now":"one specific action to do right now"}`);
     r._rawDate=rawDate;r._rawTime=rawTime;r._sound=sound;r._dateLabel=dateLabel;r._timeLabel=timeLabel;
     hideStatus('rem');renderReminder(r);
-    if(rawDate&&rawTime)scheduleAlarm(r);
+    if(rawDate&&rawTime){
+      scheduleAlarm(r);
+      // Save to Firebase for push notification
+      const u=getUser();
+      const fcmToken=localStorage.getItem('vora_fcm_token');
+      if(u&&u.uid&&fcmToken&&rawDate&&rawTime){
+        const eventDate=new Date(rawDate+'T'+rawTime);
+        const morningDate=new Date(rawDate+'T08:00:00');
+        const alertDate=new Date(eventDate.getTime()-30*60*1000);
+        saveReminderToFirebase(u.uid, fcmToken, {
+          morning_subject: r.morning_subject,
+          morning_body: r.morning_body,
+          alert_subject: r.alert_subject,
+          alert_body: r.alert_body,
+          morningTime: morningDate.toISOString(),
+          alertTime: alertDate.toISOString()
+        });
+      }
+    }
   }catch(e){hideStatus('rem');document.getElementById('rem-results').innerHTML=errCard(e.message);}
   btn.disabled=false;
 }
@@ -1722,6 +1866,7 @@ window.addEventListener('voraAuthReady', function(e){
     updateUserBadge();
     if(typeof updateTopicsAccess === 'function') updateTopicsAccess();
     if(typeof renderSubscriptionCTA === 'function') renderSubscriptionCTA();
+    setTimeout(()=>{ if(typeof initPushNotifications==='function') initPushNotifications(); }, 1500);
   } else {
     updateUserBadge();
   }
