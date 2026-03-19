@@ -277,6 +277,36 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
 .plan-price{font-size:18px;font-weight:700;color:var(--accent)}
 .plan-desc{font-size:11px;color:var(--text2);margin-top:3px;line-height:1.5}
 
+/* ── CALENDAR ── */
+.cal-tab{flex:1;padding:7px;border-radius:6px;border:none;font-size:12px;font-weight:500;font-family:var(--font);cursor:pointer;background:transparent;color:var(--text2);transition:all .2s}
+.cal-tab.active{background:var(--accent);color:#fff}
+.cal-item{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:11px 13px;margin-bottom:8px;position:relative}
+.cal-item.completed{opacity:.6}
+.cal-item.overdue{border-left:2.5px solid var(--red)}
+.cal-item.upcoming{border-left:2.5px solid var(--green)}
+.cal-item.today{border-left:2.5px solid var(--accent)}
+.cal-item-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px}
+.cal-item-meta{font-size:11px;color:var(--text2)}
+.cal-item-type{font-size:9px;font-weight:600;padding:2px 7px;border-radius:8px;display:inline-block;margin-top:4px}
+.cal-type-schedule{background:rgba(79,110,247,.15);color:var(--accent)}
+.cal-type-reminder{background:rgba(34,197,94,.15);color:var(--green)}
+.cal-type-task{background:rgba(245,158,11,.15);color:var(--amber)}
+.cal-date-group{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin:14px 0 8px;padding-bottom:4px;border-bottom:0.5px solid var(--border)}
+/* Month grid */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:14px}
+.cal-grid-header{text-align:center;font-size:9px;font-weight:600;color:var(--text3);padding:4px 0;text-transform:uppercase}
+.cal-grid-day{min-height:36px;border-radius:6px;padding:3px;position:relative;cursor:pointer;border:0.5px solid transparent}
+.cal-grid-day:hover{background:var(--surface2)}
+.cal-grid-day.has-items{background:rgba(79,110,247,.08);border-color:rgba(79,110,247,.2)}
+.cal-grid-day.today-cell{background:rgba(79,110,247,.18);border-color:var(--accent)}
+.cal-grid-day.selected-cell{background:rgba(79,110,247,.25);border-color:var(--accent)}
+.cal-grid-day.other-month{opacity:.3}
+.cal-day-num{font-size:11px;font-weight:500;color:var(--text2);text-align:center}
+.cal-dot{width:4px;height:4px;border-radius:50%;background:var(--accent);margin:1px auto 0}
+.cal-month-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.cal-month-label{font-size:13px;font-weight:600;color:var(--text)}
+.cal-nav-btn{background:var(--surface2);border:0.5px solid var(--border);color:var(--text2);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;font-family:var(--font)}
+
 /* ── SCROLLBAR ── */
 ::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-track{background:transparent}
@@ -488,6 +518,23 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
       <div id="rem-active-area"></div>
     </div>
 
+    <!-- CALENDAR -->
+    <div class="screen" id="screen-calendar">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div class="sect" style="margin:0">My Calendar</div>
+        <div id="cal-view-toggle" style="display:none">
+          <button id="cal-btn-list" onclick="setCalView('list')" style="font-size:10px;padding:4px 10px;border-radius:6px 0 0 6px;border:0.5px solid var(--border);background:var(--accent);color:#fff;cursor:pointer;font-family:var(--font)">List</button>
+          <button id="cal-btn-grid" onclick="setCalView('grid')" style="font-size:10px;padding:4px 10px;border-radius:0 6px 6px 0;border:0.5px solid var(--border);background:var(--surface2);color:var(--text2);cursor:pointer;font-family:var(--font)">Month</button>
+        </div>
+      </div>
+      <div id="cal-tabs" style="display:flex;background:var(--surface2);border-radius:var(--radius-sm);padding:3px;margin-bottom:14px">
+        <button class="cal-tab active" onclick="setCalTab('active')">Active</button>
+        <button class="cal-tab" onclick="setCalTab('completed')">Completed</button>
+      </div>
+      <div id="cal-grid-area" style="display:none"></div>
+      <div id="cal-list-area"></div>
+    </div>
+
     <!-- PRIVACY POLICY -->
     <div class="screen" id="screen-privacy">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:0.5px solid var(--border)">
@@ -556,31 +603,46 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
   </div><!-- /screens -->
 
   <!-- Bottom Nav -->
-  <div class="bottom-nav">
-    <button class="nav-item active" id="nav-home" onclick="goTo('home')">
-      <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-      <span class="nav-label">Home</span>
-    </button>
-    <button class="nav-item" id="nav-chats" onclick="goTo('chats')">
-      <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
-      <span class="nav-label">Chats</span>
-    </button>
-    <button class="nav-item" id="nav-scan" onclick="goTo('scan')">
-      <div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
-      <span class="nav-label">Scan→PDF</span>
-    </button>
-    <button class="nav-item" id="nav-schedule" onclick="goTo('schedule')">
-      <div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
-      <span class="nav-label">Schedule</span>
-    </button>
-    <button class="nav-item" id="nav-topics" onclick="handleTopicsTile()">
-      <div class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
-      <span class="nav-label">Topics</span>
-    </button>
-    <button class="nav-item" id="nav-reminders" onclick="goTo('reminders')">
-      <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
-      <span class="nav-label">Reminder</span>
-    </button>
+  <!-- 2-tier bottom navigation -->
+  <div class="bottom-nav" style="flex-direction:column;padding:0">
+    <!-- Top row: Home, Chats, Scan, Topics -->
+    <div style="display:flex;width:100%;border-bottom:0.5px solid var(--border)">
+      <button class="nav-item active" id="nav-home" onclick="goTo('home')">
+        <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <span class="nav-label">Home</span>
+      </button>
+      <button class="nav-item" id="nav-chats" onclick="goTo('chats')">
+        <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <span class="nav-label">Chats</span>
+      </button>
+      <button class="nav-item" id="nav-scan" onclick="goTo('scan')">
+        <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg></div>
+        <span class="nav-label">Scan</span>
+      </button>
+      <button class="nav-item" id="nav-topics" onclick="handleTopicsTile()">
+        <div class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+        <span class="nav-label">Topics</span>
+      </button>
+    </div>
+    <!-- Bottom row: Schedule, Calendar, Reminder, Done -->
+    <div style="display:flex;width:100%">
+      <button class="nav-item" id="nav-schedule" onclick="goTo('schedule')">
+        <div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <span class="nav-label">Schedule</span>
+      </button>
+      <button class="nav-item" id="nav-calendar" onclick="goTo('calendar')">
+        <div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="8" cy="15" r="1"/><circle cx="12" cy="15" r="1"/><circle cx="16" cy="15" r="1"/></svg></div>
+        <span class="nav-label">Calendar</span>
+      </button>
+      <button class="nav-item" id="nav-reminders" onclick="goTo('reminders')">
+        <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+        <span class="nav-label">Reminder</span>
+      </button>
+      <button class="nav-item" id="nav-done" onclick="goTo('calendar');setCalTab('completed')">
+        <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+        <span class="nav-label">Done</span>
+      </button>
+    </div>
   </div>
 
 </div><!-- /app -->
@@ -849,7 +911,7 @@ if(aboutCollapsed){
 // ══════════════════════════════════════════════
 // NAV
 // ══════════════════════════════════════════════
-const SCREENS=['home','chats','scan','schedule','topics','reminders','privacy','terms'];
+const SCREENS=['home','chats','scan','schedule','topics','reminders','privacy','terms','calendar'];
 const allTasks=[];
 
 document.getElementById('live-date').textContent=new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short'});
@@ -872,6 +934,9 @@ function goTo(name){
   if(nav) nav.style.display=noNav.includes(name)?'none':'flex';
   if(hdr) hdr.style.display=noNav.includes(name)?'none':'flex';
   if(name==='home'){renderHomeTasks();renderUserBadge();renderSubscriptionCTA();}
+  if(name==='calendar'){
+    loadCalFromFirebase().then(()=>renderCalendar());
+  }
 }
 
 // ══════════════════════════════════════════════
@@ -1486,13 +1551,60 @@ function renderChatResults(r){
       </div>
     </div>`;
   });
-  html+=`<div class="btn-row"><button class="btn btn-sm" style="background:rgba(79,110,247,.15);border-color:var(--accent);color:#7B9BFF" onclick="goTo('schedule')">Build schedule from these</button><button class="btn btn-sm" onclick="document.getElementById('chat-results').innerHTML=''">Clear</button></div></div>`;
+  // Store tasks for schedule
+  window._chatExtractedTasks = tasks;
+  // Auto-save tasks with dates to calendar
+  tasks.filter(t=>t.date&&t.date!=='No date').forEach(t=>{
+    saveToCalendar('task',{
+      title:t.title,
+      date:guessDateStr(t.date),
+      dateLabel:t.date,
+      person:t.person||'',
+      priority:t.priority||'Medium',
+      taskType:t.type||'Task'
+    });
+  });
+  // Save tasks with dates to calendar
+  tasks.filter(t=>t.date&&t.date!=='No date').forEach(t=>{
+    saveToCalendar('task', {
+      title: t.title,
+      date: guessDateStr(t.date),
+      dateLabel: t.date,
+      priority: t.priority||'Medium',
+      type: t.type||'Task',
+      person: t.person||''
+    });
+  });
+  html+=`<div class="btn-row"><button class="btn btn-sm" style="background:rgba(79,110,247,.15);border-color:var(--accent);color:#7B9BFF" onclick="buildScheduleFromChat()">Build schedule from these</button><button class="btn btn-sm" onclick="document.getElementById('chat-results').innerHTML=''">Clear</button></div></div>`;
   document.getElementById('chat-results').innerHTML=html;
+}
+
+function buildScheduleFromChat(){
+  const tasks=window._chatExtractedTasks||[];
+  if(!tasks.length){goTo('schedule');return;}
+  // Build a natural language description from extracted tasks
+  const taskList=tasks.map(t=>{
+    let desc=t.title;
+    if(t.date&&t.date!=='No date') desc+=' ('+t.date+')';
+    if(t.person) desc+=' — from '+t.person;
+    return desc;
+  }).join('\n');
+  goTo('schedule');
+  // Fill the schedule textarea with extracted tasks
+  setTimeout(()=>{
+    const inp=document.getElementById('sched-input');
+    if(inp){
+      inp.value=taskList;
+      inp.style.height='auto';
+      inp.style.height=inp.scrollHeight+'px';
+    }
+  },200);
 }
 
 function toggleTask(i){
   const cc=document.getElementById('cc-'+i);const tt=document.getElementById('tt-'+i);
-  const done=cc.classList.toggle('checked');tt.classList.toggle('done',done);
+  // Just toggle visual selection — do NOT strike through (that was confusing)
+  cc.classList.toggle('checked');
 }
 
 // ══════════════════════════════════════════════
@@ -1537,70 +1649,96 @@ function renderScanResults(r,imgSrc){
   const safeRaw=JSON.stringify(esc(raw));
   const safeLines=JSON.stringify(lines.map(esc));
 
-  document.getElementById('scan-results').innerHTML=`
-    <div style="margin-top:10px">
-      <div class="sect">Extracted text — ${lines.length} lines</div>
-      <div class="ocr-preview">${esc(raw)}</div>
-      <div class="sect">File name</div>
-      <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center">
-        <input type="text" id="doc-title-input" value="${esc(uName+' - '+defTitle)}" style="flex:1"/>
-      </div>
-      <div class="sect">Export as</div>
-      <div class="fmt-row">
-        <div class="fmt-btn" onclick="downloadPDF(${safeRaw},'${esc(imgSrc)}')">
-          <span class="fmt-icon">📄</span>
-          <div class="fmt-name">PDF</div>
-          <div class="fmt-ext">Full page scan</div>
-        </div>
-        <div class="fmt-btn" onclick="downloadRTF(${safeRaw})">
-          <span class="fmt-icon">📝</span>
-          <div class="fmt-name">Word</div>
-          <div class="fmt-ext">.rtf file</div>
-        </div>
-        <div class="fmt-btn" onclick="downloadCSV(${safeLines})">
-          <span class="fmt-icon">📊</span>
-          <div class="fmt-name">Excel</div>
-          <div class="fmt-ext">.csv file</div>
-        </div>
-      </div>
-      <div class="btn-row">
-        <button class="btn btn-sm" onclick="copyToClip(${safeRaw})">Copy text</button>
-        <button class="btn btn-sm" onclick="document.getElementById('scan-results').innerHTML='';document.getElementById('img-preview-area').innerHTML=''">Clear</button>
-      </div>
-      ${(!u||isExpired(u)||u.type==='guest'||u.type==='free'||u.type==='basic')?`<div style="margin-top:10px;background:rgba(139,92,246,.08);border:0.5px solid rgba(139,92,246,.3);border-radius:var(--radius-sm);padding:10px 12px;font-size:11px;color:#A78BFA;line-height:1.6">⭐ <strong>Premium (₹99/mo):</strong> Save PDFs permanently to your account. Basic plan files are session-only — download before closing. <span style="cursor:pointer;text-decoration:underline" onclick="showSubscribeModal()">Upgrade</span></div>`:''}
-    </div>`;
+  // Store scan data globally to avoid onclick injection issues
+  window._scanData = {raw, lines, imgSrc};
+
+  document.getElementById('scan-results').innerHTML=
+    '<div style="margin-top:10px">'+
+    '<div class="sect">Extracted text — '+lines.length+' lines</div>'+
+    '<div class="ocr-preview">'+esc(raw)+'</div>'+
+    '<div class="sect">File name</div>'+
+    '<div style="display:flex;gap:8px;margin-bottom:12px;align-items:center">'+
+    '<input type="text" id="doc-title-input" value="'+esc(uName+' - '+defTitle)+'" style="flex:1"/>'+
+    '</div>'+
+    '<div class="sect">Export as</div>'+
+    '<div class="fmt-row">'+
+    '<div class="fmt-btn" onclick="downloadPDFStored()">'+
+    '<span class="fmt-icon">📄</span>'+
+    '<div class="fmt-name">PDF / HTML</div>'+
+    '<div class="fmt-ext">Print to PDF</div>'+
+    '</div>'+
+    '<div class="fmt-btn" onclick="downloadRTFStored()">'+
+    '<span class="fmt-icon">📝</span>'+
+    '<div class="fmt-name">Word</div>'+
+    '<div class="fmt-ext">.rtf file</div>'+
+    '</div>'+
+    '<div class="fmt-btn" onclick="downloadCSVStored()">'+
+    '<span class="fmt-icon">📊</span>'+
+    '<div class="fmt-name">Excel</div>'+
+    '<div class="fmt-ext">.csv file</div>'+
+    '</div>'+
+    '</div>'+
+    '<div class="btn-row">'+
+    '<button class="btn btn-sm" onclick="copyToClipStored()">Copy text</button>'+
+    '<button class="btn btn-sm" onclick="clearScanResults()">Clear</button>'+
+    '</div>'+
+    '</div>';
 }
 
+function clearScanResults(){
+  const sr=document.getElementById('scan-results');
+  const ip=document.getElementById('img-preview-area');
+  if(sr)sr.innerHTML='';
+  if(ip)ip.innerHTML='';
+  window._scanData=null;
+}
 function getDocTitle(){
   const inp=document.getElementById('doc-title-input');
   return inp?unesc(inp.value)||'VORA Document':'VORA Document';
+}
+function downloadPDFStored(){
+  const d=window._scanData||{};
+  downloadPDF(JSON.stringify(esc(d.raw||'')),d.imgSrc||'');
+}
+function downloadRTFStored(){
+  const d=window._scanData||{};
+  downloadRTF(JSON.stringify(esc(d.raw||'')));
+}
+function downloadCSVStored(){
+  const d=window._scanData||{};
+  downloadCSV(JSON.stringify((d.lines||[]).map(esc)));
+}
+function copyToClipStored(){
+  const d=window._scanData||{};
+  copyToClip(JSON.stringify(esc(d.raw||'')));
 }
 
 function downloadPDF(escapedText, imgSrc){
   const title=getDocTitle();
   const text=unesc(escapedText);
-  // Build a printable HTML page and convert to PDF via print dialog
-  const win=window.open('','_blank');
-  if(!win){alert('Please allow pop-ups to download PDF.');return;}
-  win.document.write(`<!DOCTYPE html><html><head><title>${title}</title>
-  <style>
-    body{font-family:Arial,sans-serif;margin:0;padding:0;background:#fff;color:#000}
-    .page{max-width:210mm;margin:0 auto;padding:20mm}
-    h1{font-size:18pt;margin-bottom:12pt;color:#1a1a1a;border-bottom:2pt solid #333;padding-bottom:8pt}
-    .meta{font-size:9pt;color:#666;margin-bottom:16pt}
-    .scan-img{width:100%;max-height:200mm;object-fit:contain;border:1pt solid #ddd;border-radius:4pt;margin-bottom:16pt;display:block}
-    .extracted{font-size:11pt;line-height:1.8;white-space:pre-wrap;background:#f9f9f9;padding:12pt;border-radius:4pt;border:1pt solid #eee}
-    @media print{body{margin:0}@page{margin:15mm}}
-  </style></head><body>
-  <div class="page">
-    <h1>${title}</h1>
-    <div class="meta">Scanned by VORA AI · ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})}</div>
-    ${imgSrc&&imgSrc!=='undefined'?`<img class="scan-img" src="${imgSrc}" alt="Scanned document"/>`:''} 
-    <div class="extracted">${text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
-  </div>
-  <script>window.onload=function(){window.print();window.onafterprint=function(){window.close();}}<\/script>
-  </body></html>`);
-  win.document.close();
+  const date=new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
+  // Build HTML content for the PDF
+  const imgTag=imgSrc&&imgSrc!=='undefined'&&imgSrc!=='null'?
+    '<img style="width:100%;max-height:80mm;object-fit:contain;border:1pt solid #ddd;margin-bottom:12pt;display:block" src="'+imgSrc+'" alt="Scanned"/>':'';
+  const htmlContent='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+title+'</title>'+
+    '<style>body{font-family:Arial,sans-serif;margin:20mm;color:#000;background:#fff}'+
+    'h1{font-size:16pt;border-bottom:2pt solid #333;padding-bottom:6pt;margin-bottom:8pt}'+
+    '.meta{font-size:9pt;color:#666;margin-bottom:14pt}'+
+    '.text{font-size:11pt;line-height:1.8;white-space:pre-wrap;background:#f9f9f9;padding:10pt;border:1pt solid #eee}'+
+    '</style></head><body>'+
+    '<h1>'+title.replace(/</g,'&lt;')+'</h1>'+
+    '<div class="meta">Scanned by VORA &nbsp;·&nbsp; '+date+'</div>'+
+    imgTag+
+    '<div class="text">'+text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>'+
+    '</body></html>';
+  // Download as HTML file — opens natively, user can print to PDF
+  dl(htmlContent,'text/html',title.replace(/\s+/g,'_')+'.html');
+  // Show instruction
+  const res=document.getElementById('scan-results');
+  const note=document.createElement('div');
+  note.style.cssText='margin-top:10px;background:rgba(34,197,94,.08);border:0.5px solid var(--green);border-radius:var(--radius-sm);padding:10px 13px;font-size:11px;color:var(--green);line-height:1.6';
+  note.innerHTML='✅ File downloaded. Open it in your browser then tap Share → Print → Save as PDF to get a PDF file.';
+  res.appendChild(note);
 }
 
 function downloadRTF(escapedText){
@@ -1656,8 +1794,25 @@ function renderSchedule(r){
     </div>`;
   });
   if(r.tip)html+=`<div class="tip-box"><div class="tip-label">Productivity tip</div><div class="tip-text">${esc(r.tip)}</div></div>`;
+  // Auto-save to VORA calendar
+  if(r.date&&r.schedule&&r.schedule.length){
+    saveToCalendar('schedule',{
+      title:r.date+' Schedule',
+      date:r._rawDate||new Date().toISOString().slice(0,10),
+      time:r._rawTime||'09:00',
+      items:r.schedule,
+      tip:r.tip||''
+    });
+  }
   html+=`<div class="btn-row" style="margin-top:10px"><button class="btn btn-sm" style="background:rgba(34,197,94,.12);border-color:var(--green);color:var(--green)" onclick='downloadICS(${JSON.stringify(r)})'>Download .ics (Google Calendar)</button><button class="btn btn-sm" onclick="document.getElementById('sched-results').innerHTML=''">Clear</button></div></div>`;
   document.getElementById('sched-results').innerHTML=html;
+  // Save to calendar store
+  saveToCalendar('schedule', {
+    title: r.date+' Schedule',
+    date: r._rawDate||new Date().toISOString().slice(0,10),
+    items: r.schedule||[],
+    tip: r.tip||''
+  });
 }
 
 function downloadICS(r){
@@ -1744,7 +1899,32 @@ Notes: ${notes}
 Return ONLY valid JSON:
 {"event":"${event}","morning_subject":"short notification title","morning_body":"2-3 sentence morning reminder with preparation tips","alert_subject":"30-min before alert title","alert_body":"3-4 sentence contextual brief with one practical tip","prepare_now":"one specific action to do right now"}`);
     r._rawDate=rawDate;r._rawTime=rawTime;r._sound=sound;r._dateLabel=dateLabel;r._timeLabel=timeLabel;
+    // Auto-save to VORA calendar
+    if(rawDate){
+      saveToCalendar('reminder',{
+        title:event,
+        date:rawDate,
+        time:rawTime||'',
+        morning_subject:r.morning_subject,
+        morning_body:r.morning_body,
+        alert_subject:r.alert_subject,
+        alert_body:r.alert_body,
+        notes:notes
+      });
+    }
     hideStatus('rem');renderReminder(r);
+    // Save to calendar store
+    if(rawDate){
+      saveToCalendar('reminder', {
+        title: r.event||'Reminder',
+        date: rawDate,
+        time: rawTime||'',
+        morning_subject: r.morning_subject||'',
+        morning_body: r.morning_body||'',
+        alert_subject: r.alert_subject||'',
+        alert_body: r.alert_body||''
+      });
+    }
     if(rawDate&&rawTime){
       scheduleAlarm(r);
       // Save to Firebase for push notification
@@ -1838,6 +2018,478 @@ function renderReminder(r){
       </div>
     </div>`;
 }
+
+// ══════════════════════════════════════════════
+// CALENDAR STORE
+// ══════════════════════════════════════════════
+
+// ── Calendar Firebase path ───────────────────────────────────────────────────
+function calPath(uid){ return 'calendar/'+uid; }
+
+function getCalStore(){
+  try{ return JSON.parse(localStorage.getItem('vora_calendar')||'[]'); }catch(e){ return []; }
+}
+function saveCalStoreLocal(items){
+  try{ localStorage.setItem('vora_calendar', JSON.stringify(items)); }catch(e){}
+}
+async function saveCalStoreFirebase(items){
+  const u=getUser();
+  if(!u||!u.uid||!window._voraSet) return;
+  try{
+    // Save as object keyed by id for efficient Firebase queries
+    const obj={};
+    items.forEach(item=>{ obj[item.id.replace(/[.#$/\[\]]/g,'_')]=item; });
+    await window._voraSet(window._voraRef(window._voraDb,calPath(u.uid)),obj);
+  }catch(e){ console.log('Cal Firebase save error:',e); }
+}
+function saveCalStore(items){
+  saveCalStoreLocal(items);
+  saveCalStoreFirebase(items); // async — fire and forget
+}
+async function loadCalFromFirebase(){
+  const u=getUser();
+  if(!u||!u.uid||!window._voraGet) return;
+  try{
+    const snap=await window._voraGet(window._voraRef(window._voraDb,calPath(u.uid)));
+    const data=snap.val();
+    if(data){
+      const items=Object.values(data).filter(Boolean);
+      saveCalStoreLocal(items);
+    }
+  }catch(e){ console.log('Cal Firebase load error:',e); }
+}
+
+async function saveToCalendar(type, data){
+  const u=getUser();
+  const items=getCalStore();
+  const id='cal_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
+  const now=new Date().toISOString();
+  const newItem={id, type, ...data, createdAt:now, status:'active'};
+  items.push(newItem);
+  saveCalStore(items);
+}
+
+function guessDateStr(dateLabel){
+  // Try to parse common date formats from chat extraction
+  if(!dateLabel||dateLabel==='No date') return new Date().toISOString().slice(0,10);
+  const today=new Date();
+  const lower=dateLabel.toLowerCase();
+  if(lower.includes('today')) return today.toISOString().slice(0,10);
+  if(lower.includes('tomorrow')){
+    const t=new Date(today); t.setDate(t.getDate()+1);
+    return t.toISOString().slice(0,10);
+  }
+  // Try direct parse
+  const d=new Date(dateLabel);
+  if(!isNaN(d.getTime())) return d.toISOString().slice(0,10);
+  return today.toISOString().slice(0,10);
+}
+
+function getRetentionDays(u){
+  if(!u||u.type==='guest') return 1;
+  if(u.type==='free') return 1;
+  if(u.type==='basic') return 3;
+  if(u.type==='premium'||u.adminOverride) return 7;
+  return 1;
+}
+
+function purgeExpiredItems(){
+  const u=getUser();
+  const retDays=getRetentionDays(u);
+  const items=getCalStore();
+  const now=Date.now();
+  const filtered=items.filter(item=>{
+    const created=new Date(item.createdAt).getTime();
+    const ageHours=(now-created)/(1000*60*60);
+    if(item.status==='active') return true; // never auto-purge active
+    // Completed items — check retention
+    const retHours=retDays*24;
+    return ageHours < retHours;
+  });
+  // Auto-move past items to completed
+  const itemDate=(item)=>item.date?new Date(item.date+'T23:59:59').getTime():0;
+  filtered.forEach(item=>{
+    if(item.status==='active' && itemDate(item) < now && itemDate(item) > 0){
+      item.status='completed';
+      item.completedAt=new Date().toISOString();
+    }
+  });
+  saveCalStore(filtered);
+}
+
+// ── CALENDAR VIEW ─────────────────────────────────────────────────────────────
+let _calView='list';   // list | grid
+let _calTab='active';  // active | completed
+let _calMonth=new Date();
+let _calSelectedDate=null;
+
+function setCalView(v){
+  _calView=v;
+  document.getElementById('cal-btn-list').style.background=v==='list'?'var(--accent)':'var(--surface2)';
+  document.getElementById('cal-btn-list').style.color=v==='list'?'#fff':'var(--text2)';
+  document.getElementById('cal-btn-grid').style.background=v==='grid'?'var(--accent)':'var(--surface2)';
+  document.getElementById('cal-btn-grid').style.color=v==='grid'?'#fff':'var(--text2)';
+  document.getElementById('cal-grid-area').style.display=v==='grid'?'':'none';
+  renderCalendar();
+}
+
+function setCalTab(t){
+  _calTab=t;
+  document.querySelectorAll('.cal-tab').forEach((b,i)=>{
+    b.classList.toggle('active',['active','completed'][i]===t);
+  });
+  renderCalendar();
+}
+
+function renderCalendar(){
+  purgeExpiredItems();
+  const u=getUser();
+  const isPrem=u&&(u.type==='premium'||u.adminOverride);
+  const isBasic=u&&u.type==='basic';
+
+  // Show view toggle only for premium
+  const toggle=document.getElementById('cal-view-toggle');
+  if(toggle) toggle.style.display=isPrem?'':'none';
+
+  // For basic — force grid only; for premium — respect toggle; for others — list only
+  const effectiveView=isPrem?_calView:(isBasic?'grid':'list');
+
+  if(effectiveView==='grid'){
+    document.getElementById('cal-grid-area').style.display='';
+    renderCalGrid();
+  } else {
+    document.getElementById('cal-grid-area').style.display='none';
+  }
+  renderCalList(_calSelectedDate);
+}
+
+function renderCalGrid(){
+  const area=document.getElementById('cal-grid-area');
+  const year=_calMonth.getFullYear();
+  const month=_calMonth.getMonth();
+  const firstDay=new Date(year,month,1).getDay();
+  const daysInMonth=new Date(year,month+1,0).getDate();
+  const today=new Date();
+  const items=getCalStore().filter(i=>i.status===_calTab);
+
+  // Group items by date
+  const byDate={};
+  items.forEach(item=>{
+    if(item.date){
+      byDate[item.date]=(byDate[item.date]||0)+1;
+    }
+  });
+
+  const monthLabel=_calMonth.toLocaleDateString('en-IN',{month:'long',year:'numeric'});
+  let html='<div class="cal-month-nav">';
+  html+='<button class="cal-nav-btn" onclick="calPrevMonth()">&#8592;</button>';
+  html+='<div class="cal-month-label">'+monthLabel+'</div>';
+  html+='<button class="cal-nav-btn" onclick="calNextMonth()">&#8594;</button>';
+  html+='</div>';
+  html+='<div class="cal-grid">';
+  ['S','M','T','W','T','F','S'].forEach(d=>{
+    html+='<div class="cal-grid-header">'+d+'</div>';
+  });
+  // Empty cells before first day
+  for(let i=0;i<firstDay;i++) html+='<div class="cal-grid-day other-month"></div>';
+  // Days
+  for(let d=1;d<=daysInMonth;d++){
+    const dateStr=year+'-'+String(month+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    const isToday=d===today.getDate()&&month===today.getMonth()&&year===today.getFullYear();
+    const isSelected=_calSelectedDate===dateStr;
+    const hasItems=byDate[dateStr]>0;
+    let cls='cal-grid-day';
+    if(isToday) cls+=' today-cell';
+    else if(isSelected) cls+=' selected-cell';
+    else if(hasItems) cls+=' has-items';
+    html+='<div class="'+cls+'" data-date="'+dateStr+'" onclick="calSelectDate(this.dataset.date)">';
+    html+='<div class="cal-day-num">'+d+'</div>';
+    if(hasItems) html+='<div class="cal-dot"></div>';
+    html+='</div>';
+  }
+  html+='</div>';
+  area.innerHTML=html;
+}
+
+function calPrevMonth(){
+  _calMonth=new Date(_calMonth.getFullYear(),_calMonth.getMonth()-1,1);
+  renderCalGrid();
+}
+function calNextMonth(){
+  const u=getUser();
+  const isPrem=u&&(u.type==='premium'||u.adminOverride);
+  const maxMonths=isPrem?6:3; // premium: 6 months ahead, basic: 3 months
+  const now=new Date();
+  const maxDate=new Date(now.getFullYear(),now.getMonth()+maxMonths,1);
+  const next=new Date(_calMonth.getFullYear(),_calMonth.getMonth()+1,1);
+  if(next>maxDate){
+    showToast(isPrem?'Showing up to 6 months ahead (Premium)':'Upgrade to Premium to see more than 3 months ahead');
+    return;
+  }
+  _calMonth=next;
+  renderCalGrid();
+}
+function calSelectDate(dateStr){
+  _calSelectedDate=dateStr;
+  renderCalGrid();
+  renderCalList(dateStr);
+}
+
+function renderCalList(filterDate){
+  const area=document.getElementById('cal-list-area');
+  if(!area) return;
+  const items=getCalStore().filter(i=>i.status===_calTab);
+  let filtered=filterDate?items.filter(i=>i.date===filterDate):items;
+
+  // For non-premium, limit future view to 3 months
+  const u=getUser();
+  const isPrem=u&&(u.type==='premium'||u.adminOverride);
+  if(!isPrem){
+    const cutoff=new Date();
+    cutoff.setMonth(cutoff.getMonth()+3);
+    filtered=filtered.filter(i=>!i.date||new Date(i.date+'T12:00:00')<=cutoff);
+  }
+
+  if(!filtered.length){
+    const msg=_calTab==='active'
+      ?'<div style="font-size:24px;margin-bottom:8px">📅</div><div style="font-size:13px">No active items yet.<br>Your schedules, reminders and tasks appear here automatically.</div>'
+      :'<div style="font-size:24px;margin-bottom:8px">✅</div><div style="font-size:13px">No completed items yet.</div>';
+    area.innerHTML='<div style="text-align:center;padding:24px 16px;color:var(--text3)">'+msg+'</div>';
+    return;
+  }
+
+  // Sort by date
+  filtered.sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+
+  // Group by date
+  const groups={};
+  filtered.forEach(item=>{
+    const key=item.date||'No date';
+    if(!groups[key]) groups[key]=[];
+    groups[key].push(item);
+  });
+
+  const today=new Date().toISOString().slice(0,10);
+  const frag=document.createDocumentFragment();
+
+  Object.entries(groups).forEach(([date,gItems])=>{
+    const isToday=date===today;
+    const isPast=date<today&&date!=='No date';
+    const dateDisplay=date==='No date'?'No date set':
+      new Date(date+'T12:00:00').toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    const prefix=isToday?'📅 Today — ':isPast?'':'🔜 ';
+
+    const header=document.createElement('div');
+    header.className='cal-date-group';
+    header.textContent=prefix+dateDisplay;
+    frag.appendChild(header);
+
+    gItems.forEach(item=>{
+      const card=document.createElement('div');
+      const borderClass=item.status==='completed'?'completed':isToday?'today':isPast&&item.status==='active'?'overdue':'upcoming';
+      card.className='cal-item '+borderClass;
+
+      // Build inner HTML safely using DOM
+      const row=document.createElement('div');
+      row.style.cssText='display:flex;align-items:flex-start;justify-content:space-between;gap:8px';
+
+      // Left — content
+      const left=document.createElement('div');
+      left.style.flex='1';
+
+      const title=document.createElement('div');
+      title.className='cal-item-title';
+      title.textContent=item.title||'Untitled';
+      left.appendChild(title);
+
+      // Type-specific details
+      if(item.type==='schedule'&&item.items){
+        const meta=document.createElement('div');
+        meta.className='cal-item-meta';
+        meta.textContent=item.items.length+' time blocks'+(item.items[0]?' · Starts '+( item.items[0].time||item.items[0].time12||''):'');
+        left.appendChild(meta);
+        // Show first 3 blocks
+        const blocks=document.createElement('div');
+        blocks.style.cssText='margin-top:6px;display:grid;gap:3px';
+        item.items.slice(0,3).forEach(s=>{
+          const lc=s.type==='Meeting'?'var(--accent)':s.type==='Break'?'var(--text3)':s.type==='Personal'?'var(--green)':'var(--amber)';
+          const blk=document.createElement('div');
+          blk.style.cssText='display:flex;gap:8px;font-size:11px;color:var(--text2);padding:3px 0;border-left:2px solid '+lc+';padding-left:6px';
+          blk.innerHTML='<span style="color:var(--text3);min-width:40px">'+esc(s.time||s.time12||'')+'</span><span>'+esc(s.title)+'</span>';
+          blocks.appendChild(blk);
+        });
+        if(item.items.length>3){
+          const more=document.createElement('div');
+          more.style.cssText='font-size:10px;color:var(--text3);padding-left:6px';
+          more.textContent='+'+(item.items.length-3)+' more';
+          blocks.appendChild(more);
+        }
+        left.appendChild(blocks);
+      } else if(item.type==='reminder'){
+        if(item.time){
+          const m=document.createElement('div');m.className='cal-item-meta';
+          m.textContent='⏰ '+item.time;left.appendChild(m);
+        }
+        if(item.morning_body){
+          const m=document.createElement('div');
+          m.className='cal-item-meta';m.style.cssText='margin-top:3px;font-size:10px';
+          m.textContent=item.morning_body.slice(0,80)+(item.morning_body.length>80?'…':'');
+          left.appendChild(m);
+        }
+      } else if(item.type==='task'){
+        const parts=[];
+        if(item.dateLabel) parts.push(item.dateLabel);
+        if(item.person) parts.push('from '+item.person);
+        if(item.priority) parts.push(item.priority);
+        if(parts.length){
+          const m=document.createElement('div');m.className='cal-item-meta';
+          m.textContent=parts.join(' · ');left.appendChild(m);
+        }
+      }
+
+      const typeLabel=item.type==='schedule'?'Schedule':item.type==='reminder'?'Reminder':'Task';
+      const badge=document.createElement('span');
+      badge.className='cal-item-type cal-type-'+(item.type||'task');
+      badge.textContent=typeLabel;
+      left.appendChild(badge);
+      row.appendChild(left);
+
+      // Right — action buttons
+      const btns=document.createElement('div');
+      btns.style.cssText='display:flex;flex-direction:column;gap:4px;flex-shrink:0';
+
+      const makeBtn=(label,color,bg,fn)=>{
+        const b=document.createElement('button');
+        b.style.cssText='font-size:9px;padding:3px 8px;border-radius:5px;border:0.5px solid '+color+';background:'+bg+';color:'+color+';cursor:pointer;font-family:inherit';
+        b.textContent=label;
+        b.onclick=()=>fn(item.id);
+        return b;
+      };
+
+      if(item.status==='active'){
+        btns.appendChild(makeBtn('✓ Done','var(--green)','rgba(34,197,94,.1)',calComplete));
+        btns.appendChild(makeBtn('✏️ Edit','var(--accent)','rgba(79,110,247,.1)',calReschedule));
+      } else {
+        btns.appendChild(makeBtn('↩ Restore','var(--amber)','rgba(245,158,11,.1)',calRestore));
+      }
+      btns.appendChild(makeBtn('🗑 Del','var(--text3)','transparent',calDelete));
+      row.appendChild(btns);
+      card.appendChild(row);
+      frag.appendChild(card);
+    });
+  });
+
+  area.innerHTML='';
+  area.appendChild(frag);
+}
+
+
+function calComplete(id){
+  const items=getCalStore();
+  const item=items.find(i=>i.id===id);
+  if(item){item.status='completed';item.completedAt=new Date().toISOString();}
+  saveCalStore(items);
+  renderCalendar();
+}
+
+function calDelete(id){
+  if(!confirm('Delete this item? This cannot be undone.')) return;
+  const items=getCalStore().filter(i=>i.id!==id);
+  saveCalStore(items);
+  renderCalendar();
+}
+
+function calRestore(id){
+  // Restore a completed item — ask for new date and time
+  const items=getCalStore();
+  const item=items.find(i=>i.id===id);
+  if(!item) return;
+
+  // Show a small modal to pick new date and time
+  const overlay=document.createElement('div');
+  overlay.className='modal-overlay';overlay.id='vora-modal';
+  overlay.onclick=e=>{if(e.target===overlay)removeModal();};
+  overlay.innerHTML='<div class="modal-box">'+
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">'+
+    '<div class="modal-title">Restore & Reschedule</div>'+
+    '<button onclick="removeModal()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px">✕</button>'+
+    '</div>'+
+    '<div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:12px">'+esc(item.title||'Item')+'</div>'+
+    '<div style="font-size:10px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;font-weight:600;letter-spacing:.5px">New date</div>'+
+    '<input type="date" id="restore-date" style="width:100%;padding:10px 12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:var(--font);font-size:13px;outline:none;color-scheme:dark;margin-bottom:8px"/>'+
+    '<div style="font-size:10px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;font-weight:600;letter-spacing:.5px">New time (24h)</div>'+
+    '<input type="time" id="restore-time" style="width:100%;padding:10px 12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:var(--font);font-size:13px;outline:none;color-scheme:dark;margin-bottom:14px"/>'+
+    '<button class="btn btn-primary btn-full" data-id="'+id+'" onclick="confirmRestore(this.dataset.id)">Restore to Active →</button>'+
+    '</div>';
+  document.body.appendChild(overlay);
+}
+
+function confirmRestore(id){
+  const newDate=document.getElementById('restore-date')?.value;
+  const newTime=document.getElementById('restore-time')?.value;
+  if(!newDate){showToast('Please pick a new date.');return;}
+  const items=getCalStore();
+  const item=items.find(i=>i.id===id);
+  if(item){
+    item.status='active';
+    item.date=newDate;
+    if(newTime) item.time=newTime;
+    item.completedAt=null;
+    item.restoredAt=new Date().toISOString();
+  }
+  saveCalStore(items);
+  removeModal();
+  renderCalendar();
+  showToast('Item restored to active ✓');
+}
+
+function calReschedule(id){
+  // Same as restore but for active items
+  const items=getCalStore();
+  const item=items.find(i=>i.id===id);
+  if(!item) return;
+  const overlay=document.createElement('div');
+  overlay.className='modal-overlay';overlay.id='vora-modal';
+  overlay.onclick=e=>{if(e.target===overlay)removeModal();};
+  overlay.innerHTML='<div class="modal-box">'+
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">'+
+    '<div class="modal-title">Edit / Reschedule</div>'+
+    '<button onclick="removeModal()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px">✕</button>'+
+    '</div>'+
+    '<div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:12px">'+esc(item.title||'Item')+'</div>'+
+    '<div style="font-size:10px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;font-weight:600;letter-spacing:.5px">New date</div>'+
+    '<input type="date" id="reschedule-date" value="'+(item.date||'')+'" style="width:100%;padding:10px 12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:var(--font);font-size:13px;outline:none;color-scheme:dark;margin-bottom:8px"/>'+
+    '<div style="font-size:10px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;font-weight:600;letter-spacing:.5px">New time (24h)</div>'+
+    '<input type="time" id="reschedule-time" value="'+(item.time||'')+'" style="width:100%;padding:10px 12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:var(--font);font-size:13px;outline:none;color-scheme:dark;margin-bottom:14px"/>'+
+    '<div style="display:flex;gap:8px">'+
+    '<button class="btn btn-primary" style="flex:1" data-id="'+id+'" onclick="confirmReschedule(this.dataset.id)">Save changes</button>'+
+    '<button class="btn" style="flex:1;border-color:var(--red);color:var(--red)" data-id="'+id+'" onclick="calDelete(this.dataset.id);removeModal()">Cancel event</button>'+
+    '</div>'+
+    '</div>';
+  document.body.appendChild(overlay);
+}
+
+function confirmReschedule(id){
+  const newDate=document.getElementById('reschedule-date')?.value;
+  const newTime=document.getElementById('reschedule-time')?.value;
+  if(!newDate){showToast('Please pick a date.');return;}
+  const items=getCalStore();
+  const item=items.find(i=>i.id===id);
+  if(item){
+    item.date=newDate;
+    if(newTime) item.time=newTime;
+    item.updatedAt=new Date().toISOString();
+  }
+  saveCalStore(items);
+  removeModal();
+  renderCalendar();
+  showToast('Rescheduled ✓');
+}
+
+// Init calendar when navigating to it
+const _origGoTo=goTo;
+// Override goTo to trigger calendar render
+const _baseGoTo=goTo;
 
 // ══════════════════════════════════════════════
 // HOME TASKS
