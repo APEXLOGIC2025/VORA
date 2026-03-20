@@ -638,10 +638,12 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
     <div class="screen" id="screen-calendar">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
         <div class="sect" style="margin:0">My Calendar</div>
-      <div id="cal-view-toggle" style="display:none;display:flex;background:var(--surface2);border-radius:8px;padding:3px">
-          <button id="cal-btn-list" onclick="setCalView('list')" style="flex:1;font-size:10px;padding:5px 0;border-radius:5px;border:none;background:var(--accent);color:#fff;cursor:pointer;font-family:var(--font)">List</button>
-          <button id="cal-btn-grid" onclick="setCalView('grid')" style="flex:1;font-size:10px;padding:5px 0;border-radius:5px;border:none;background:transparent;color:var(--text2);cursor:pointer;font-family:var(--font)">Month</button>
+      <div id="cal-view-toggle" style="display:none;background:var(--surface2);border-radius:8px;padding:3px;width:160px">
+        <div style="display:flex;width:100%">
+          <button id="cal-btn-list" onclick="setCalView('list')" style="flex:1;min-width:0;font-size:11px;font-weight:600;padding:6px 0;border-radius:5px;border:none;background:var(--accent);color:#fff;cursor:pointer;font-family:var(--font)">List</button>
+          <button id="cal-btn-grid" onclick="setCalView('grid')" style="flex:1;min-width:0;font-size:11px;font-weight:600;padding:6px 0;border-radius:5px;border:none;background:transparent;color:var(--text2);cursor:pointer;font-family:var(--font)">Month</button>
         </div>
+      </div>
       </div>
       <div id="cal-tabs" style="display:flex;background:var(--surface2);border-radius:var(--radius-sm);padding:3px;margin-bottom:14px">
         <button class="cal-tab active" onclick="setCalTab('active')">Active</button>
@@ -2451,13 +2453,18 @@ function saveCalStoreLocal(items){
 }
 async function saveCalStoreFirebase(items){
   const u=getUser();
-  if(!u||!u.uid||!window._voraSet) return;
+  if(!u||!u.uid) return;
+  let attempts=0;
+  while(!window._voraSet && attempts<10){
+    await new Promise(r=>setTimeout(r,300));
+    attempts++;
+  }
+  if(!window._voraSet) return;
   try{
-    // Save as object keyed by id for efficient Firebase queries
     const obj={};
-    items.forEach(item=>{ obj[item.id.replace(/[.#$/\[\]]/g,'_')]=item; });
+    items.forEach(item=>{ obj[item.id.replace(/[.#$\[\]]/g,'_')]=item; });
     await window._voraSet(window._voraRef(window._voraDb,calPath(u.uid)),obj);
-  }catch(e){ console.log('Cal Firebase save error:',e); }
+  }catch(e){ console.log('Cal Firebase save error:',e.message); }
 }
 function saveCalStore(items){
   saveCalStoreLocal(items);
@@ -2465,15 +2472,29 @@ function saveCalStore(items){
 }
 async function loadCalFromFirebase(){
   const u=getUser();
-  if(!u||!u.uid||!window._voraGet) return;
+  if(!u||!u.uid) return;
+  // Wait for Firebase to be ready
+  let attempts=0;
+  while(!window._voraGet && attempts<15){
+    await new Promise(r=>setTimeout(r,300));
+    attempts++;
+  }
+  if(!window._voraGet){ console.log('Firebase not ready for calendar'); return; }
   try{
     const snap=await window._voraGet(window._voraRef(window._voraDb,calPath(u.uid)));
     const data=snap.val();
     if(data){
       const items=Object.values(data).filter(Boolean);
       saveCalStoreLocal(items);
+      console.log('Calendar loaded from Firebase:',items.length,'items');
     }
-  }catch(e){ console.log('Cal Firebase load error:',e); }
+  }catch(e){
+    console.log('Cal Firebase load error:',e.message);
+    // If permission denied, still show local storage data
+    if(e.message&&e.message.includes('Permission denied')){
+      showToast('Calendar loaded from local storage');
+    }
+  }
 }
 
 async function saveToCalendar(type, data){
