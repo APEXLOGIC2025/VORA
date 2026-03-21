@@ -730,7 +730,7 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
 
 </div><!-- /app -->
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 // ═══════════════════════════════════════════════════════
 // STEP 1: PASTE YOUR ANTHROPIC API KEY BELOW
 // Replace  YOUR_API_KEY_HERE  with your actual key
@@ -1021,8 +1021,8 @@ function renderProfilePanel(){
     el.innerHTML='<div style="text-align:center;padding:20px 0">'
       +'<div style="font-size:32px;margin-bottom:10px">👤</div>'
       +'<div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px">Not signed in</div>'
-      +'<button class="btn btn-primary" style="width:100%;margin-bottom:8px" onclick="closeDrawer('right');showAuthModal('signup')">Sign up free →</button>'
-      +'<button class="btn" style="width:100%" onclick="closeDrawer('right');showAuthModal('login')">Sign in</button>'
+      +'<button class="btn btn-primary" style="width:100%;margin-bottom:8px" onclick="voraSignupFromProfile()">Sign up free →</button>'
+      +'<button class="btn" style="width:100%" onclick="voraLoginFromProfile()">Sign in</button>'
       +'</div>';
     return;
   }
@@ -1056,15 +1056,17 @@ function renderProfilePanel(){
     html+='<div style="background:rgba(245,158,11,.08);border:0.5px solid rgba(245,158,11,.3);border-radius:var(--radius-sm);padding:10px;margin-bottom:12px;text-align:center;font-size:12px;color:var(--amber)">♾️ Free forever (Admin)</div>';
   }
   if(!u.adminOverride&&u.type!=='premium'&&u.type!=='basic'){
-    html+='<button style="width:100%;padding:10px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;border:none;background:var(--accent);color:#fff;font-family:var(--font);margin-bottom:8px" onclick="closeDrawer('right');showSubscribeModal()">Subscribe — ₹25/month →</button>';
+    html+='<button style="width:100%;padding:10px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;border:none;background:var(--accent);color:#fff;font-family:var(--font);margin-bottom:8px" onclick="voraSubFromProfile()">Subscribe — ₹25/month →</button>';
   }
   if(u.adminOverride||u.type==='admin'){
-    html+='<button style="width:100%;padding:10px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;border:0.5px solid var(--amber);background:rgba(245,158,11,.1);color:var(--amber);font-family:var(--font);margin-bottom:8px" onclick="closeDrawer('right');showAdminPanel()">🛡️ Admin Panel</button>';
+    html+='<button style="width:100%;padding:10px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;border:0.5px solid var(--amber);background:rgba(245,158,11,.1);color:var(--amber);font-family:var(--font);margin-bottom:8px" onclick="voraAdminFromProfile()">🛡️ Admin Panel</button>';
   }
-  html+='<button style="width:100%;padding:10px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;border:0.5px solid rgba(239,68,68,.4);background:rgba(239,68,68,.06);color:var(--red);font-family:var(--font)" onclick="closeDrawer('right');signOut()">Sign out</button>';
+  html+='<button style="width:100%;padding:10px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;border:0.5px solid rgba(239,68,68,.4);background:rgba(239,68,68,.06);color:var(--red);font-family:var(--font)" onclick="voraSignOutFromProfile()">Sign out</button>';
   el.innerHTML=html;
 }
 
+function voraSignupFromProfile(){ closeDrawer('right'); showAuthModal('signup'); }
+function voraLoginFromProfile(){ closeDrawer('right'); showAuthModal('login'); }
 function togglePwd(inputId,btn){
   const inp=document.getElementById(inputId);
   if(!inp) return;
@@ -2715,4 +2717,18 @@ function renderHomeTasks(){
 updateUserBadge();
 
 // Listen for Firebase auth restore
-window.addEventListener('voraAuthReady', f
+window.addEventListener('voraAuthReady', function(e){
+  const profile = e.detail;
+  if(profile){
+    try{ localStorage.setItem('vora_user', JSON.stringify(profile)); }catch(err){}
+    updateUserBadge();
+    if(typeof updateTopicsAccess === 'function') updateTopicsAccess();
+    if(typeof renderSubscriptionCTA === 'function') renderSubscriptionCTA();
+    setTimeout(()=>{ if(typeof initPushNotifications==='function') initPushNotifications(); }, 1500);
+  } else {
+    updateUserBadge();
+  }
+});
+</script>
+</body>
+</html>
