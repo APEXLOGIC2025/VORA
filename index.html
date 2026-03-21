@@ -1196,9 +1196,13 @@ function checkLocalAlarms(){
   }catch(e){}
 }
 
-// Check alarms every 30 seconds while page is open
+// Check alarms every 60 seconds while page is open
+// Use 60s to match SW polling interval
+setInterval(checkLocalAlarms, 60000);
+// Also check every 30s for better accuracy
 setInterval(checkLocalAlarms, 30000);
-checkLocalAlarms();
+// Check on load after a short delay
+setTimeout(checkLocalAlarms, 3000);
 
 // Listen for SW messages
 if(navigator.serviceWorker){
@@ -1234,12 +1238,12 @@ function goTo(name){
   if(hdr) hdr.style.display=noNav.includes(name)?'none':'flex';
   if(name==='home'){renderHomeTasks();renderUserBadge();renderSubscriptionCTA();}
   if(name==='calendar'){
-    // Show loading state first
-    const listArea=document.getElementById('cal-list-area');
-    if(listArea) listArea.innerHTML='<div style="text-align:center;padding:20px;color:var(--text2);font-size:12px">Loading calendar...</div>';
-    loadCalFromFirebase().then(()=>{
-      renderCalendar();
-    }).catch(()=>renderCalendar()); // render from localStorage even if Firebase fails
+    // Render immediately from localStorage — no waiting
+    renderCalendar();
+    // Then silently sync from Firebase in background
+    if(window._voraGet){
+      loadCalFromFirebase().then(()=>renderCalendar()).catch(()=>{});
+    }
   }
 }
 
@@ -2375,7 +2379,11 @@ function playAlarmSound(type){
 
 function scheduleAlarm(r){
   const now=new Date();
+  // Validate date and time
+  if(!r._rawDate){showToast('Please select a date for the reminder.');return;}
+  if(!r._rawTime){showToast('Please select a time for the reminder.');return;}
   const eventDate=new Date(r._rawDate+'T'+r._rawTime);
+  if(isNaN(eventDate.getTime())){showToast('Invalid date/time for reminder.');return;}
   const morningDate=new Date(r._rawDate+'T08:00');
   const alertDate=new Date(eventDate.getTime()-30*60*1000);
 
@@ -2484,29 +2492,20 @@ function saveCalStore(items){
 }
 async function loadCalFromFirebase(){
   const u=getUser();
-  if(!u||!u.uid) return;
-  // Wait for Firebase to be ready
-  let attempts=0;
-  while(!window._voraGet && attempts<15){
-    await new Promise(r=>setTimeout(r,300));
-    attempts++;
-  }
-  if(!window._voraGet){ console.log('Firebase not ready for calendar'); return; }
+  if(!u||!u.uid||!window._voraGet) return;
   try{
     const snap=await window._voraGet(window._voraRef(window._voraDb,calPath(u.uid)));
     const data=snap.val();
     if(data){
-      const items=Object.values(data).filter(Boolean);
-      saveCalStoreLocal(items);
-      console.log('Calendar loaded from Firebase:',items.length,'items');
+      const fbItems=Object.values(data).filter(Boolean);
+      // Merge with localStorage — prefer Firebase data but keep local items not in Firebase
+      const localItems=getCalStore();
+      const fbIds=new Set(fbItems.map(i=>i.id));
+      const localOnly=localItems.filter(i=>!fbIds.has(i.id));
+      const merged=[...fbItems,...localOnly];
+      saveCalStoreLocal(merged);
     }
-  }catch(e){
-    console.log('Cal Firebase load error:',e.message);
-    // If permission denied, still show local storage data
-    if(e.message&&e.message.includes('Permission denied')){
-      showToast('Calendar loaded from local storage');
-    }
-  }
+  }catch(e){ console.log('Cal Firebase sync error:',e.message); }
 }
 
 async function saveToCalendar(type, data){
@@ -2618,19 +2617,19 @@ function renderCalendar(){
   const isPrem=u&&(u.type==='premium'||u.adminOverride);
   const isBasic=u&&u.type==='basic';
 
-  // Show view toggle only for premium
+  // Show toggle for basic and premium users only — free/guest get list only
   const toggle=document.getElementById('cal-view-toggle');
-  if(toggle) toggle.style.display=isPrem?'':'none';
+  const canToggle=isPrem||isBasic;
+  if(toggle) toggle.style.display=canToggle?'flex':'none';
 
-  // For basic — force grid only; for premium — respect toggle; for others — list only
-  const effectiveView=isPrem?_calView:(isBasic?'grid':'list');
+  // Determine view: premium respects toggle, basic defaults to grid, free gets list
+  let effectiveView='list';
+  if(isPrem) effectiveView=_calView;
+  else if(isBasic) effectiveView='grid';
 
-  if(effectiveView==='grid'){
-    document.getElementById('cal-grid-area').style.display='';
-    renderCalGrid();
-  } else {
-    document.getElementById('cal-grid-area').style.display='none';
-  }
+  const gridArea=document.getElementById('cal-grid-area');
+  if(gridArea) gridArea.style.display=effectiveView==='grid'?'':'none';
+  if(effectiveView==='grid') renderCalGrid();
   renderCalList(_calSelectedDate);
 }
 
@@ -2709,149 +2708,105 @@ function calSelectDate(dateStr){
 function renderCalList(filterDate){
   const area=document.getElementById('cal-list-area');
   if(!area) return;
-  const items=getCalStore().filter(i=>i.status===_calTab);
-  let filtered=filterDate?items.filter(i=>i.date===filterDate):items;
 
-  // For non-premium, limit future view to 3 months
-  const u=getUser();
-  const isPrem=u&&(u.type==='premium'||u.adminOverride);
-  if(!isPrem){
-    const cutoff=new Date();
-    cutoff.setMonth(cutoff.getMonth()+3);
-    filtered=filtered.filter(i=>!i.date||new Date(i.date+'T12:00:00')<=cutoff);
-  }
+  let items=getCalStore().filter(i=>i.status===_calTab);
 
-  if(!filtered.length){
-    const msg=_calTab==='active'
-      ?'<div style="font-size:24px;margin-bottom:8px">📅</div><div style="font-size:13px;line-height:1.7">No active items yet.<br>Build a schedule or set a reminder<br>and it will appear here automatically.</div>'
-      :'<div style="font-size:24px;margin-bottom:8px">✅</div><div style="font-size:13px;line-height:1.7">No completed items yet.<br>Mark active items as Done<br>to see them here.</div>';
-    area.innerHTML='<div style="text-align:center;padding:30px 16px;color:var(--text3)">'+msg+'</div>';
+  // Filter by date if selected
+  if(filterDate) items=items.filter(i=>i.date===filterDate);
+
+  // Sort by date ascending
+  items.sort((a,b)=>(a.date||'9999').localeCompare(b.date||'9999'));
+
+  if(!items.length){
+    area.innerHTML='<div style="text-align:center;padding:30px 16px;color:var(--text3)">'
+      +(_calTab==='active'
+        ?'<div style="font-size:28px;margin-bottom:10px">📅</div><div style="font-size:13px;line-height:1.8">No active items.<br>Build a schedule or set a reminder<br>— it will appear here automatically.</div>'
+        :'<div style="font-size:28px;margin-bottom:10px">✅</div><div style="font-size:13px;line-height:1.8">No completed items yet.<br>Mark active items Done to see them here.</div>')
+      +'</div>';
     return;
   }
 
-  // Sort by date
-  filtered.sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+  const today=new Date().toISOString().slice(0,10);
 
   // Group by date
   const groups={};
-  filtered.forEach(item=>{
+  items.forEach(item=>{
     const key=item.date||'No date';
     if(!groups[key]) groups[key]=[];
     groups[key].push(item);
   });
 
-  const today=new Date().toISOString().slice(0,10);
-  const frag=document.createDocumentFragment();
-
+  let html='';
   Object.entries(groups).forEach(([date,gItems])=>{
     const isToday=date===today;
     const isPast=date<today&&date!=='No date';
-    const dateDisplay=date==='No date'?'No date set':
-      new Date(date+'T12:00:00').toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-    const prefix=isToday?'📅 Today — ':isPast?'':'🔜 ';
-
-    const header=document.createElement('div');
-    header.className='cal-date-group';
-    header.textContent=prefix+dateDisplay;
-    frag.appendChild(header);
+    let dateDisplay='No date set';
+    if(date!=='No date'){
+      try{
+        dateDisplay=new Date(date+'T12:00:00').toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+      }catch(e){ dateDisplay=date; }
+    }
+    const prefix=isToday?'📅 Today — ':isPast&&_calTab==='active'?'⚠️ ':'🔜 ';
+    html+='<div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin:14px 0 8px;padding-bottom:5px;border-bottom:0.5px solid var(--border)">'
+      +(date==='No date'?'No date set':prefix+dateDisplay)+'</div>';
 
     gItems.forEach(item=>{
-      const card=document.createElement('div');
-      const borderClass=item.status==='completed'?'completed':isToday?'today':isPast&&item.status==='active'?'overdue':'upcoming';
-      card.className='cal-item '+borderClass;
+      const borderColor=_calTab==='completed'?'var(--text3)':isToday?'var(--accent)':isPast?'var(--red)':'var(--green)';
+      const typeLabel={'schedule':'📅 Schedule','reminder':'🔔 Reminder','task':'✅ Task'}[item.type]||item.type||'Item';
+      const typeBg={'schedule':'rgba(79,110,247,.12)','reminder':'rgba(34,197,94,.12)','task':'rgba(245,158,11,.12)'}[item.type]||'rgba(255,255,255,.06)';
+      const typeColor={'schedule':'var(--accent)','reminder':'var(--green)','task':'var(--amber)'}[item.type]||'var(--text2)';
 
-      // Build inner HTML safely using DOM
-      const row=document.createElement('div');
-      row.style.cssText='display:flex;align-items:flex-start;justify-content:space-between;gap:8px';
+      html+='<div style="background:var(--surface);border:0.5px solid var(--border);border-left:3px solid '+borderColor+';border-radius:var(--radius-sm);padding:11px 13px;margin-bottom:8px">';
+      html+='<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">';
+      html+='<div style="flex:1;min-width:0">';
+      html+='<div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px">'+esc(item.title||'Untitled')+'</div>';
 
-      // Left — content
-      const left=document.createElement('div');
-      left.style.flex='1';
-
-      const title=document.createElement('div');
-      title.className='cal-item-title';
-      title.textContent=item.title||'Untitled';
-      left.appendChild(title);
-
-      // Type-specific details
-      if(item.type==='schedule'&&item.items){
-        const meta=document.createElement('div');
-        meta.className='cal-item-meta';
-        meta.textContent=item.items.length+' time blocks'+(item.items[0]?' · Starts '+( item.items[0].time||item.items[0].time12||''):'');
-        left.appendChild(meta);
+      // Details by type
+      if(item.time) html+='<div style="font-size:11px;color:var(--text2);margin-bottom:3px">⏰ '+esc(item.time)+'</div>';
+      if(item.type==='schedule'&&item.items&&item.items.length){
+        html+='<div style="font-size:11px;color:var(--text2);margin-bottom:3px">'+item.items.length+' time blocks';
+        if(item.items[0]) html+=' · Starts '+esc(item.items[0].time||item.items[0].time12||'');
+        html+='</div>';
         // Show first 3 blocks
-        const blocks=document.createElement('div');
-        blocks.style.cssText='margin-top:6px;display:grid;gap:3px';
+        html+='<div style="margin-top:6px;display:grid;gap:2px">';
         item.items.slice(0,3).forEach(s=>{
-          const lc=s.type==='Meeting'?'var(--accent)':s.type==='Break'?'var(--text3)':s.type==='Personal'?'var(--green)':'var(--amber)';
-          const blk=document.createElement('div');
-          blk.style.cssText='display:flex;gap:8px;font-size:11px;color:var(--text2);padding:3px 0;border-left:2px solid '+lc+';padding-left:6px';
-          blk.innerHTML='<span style="color:var(--text3);min-width:40px">'+esc(s.time||s.time12||'')+'</span><span>'+esc(s.title)+'</span>';
-          blocks.appendChild(blk);
+          const lc={'Meeting':'var(--accent)','Break':'var(--text3)','Personal':'var(--green)'}[s.type]||'var(--amber)';
+          html+='<div style="display:flex;gap:6px;font-size:10px;color:var(--text2);border-left:2px solid '+lc+';padding-left:5px">'
+            +'<span style="color:var(--text3);min-width:38px">'+esc(s.time||s.time12||'')+'</span>'
+            +'<span>'+esc(s.title)+'</span></div>';
         });
-        if(item.items.length>3){
-          const more=document.createElement('div');
-          more.style.cssText='font-size:10px;color:var(--text3);padding-left:6px';
-          more.textContent='+'+(item.items.length-3)+' more';
-          blocks.appendChild(more);
-        }
-        left.appendChild(blocks);
-      } else if(item.type==='reminder'){
-        if(item.time){
-          const m=document.createElement('div');m.className='cal-item-meta';
-          m.textContent='⏰ '+item.time;left.appendChild(m);
-        }
-        if(item.morning_body){
-          const m=document.createElement('div');
-          m.className='cal-item-meta';m.style.cssText='margin-top:3px;font-size:10px';
-          m.textContent=item.morning_body.slice(0,80)+(item.morning_body.length>80?'…':'');
-          left.appendChild(m);
-        }
+        if(item.items.length>3) html+='<div style="font-size:10px;color:var(--text3);padding-left:5px">+'+( item.items.length-3)+' more</div>';
+        html+='</div>';
+      } else if(item.type==='reminder'&&item.morning_body){
+        html+='<div style="font-size:10px;color:var(--text2);margin-top:3px;line-height:1.5">'+esc(item.morning_body.slice(0,80))+(item.morning_body.length>80?'…':'')+'</div>';
       } else if(item.type==='task'){
         const parts=[];
         if(item.dateLabel) parts.push(item.dateLabel);
         if(item.person) parts.push('from '+item.person);
         if(item.priority) parts.push(item.priority);
-        if(parts.length){
-          const m=document.createElement('div');m.className='cal-item-meta';
-          m.textContent=parts.join(' · ');left.appendChild(m);
-        }
+        if(parts.length) html+='<div style="font-size:11px;color:var(--text2);margin-top:2px">'+esc(parts.join(' · '))+'</div>';
       }
 
-      const typeLabel=item.type==='schedule'?'Schedule':item.type==='reminder'?'Reminder':'Task';
-      const badge=document.createElement('span');
-      badge.className='cal-item-type cal-type-'+(item.type||'task');
-      badge.textContent=typeLabel;
-      left.appendChild(badge);
-      row.appendChild(left);
+      html+='<span style="font-size:9px;font-weight:600;padding:2px 7px;border-radius:8px;background:'+typeBg+';color:'+typeColor+';display:inline-block;margin-top:5px">'+typeLabel+'</span>';
+      html+='</div>';
 
-      // Right — action buttons
-      const btns=document.createElement('div');
-      btns.style.cssText='display:flex;flex-direction:column;gap:4px;flex-shrink:0';
-
-      const makeBtn=(label,color,bg,fn)=>{
-        const b=document.createElement('button');
-        b.style.cssText='font-size:9px;padding:3px 8px;border-radius:5px;border:0.5px solid '+color+';background:'+bg+';color:'+color+';cursor:pointer;font-family:inherit';
-        b.textContent=label;
-        b.onclick=()=>fn(item.id);
-        return b;
-      };
-
-      if(item.status==='active'){
-        btns.appendChild(makeBtn('✓ Done','var(--green)','rgba(34,197,94,.1)',calComplete));
-        btns.appendChild(makeBtn('✏️ Edit','var(--accent)','rgba(79,110,247,.1)',calReschedule));
+      // Action buttons — use data-id attribute
+      html+='<div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">';
+      const iid=item.id;
+      if(_calTab==='active'){
+        html+='<button data-id="'+iid+'" onclick="calComplete(this.dataset.id)" style="font-size:9px;padding:4px 8px;border-radius:5px;border:0.5px solid var(--green);background:rgba(34,197,94,.1);color:var(--green);cursor:pointer;white-space:nowrap">✓ Done</button>';
+        html+='<button data-id="'+iid+'" onclick="calReschedule(this.dataset.id)" style="font-size:9px;padding:4px 8px;border-radius:5px;border:0.5px solid var(--accent);background:rgba(79,110,247,.1);color:var(--accent);cursor:pointer;white-space:nowrap">✏️ Edit</button>';
       } else {
-        btns.appendChild(makeBtn('↩ Restore','var(--amber)','rgba(245,158,11,.1)',calRestore));
+        html+='<button data-id="'+iid+'" onclick="calRestore(this.dataset.id)" style="font-size:9px;padding:4px 8px;border-radius:5px;border:0.5px solid var(--amber);background:rgba(245,158,11,.1);color:var(--amber);cursor:pointer;white-space:nowrap">↩ Restore</button>';
       }
-      btns.appendChild(makeBtn('🗑 Del','var(--text3)','transparent',calDelete));
-      row.appendChild(btns);
-      card.appendChild(row);
-      frag.appendChild(card);
+      html+='<button data-id="'+iid+'" onclick="calDelete(this.dataset.id)" style="font-size:9px;padding:4px 8px;border-radius:5px;border:0.5px solid var(--border);background:transparent;color:var(--text3);cursor:pointer;white-space:nowrap">🗑 Del</button>';
+      html+='</div>';
+      html+='</div>';
+      html+='</div>';
     });
   });
 
-  area.innerHTML='';
-  area.appendChild(frag);
+  area.innerHTML=html;
 }
 
 
