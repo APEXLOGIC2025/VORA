@@ -1206,19 +1206,22 @@ async function startSignup(){
   }
 }
 
+var _viv=null;
 function startVerifyCountdown(){
+  if(_viv) clearInterval(_viv);
   var secs=5;
-  var el=document.getElementById('vsecs');
-  var iv=setInterval(async function(){
+  _viv=setInterval(async function(){
+    var el=document.getElementById('vsecs');
+    if(!el){ clearInterval(_viv);_viv=null;return; } // modal closed
     secs--;
-    if(el) el.textContent=secs;
+    el.textContent=secs;
     if(secs<=0){
-      clearInterval(iv);
-      // Auto check
+      secs=5; el.textContent='...';
       try{
         if(window._voraAuth&&window._voraAuth.currentUser){
           await window._voraAuth.currentUser.reload();
           if(window._voraAuth.currentUser.emailVerified){
+            clearInterval(_viv);_viv=null;
             var u=getUser();
             if(u){u.emailVerified=true;saveUser(u);}
             removeModal();updateUserBadge();
@@ -1227,11 +1230,7 @@ function startVerifyCountdown(){
           }
         }
       }catch(e2){}
-      // Not verified yet — reset and try again
-      secs=5;
-      var el2=document.getElementById('vsecs');
-      if(el2){ el=el2; el.textContent=secs; }
-      else clearInterval(iv); // modal closed
+      el.textContent=5; secs=5;
     }
   },1000);
 }
@@ -1293,7 +1292,9 @@ async function signIn(){
 
 function signOut(){
   if(window._voraAuth?.currentUser) window._signOutFb(window._voraAuth).catch(()=>{});
-  clearUser();removeModal();updateUserBadge();
+  clearUser();
+  try{localStorage.removeItem('vora_calendar');}catch(e){}
+  removeModal();updateUserBadge();
   showToast('Signed out successfully.');
 }
 
@@ -1342,7 +1343,9 @@ function showProfileModal(u){
 }
 
 function signOut(){
-  clearUser(); removeModal(); updateUserBadge();
+  clearUser();
+  try{localStorage.removeItem('vora_calendar');}catch(e){}
+  removeModal();updateUserBadge();
   showToast('Signed out successfully.');
 }
 
@@ -2289,7 +2292,7 @@ function renderCalendar(){
 
   // Show view toggle only for premium
   const toggle=document.getElementById('cal-view-toggle');
-  if(toggle) toggle.style.display=isPrem?'':'none';
+  if(toggle) toggle.style.display=isPrem?'flex':'none';
 
   // For basic — force grid only; for premium — respect toggle; for others — list only
   const effectiveView=isPrem?_calView:(isBasic?'grid':'list');
