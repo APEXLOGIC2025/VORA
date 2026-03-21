@@ -647,7 +647,7 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
 
 </div><!-- /app -->
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 // ═══════════════════════════════════════════════════════
 // STEP 1: PASTE YOUR ANTHROPIC API KEY BELOW
 // Replace  YOUR_API_KEY_HERE  with your actual key
@@ -2503,4 +2503,17 @@ function renderHomeTasks(){
 updateUserBadge();
 
 // Listen for Firebase auth restore
-window.addEventListener('voraAuthReady', f
+window.addEventListener('voraAuthReady', function(e){
+  const profile=e.detail;
+  if(profile){
+    try{ localStorage.setItem('vora_user',JSON.stringify(profile)); }catch(err){}
+    updateUserBadge();
+    if(typeof updateTopicsAccess==='function') updateTopicsAccess();
+    if(typeof renderSubscriptionCTA==='function') renderSubscriptionCTA();
+  } else {
+    updateUserBadge();
+  }
+});
+</script>
+</body>
+</html>
