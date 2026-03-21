@@ -708,7 +708,14 @@ const ANTHROPIC_API_KEY = 'sk-ant-api03-osF6fG-QuGAyo3T8kyk6WrxUY4jP65asEDoJi6QP
 
 function getUser(){ try{ return JSON.parse(localStorage.getItem('vora_user')||'null'); }catch(e){ return null; } }
 function saveUser(u){ localStorage.setItem('vora_user',JSON.stringify(u)); }
-function clearUser(){ localStorage.removeItem('vora_user'); }
+function clearUser(){
+  try{
+    localStorage.removeItem('vora_user');
+    localStorage.removeItem('vora_calendar');
+    localStorage.removeItem('vora_alarms');
+    localStorage.removeItem('vora_about_collapsed');
+  }catch(e){}
+}
 
 function isExpired(u){
   if(!u) return true;
@@ -1293,7 +1300,6 @@ async function signIn(){
 function signOut(){
   if(window._voraAuth?.currentUser) window._signOutFb(window._voraAuth).catch(()=>{});
   clearUser();
-  try{localStorage.removeItem('vora_calendar');}catch(e){}
   removeModal();updateUserBadge();
   showToast('Signed out successfully.');
 }
@@ -1343,8 +1349,8 @@ function showProfileModal(u){
 }
 
 function signOut(){
+  if(window._voraAuth?.currentUser) window._signOutFb(window._voraAuth).catch(()=>{});
   clearUser();
-  try{localStorage.removeItem('vora_calendar');}catch(e){}
   removeModal();updateUserBadge();
   showToast('Signed out successfully.');
 }
@@ -2199,14 +2205,16 @@ function saveCalStore(items){
 async function loadCalFromFirebase(){
   const u=getUser();
   if(!u||!u.uid||!window._voraGet) return;
+  const fbUser=window._voraAuth&&window._voraAuth.currentUser;
+  if(fbUser&&fbUser.uid!==u.uid){
+    saveCalStoreLocal([]);
+    return;
+  }
   try{
     const snap=await window._voraGet(window._voraRef(window._voraDb,calPath(u.uid)));
     const data=snap.val();
-    if(data){
-      const items=Object.values(data).filter(Boolean);
-      saveCalStoreLocal(items);
-    }
-  }catch(e){ console.log('Cal Firebase load error:',e); }
+    saveCalStoreLocal(data?Object.values(data).filter(Boolean):[]);
+  }catch(e){ console.log('Cal sync error:',e.message); }
 }
 
 async function saveToCalendar(type, data){
@@ -2657,11 +2665,19 @@ updateUserBadge();
 window.addEventListener('voraAuthReady', function(e){
   var profile=e.detail;
   if(profile){
+    // Clear previous user's calendar before loading new user's data
+    const prevUser=getUser();
+    if(!prevUser||prevUser.uid!==profile.uid){
+      try{localStorage.removeItem('vora_calendar');}catch(e){}
+    }
     try{ localStorage.setItem('vora_user',JSON.stringify(profile)); }catch(err){}
     updateUserBadge();
     if(typeof updateTopicsAccess==='function') updateTopicsAccess();
     if(typeof renderSubscriptionCTA==='function') renderSubscriptionCTA();
-  } else { updateUserBadge(); }
+  } else {
+    clearUser();
+    updateUserBadge();
+  }
 });
 </script>
 </body>
