@@ -1191,9 +1191,12 @@ async function startSignup(){
         <div style="font-family:var(--font-head);font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px">Check your email!</div>
         <div style="font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:8px">A verification link has been sent to <strong style="color:var(--text)">${esc(email)}</strong></div>
         <div class="warn-box" style="text-align:left">⚠️ If you don't see it in 2 minutes please check your <strong>Spam / Junk folder</strong> and mark it as Not Spam.</div>
-        <button class="btn btn-primary btn-full" style="margin-top:12px" onclick="confirmVerification()">I've verified my email — continue →</button>
+        <div style="margin-top:12px;padding:10px;background:var(--surface2);border-radius:var(--radius-sm);font-size:12px;color:var(--text2)">Auto-checking in <span id="vsecs" style="font-weight:700;color:var(--accent)">5</span>s...</div>
+        <button class="btn btn-primary btn-full" style="margin-top:10px" onclick="confirmVerification()">I've verified — continue →</button>
         <div style="margin-top:8px;font-size:11px;color:var(--text3)">Didn't get it? <span style="color:var(--accent);cursor:pointer" onclick="resendVerification()">Resend email</span></div>
       </div>`;
+    // Start auto-check countdown
+    startVerifyCountdown();
   }catch(e){
     const msg=e.code==='auth/email-already-in-use'?'This email is already registered. Please sign in instead.':
               e.code==='auth/invalid-email'?'Please enter a valid email address.':
@@ -1201,6 +1204,36 @@ async function startSignup(){
     showAuthErr(msg);
     if(btn){btn.disabled=false;btn.textContent='Create account & send verification →';}
   }
+}
+
+function startVerifyCountdown(){
+  var secs=5;
+  var el=document.getElementById('vsecs');
+  var iv=setInterval(async function(){
+    secs--;
+    if(el) el.textContent=secs;
+    if(secs<=0){
+      clearInterval(iv);
+      // Auto check
+      try{
+        if(window._voraAuth&&window._voraAuth.currentUser){
+          await window._voraAuth.currentUser.reload();
+          if(window._voraAuth.currentUser.emailVerified){
+            var u=getUser();
+            if(u){u.emailVerified=true;saveUser(u);}
+            removeModal();updateUserBadge();
+            showToast('Email verified! Welcome to VORA ✓');
+            return;
+          }
+        }
+      }catch(e2){}
+      // Not verified yet — reset and try again
+      secs=5;
+      var el2=document.getElementById('vsecs');
+      if(el2){ el=el2; el.textContent=secs; }
+      else clearInterval(iv); // modal closed
+    }
+  },1000);
 }
 
 async function confirmVerification(){
