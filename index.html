@@ -636,26 +636,35 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
 
     <!-- CALENDAR -->
     <div class="screen" id="screen-calendar">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-        <div style="display:flex;align-items:center;gap:10px">
+
+      <!-- Row 1: Back + Title + Test button -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:8px">
           <button onclick="goTo('home')" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;line-height:1;padding:2px">&#8592;</button>
           <div class="sect" style="margin:0">My Calendar</div>
         </div>
-        <button onclick="addTestCalItem()" style="font-size:9px;padding:3px 8px;border-radius:5px;border:0.5px solid var(--border);background:var(--surface2);color:var(--text3);cursor:pointer">+ Test</button>
-      <div id="cal-view-toggle" style="display:none;background:var(--surface2);border-radius:8px;padding:3px;width:160px">
+        <button onclick="addTestCalItem()" style="font-size:9px;padding:3px 8px;border-radius:5px;border:0.5px solid var(--border);background:var(--surface2);color:var(--text3);cursor:pointer">+ Test item</button>
+      </div>
+
+      <!-- Row 2: List/Month toggle — only for basic/premium -->
+      <div id="cal-view-toggle" style="display:none;background:var(--surface2);border-radius:8px;padding:3px;margin-bottom:10px">
         <div style="display:flex;width:100%">
-          <button id="cal-btn-list" onclick="setCalView('list')" style="flex:1;min-width:0;font-size:11px;font-weight:600;padding:6px 0;border-radius:5px;border:none;background:var(--accent);color:#fff;cursor:pointer;font-family:var(--font)">List</button>
-          <button id="cal-btn-grid" onclick="setCalView('grid')" style="flex:1;min-width:0;font-size:11px;font-weight:600;padding:6px 0;border-radius:5px;border:none;background:transparent;color:var(--text2);cursor:pointer;font-family:var(--font)">Month</button>
+          <button id="cal-btn-list" onclick="setCalView('list')" style="flex:1;font-size:12px;font-weight:600;padding:7px 0;border-radius:6px;border:none;background:var(--accent);color:#fff;cursor:pointer;font-family:var(--font)">List</button>
+          <button id="cal-btn-grid" onclick="setCalView('grid')" style="flex:1;font-size:12px;font-weight:600;padding:7px 0;border-radius:6px;border:none;background:transparent;color:var(--text2);cursor:pointer;font-family:var(--font)">Month</button>
         </div>
       </div>
-      </div>
+
+      <!-- Row 3: Active / Completed tabs -->
       <div id="cal-tabs" style="display:flex;background:var(--surface2);border-radius:var(--radius-sm);padding:3px;margin-bottom:14px">
         <button class="cal-tab active" id="cal-tab-active" onclick="setCalTab('active')">Active</button>
         <button class="cal-tab" id="cal-tab-completed" onclick="setCalTab('completed')">Completed</button>
       </div>
+
+      <!-- Calendar content -->
       <div id="cal-grid-area" style="display:none"></div>
       <div id="cal-list-area"></div>
       <div id="cal-debug" style="margin-top:8px"></div>
+
     </div>
 
     <!-- PRIVACY POLICY -->
