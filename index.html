@@ -522,14 +522,14 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
     <div class="screen" id="screen-calendar">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
         <div class="sect" style="margin:0">My Calendar</div>
-        <div id="cal-view-toggle" style="display:none">
-          <button id="cal-btn-list" onclick="setCalView('list')" style="font-size:10px;padding:4px 10px;border-radius:6px 0 0 6px;border:0.5px solid var(--border);background:var(--accent);color:#fff;cursor:pointer;font-family:var(--font)">List</button>
-          <button id="cal-btn-grid" onclick="setCalView('grid')" style="font-size:10px;padding:4px 10px;border-radius:0 6px 6px 0;border:0.5px solid var(--border);background:var(--surface2);color:var(--text2);cursor:pointer;font-family:var(--font)">Month</button>
+        <div id="cal-view-toggle" style="display:none;flex-direction:row">
+          <button id="cal-btn-list" onclick="setCalView('list')" style="flex:1;font-size:11px;font-weight:600;padding:6px 0;border-radius:6px 0 0 6px;border:0.5px solid var(--border);background:var(--accent);color:#fff;cursor:pointer;font-family:var(--font)">List</button>
+          <button id="cal-btn-grid" onclick="setCalView('grid')" style="flex:1;font-size:11px;font-weight:600;padding:6px 0;border-radius:0 6px 6px 0;border:0.5px solid var(--border);background:var(--surface2);color:var(--text2);cursor:pointer;font-family:var(--font)">Month</button>
         </div>
       </div>
       <div id="cal-tabs" style="display:flex;background:var(--surface2);border-radius:var(--radius-sm);padding:3px;margin-bottom:14px">
-        <button class="cal-tab active" onclick="setCalTab('active')">Active</button>
-        <button class="cal-tab" onclick="setCalTab('completed')">Completed</button>
+        <button class="cal-tab active" id="cal-tab-active" onclick="setCalTab('active')">Active</button>
+        <button class="cal-tab" id="cal-tab-completed" onclick="setCalTab('completed')">Completed</button>
       </div>
       <div id="cal-grid-area" style="display:none"></div>
       <div id="cal-list-area"></div>
@@ -562,7 +562,7 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
         <p style="margin-bottom:10px">VORA is intended for users aged 13 and above. We do not knowingly collect information from children under 13.</p>
 
         <div style="font-size:11px;font-weight:600;color:var(--text);margin:12px 0 4px;text-transform:uppercase;letter-spacing:.4px">6. Contact</div>
-        <p>For privacy questions or data deletion: <strong style="color:var(--accent)">apexlogic2025@gmail.com</strong> or <strong style="color:var(--accent)">ceo@apexlogic.in</strong></p>
+        <p>For privacy questions or data deletion: <strong style="color:var(--accent)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c2a3b2a7baaeada5aba1f0f2f0f782a5afa3abaeeca1adaf">[email&#160;protected]</a></strong> or <strong style="color:var(--accent)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8be8eee4cbeafbeef3e7e4ece2e8a5e2e5">[email&#160;protected]</a></strong></p>
       </div>
     </div>
 
@@ -596,7 +596,7 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
         <p style="margin-bottom:10px">VORA is provided as-is. Apexlogic is not liable for any loss arising from use of the app including data loss, AI errors, or service interruptions.</p>
 
         <div style="font-size:11px;font-weight:600;color:var(--text);margin:12px 0 4px;text-transform:uppercase;letter-spacing:.4px">7. Contact</div>
-        <p>For questions about these terms: <strong style="color:var(--accent)">apexlogic2025@gmail.com</strong></p>
+        <p>For questions about these terms: <strong style="color:var(--accent)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0a6b7a6f7266656d6369383a383f4a6d676b636624696567">[email&#160;protected]</a></strong></p>
       </div>
     </div>
 
@@ -647,7 +647,7 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
 
 </div><!-- /app -->
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ═══════════════════════════════════════════════════════
 // STEP 1: PASTE YOUR ANTHROPIC API KEY BELOW
 // Replace  YOUR_API_KEY_HERE  with your actual key
@@ -2094,27 +2094,18 @@ function getRetentionDays(u){
 }
 
 function purgeExpiredItems(){
+  // Only remove completed items past retention — NEVER move active to completed
   const u=getUser();
   const retDays=getRetentionDays(u);
-  const items=getCalStore();
+  const retMs=retDays*24*60*60*1000;
   const now=Date.now();
+  const items=getCalStore();
   const filtered=items.filter(item=>{
-    const created=new Date(item.createdAt).getTime();
-    const ageHours=(now-created)/(1000*60*60);
-    if(item.status==='active') return true; // never auto-purge active
-    // Completed items — check retention
-    const retHours=retDays*24;
-    return ageHours < retHours;
+    if(item.status==='active') return true;
+    const doneAt=new Date(item.completedAt||item.createdAt).getTime();
+    return (now-doneAt)<retMs;
   });
-  // Auto-move past items to completed
-  const itemDate=(item)=>item.date?new Date(item.date+'T23:59:59').getTime():0;
-  filtered.forEach(item=>{
-    if(item.status==='active' && itemDate(item) < now && itemDate(item) > 0){
-      item.status='completed';
-      item.completedAt=new Date().toISOString();
-    }
-  });
-  saveCalStore(filtered);
+  if(filtered.length!==items.length) saveCalStore(filtered);
 }
 
 // ── CALENDAR VIEW ─────────────────────────────────────────────────────────────
@@ -2135,9 +2126,10 @@ function setCalView(v){
 
 function setCalTab(t){
   _calTab=t;
-  document.querySelectorAll('.cal-tab').forEach((b,i)=>{
-    b.classList.toggle('active',['active','completed'][i]===t);
-  });
+  const a=document.getElementById('cal-tab-active');
+  const cp=document.getElementById('cal-tab-completed');
+  if(a) a.classList.toggle('active',t==='active');
+  if(cp) cp.classList.toggle('active',t==='completed');
   renderCalendar();
 }
 
@@ -2511,18 +2503,4 @@ function renderHomeTasks(){
 updateUserBadge();
 
 // Listen for Firebase auth restore
-window.addEventListener('voraAuthReady', function(e){
-  const profile = e.detail;
-  if(profile){
-    try{ localStorage.setItem('vora_user', JSON.stringify(profile)); }catch(err){}
-    updateUserBadge();
-    if(typeof updateTopicsAccess === 'function') updateTopicsAccess();
-    if(typeof renderSubscriptionCTA === 'function') renderSubscriptionCTA();
-    setTimeout(()=>{ if(typeof initPushNotifications==='function') initPushNotifications(); }, 1500);
-  } else {
-    updateUserBadge();
-  }
-});
-</script>
-</body>
-</html>
+window.addEventListener('voraAuthReady', f
