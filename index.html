@@ -641,6 +641,7 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
           <button onclick="goTo('home')" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;line-height:1;padding:2px">&#8592;</button>
           <div class="sect" style="margin:0">My Calendar</div>
         </div>
+        <button onclick="addTestCalItem()" style="font-size:9px;padding:3px 8px;border-radius:5px;border:0.5px solid var(--border);background:var(--surface2);color:var(--text3);cursor:pointer">+ Test</button>
       <div id="cal-view-toggle" style="display:none;background:var(--surface2);border-radius:8px;padding:3px;width:160px">
         <div style="display:flex;width:100%">
           <button id="cal-btn-list" onclick="setCalView('list')" style="flex:1;min-width:0;font-size:11px;font-weight:600;padding:6px 0;border-radius:5px;border:none;background:var(--accent);color:#fff;cursor:pointer;font-family:var(--font)">List</button>
@@ -649,11 +650,12 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
       </div>
       </div>
       <div id="cal-tabs" style="display:flex;background:var(--surface2);border-radius:var(--radius-sm);padding:3px;margin-bottom:14px">
-        <button class="cal-tab active" onclick="setCalTab('active')">Active</button>
-        <button class="cal-tab" onclick="setCalTab('completed')">Completed</button>
+        <button class="cal-tab active" id="cal-tab-active" onclick="setCalTab('active')">Active</button>
+        <button class="cal-tab" id="cal-tab-completed" onclick="setCalTab('completed')">Completed</button>
       </div>
       <div id="cal-grid-area" style="display:none"></div>
       <div id="cal-list-area"></div>
+      <div id="cal-debug" style="margin-top:8px"></div>
     </div>
 
     <!-- PRIVACY POLICY -->
@@ -1220,27 +1222,40 @@ const allTasks=[];
 document.getElementById('live-date').textContent=new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short'});
 
 function goTo(name){
+  // Show/hide screens
   SCREENS.forEach(s=>{
     const sc=document.getElementById('screen-'+s);
     if(sc) sc.classList.toggle('active',s===name);
-    const n=document.getElementById('nav-'+s);
-    if(n) n.classList.toggle('active',s===name);
   });
+
+  // About banner and quick links — home only
   const banner=document.getElementById('about-banner');
   if(banner) banner.style.display=name==='home'?'':'none';
-  // Scroll screen to top
-  const activeScreen=document.getElementById('screen-'+name);
-  if(activeScreen) activeScreen.scrollTop=0;
+  const ql=document.getElementById('quick-links-bar');
+  if(ql) ql.style.display=name==='home'?'flex':'none';
+
+  // Header — hide on privacy/terms
   const noNav=['privacy','terms'];
-  const nav=document.querySelector('.bottom-nav');
   const hdr=document.querySelector('.app-header');
-  if(nav) nav.style.display=noNav.includes(name)?'none':'flex';
   if(hdr) hdr.style.display=noNav.includes(name)?'none':'flex';
-  if(name==='home'){renderHomeTasks();renderUserBadge();renderSubscriptionCTA();}
+
+  // Scroll to top
+  const scr=document.getElementById('screen-'+name);
+  if(scr) scr.scrollTop=0;
+
+  // Update drawer active state
+  if(typeof updateDrawerActive==='function') updateDrawerActive(name);
+
+  // Home-specific
+  if(name==='home'){
+    renderHomeTasks();
+    if(typeof renderUserBadge==='function') renderUserBadge();
+    if(typeof renderSubscriptionCTA==='function') renderSubscriptionCTA();
+  }
+
+  // Calendar — render immediately from localStorage
   if(name==='calendar'){
-    // Render immediately from localStorage — no waiting
     renderCalendar();
-    // Then silently sync from Firebase in background
     if(window._voraGet){
       loadCalFromFirebase().then(()=>renderCalendar()).catch(()=>{});
     }
@@ -1956,17 +1971,6 @@ function renderChatResults(r){
       taskType:t.type||'Task'
     });
   });
-  // Save tasks with dates to calendar
-  tasks.filter(t=>t.date&&t.date!=='No date').forEach(t=>{
-    saveToCalendar('task', {
-      title: t.title,
-      date: guessDateStr(t.date),
-      dateLabel: t.date,
-      priority: t.priority||'Medium',
-      type: t.type||'Task',
-      person: t.person||''
-    });
-  });
   html+=`<div class="btn-row"><button class="btn btn-sm" style="background:rgba(79,110,247,.15);border-color:var(--accent);color:#7B9BFF" onclick="buildScheduleFromChat()">Build schedule from these</button><button class="btn btn-sm" onclick="document.getElementById('chat-results').innerHTML=''">Clear</button></div></div>`;
   document.getElementById('chat-results').innerHTML=html;
 }
@@ -2217,13 +2221,6 @@ function renderSchedule(r){
     <button class="btn btn-sm" onclick="document.getElementById('sched-results').innerHTML=''">Clear</button>
   </div></div>`;
   document.getElementById('sched-results').innerHTML=html;
-  // Save to calendar store
-  saveToCalendar('schedule', {
-    title: r.date+' Schedule',
-    date: r._rawDate||new Date().toISOString().slice(0,10),
-    items: r.schedule||[],
-    tip: r.tip||''
-  });
 }
 
 function downloadICS(r){
@@ -2324,18 +2321,6 @@ Return ONLY valid JSON:
       });
     }
     hideStatus('rem');renderReminder(r);
-    // Save to calendar store
-    if(rawDate){
-      saveToCalendar('reminder', {
-        title: r.event||'Reminder',
-        date: rawDate,
-        time: rawTime||'',
-        morning_subject: r.morning_subject||'',
-        morning_body: r.morning_body||'',
-        alert_subject: r.alert_subject||'',
-        alert_body: r.alert_body||''
-      });
-    }
     if(rawDate&&rawTime){
       scheduleAlarm(r);
       // Save to Firebase for push notification
@@ -2465,6 +2450,28 @@ function renderReminder(r){
 // ── Calendar Firebase path ───────────────────────────────────────────────────
 function calPath(uid){ return 'calendar/'+uid; }
 
+function addTestCalItem(){
+  saveToCalendar('reminder',{
+    title:'Test Reminder — '+new Date().toLocaleTimeString(),
+    date:new Date().toISOString().slice(0,10),
+    time:'09:00',
+    morning_body:'This is a test item to verify calendar is working.'
+  });
+  goTo('calendar');
+  showToast('Test item added to calendar');
+}
+
+function showCalDebug(){
+  const items=getCalStore();
+  const el=document.getElementById('cal-debug');
+  if(!el) return;
+  if(items.length===0){
+    el.innerHTML='<div style="font-size:10px;color:var(--text3);text-align:center;padding:8px">localStorage has 0 items. Build a schedule or set a reminder first.</div>';
+  } else {
+    el.innerHTML='<div style="font-size:10px;color:var(--green);text-align:center;padding:8px">'+items.length+' item(s) in localStorage. Active: '+items.filter(i=>i.status==="active").length+', Completed: '+items.filter(i=>i.status==="completed").length+'</div>';
+  }
+}
+
 function getCalStore(){
   try{ return JSON.parse(localStorage.getItem('vora_calendar')||'[]'); }catch(e){ return []; }
 }
@@ -2508,29 +2515,38 @@ async function loadCalFromFirebase(){
   }catch(e){ console.log('Cal Firebase sync error:',e.message); }
 }
 
-async function saveToCalendar(type, data){
-  const u=getUser();
-  if(!u||isExpired(u)) return; // don't save for guests
-  const items=getCalStore();
-  const id='cal_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
-  const now=new Date().toISOString();
-  // Ensure all fields are plain values (no undefined)
-  const newItem={
-    id,
-    type,
-    title: data.title||'Untitled',
-    date: data.date||new Date().toISOString().slice(0,10),
-    time: data.time||'',
-    createdAt: now,
-    status: 'active'
-  };
-  // Copy all other data fields
-  Object.keys(data).forEach(k=>{
-    if(data[k]!==undefined&&data[k]!==null) newItem[k]=data[k];
-  });
-  items.push(newItem);
-  saveCalStore(items);
-  console.log('Saved to calendar:',type,newItem.title,newItem.date);
+function saveToCalendar(type, data){
+  // Synchronous save — no async, no user check blocking
+  try{
+    const items=getCalStore();
+    const id='cal_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
+    const now=new Date().toISOString();
+    const newItem={
+      id:id,
+      type:type,
+      title:data.title||'Untitled',
+      date:data.date||new Date().toISOString().slice(0,10),
+      time:data.time||'',
+      createdAt:now,
+      status:'active'
+    };
+    // Copy extra fields
+    const skipKeys={id:1,type:1,title:1,date:1,time:1,createdAt:1,status:1};
+    Object.keys(data).forEach(function(k){
+      if(!skipKeys[k]&&data[k]!==undefined&&data[k]!==null) newItem[k]=data[k];
+    });
+    items.push(newItem);
+    // Save to localStorage immediately
+    try{ localStorage.setItem('vora_calendar',JSON.stringify(items)); }catch(e){}
+    // Save to Firebase in background if available
+    saveCalStoreFirebase(items);
+    console.log('VORA Calendar: saved',type,newItem.title,newItem.date,'total items:',items.length);
+    // Refresh calendar if visible
+    const calScreen=document.getElementById('screen-calendar');
+    if(calScreen&&calScreen.classList.contains('active')) renderCalendar();
+  }catch(err){
+    console.log('saveToCalendar error:',err.message);
+  }
 }
 
 function guessDateStr(dateLabel){
@@ -2558,33 +2574,20 @@ function getRetentionDays(u){
 }
 
 function purgeExpiredItems(){
+  // Only remove completed items past retention period
+  // Never auto-move active items — user must manually mark done
   const u=getUser();
   const retDays=getRetentionDays(u);
-  const items=getCalStore();
+  const retMs=retDays*24*60*60*1000;
   const now=Date.now();
+  const items=getCalStore();
   const filtered=items.filter(item=>{
-    const created=new Date(item.createdAt).getTime();
-    const ageHours=(now-created)/(1000*60*60);
-    if(item.status==='active') return true; // never auto-purge active
-    // Completed items — check retention
-    const retHours=retDays*24;
-    return ageHours < retHours;
+    if(item.status==='active') return true;
+    // Remove completed items past retention
+    const completedAt=new Date(item.completedAt||item.createdAt).getTime();
+    return (now-completedAt)<retMs;
   });
-  // Auto-move items to completed only if more than 24 hours past their date
-  // This prevents today's items from vanishing immediately
-  const itemDate=(item)=>{
-    if(!item.date) return 0;
-    if(item.time) return new Date(item.date+'T'+item.time).getTime();
-    return new Date(item.date+'T23:59:59').getTime();
-  };
-  const oneDayMs=24*60*60*1000;
-  filtered.forEach(item=>{
-    if(item.status==='active' && itemDate(item)>0 && (now-itemDate(item))>oneDayMs){
-      item.status='completed';
-      item.completedAt=new Date().toISOString();
-    }
-  });
-  saveCalStore(filtered);
+  if(filtered.length!==items.length) saveCalStoreLocal(filtered);
 }
 
 // ── CALENDAR VIEW ─────────────────────────────────────────────────────────────
@@ -2605,30 +2608,30 @@ function setCalView(v){
 
 function setCalTab(t){
   _calTab=t;
-  document.querySelectorAll('.cal-tab').forEach((b,i)=>{
-    b.classList.toggle('active',['active','completed'][i]===t);
-  });
+  const a=document.getElementById('cal-tab-active');
+  const comp=document.getElementById('cal-tab-completed');
+  if(a) a.classList.toggle('active',t==='active');
+  if(comp) comp.classList.toggle('active',t==='completed');
   renderCalendar();
 }
 
 function renderCalendar(){
+  showCalDebug();
   purgeExpiredItems();
   const u=getUser();
   const isPrem=u&&(u.type==='premium'||u.adminOverride);
-  const isBasic=u&&u.type==='basic';
+  const isBasic=u&&(u.type==='basic');
+  const isLoggedIn=u&&u.type!=='guest';
 
-  // Show toggle for basic and premium users only — free/guest get list only
+  // Show toggle for basic and premium users
   const toggle=document.getElementById('cal-view-toggle');
-  const canToggle=isPrem||isBasic;
-  if(toggle) toggle.style.display=canToggle?'flex':'none';
+  if(toggle) toggle.style.display=(isPrem||isBasic)?'flex':'none';
 
-  // Determine view: premium respects toggle, basic defaults to grid, free gets list
-  let effectiveView='list';
-  if(isPrem) effectiveView=_calView;
-  else if(isBasic) effectiveView='grid';
+  // View logic: premium uses _calView toggle, basic defaults grid, others list
+  const effectiveView=isPrem?_calView:(isBasic?'grid':'list');
 
   const gridArea=document.getElementById('cal-grid-area');
-  if(gridArea) gridArea.style.display=effectiveView==='grid'?'':'none';
+  if(gridArea) gridArea.style.display=effectiveView==='grid'?'block':'none';
   if(effectiveView==='grid') renderCalGrid();
   renderCalList(_calSelectedDate);
 }
@@ -2916,6 +2919,26 @@ function confirmReschedule(id){
 const _origGoTo=goTo;
 // Override goTo to trigger calendar render
 const _baseGoTo=goTo;
+
+// ══════════════════════════════════════════════
+// CALENDAR TEST HELPER
+// ══════════════════════════════════════════════
+function addTestCalItem(){
+  const today=new Date().toISOString().slice(0,10);
+  const tomorrow=new Date(Date.now()+86400000).toISOString().slice(0,10);
+  const items=getCalStore();
+  items.push({id:'test_'+Date.now(),type:'reminder',title:'Test Reminder — Dinner at Hotel',
+    date:today,time:'19:00',morning_body:'Sample morning reminder text',status:'active',
+    createdAt:new Date().toISOString()});
+  items.push({id:'test2_'+Date.now(),type:'schedule',title:tomorrow+' Schedule',
+    date:tomorrow,time:'09:00',
+    items:[{time:'09:00',title:'Morning standup',type:'Meeting',duration:'30 min'},
+           {time:'10:00',title:'Deep work',type:'Work',duration:'2 hours'}],
+    status:'active',createdAt:new Date().toISOString()});
+  saveCalStoreLocal(items);
+  showToast('Test items added to calendar');
+  renderCalendar();
+}
 
 // ══════════════════════════════════════════════
 // HOME TASKS
