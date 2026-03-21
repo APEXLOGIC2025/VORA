@@ -6,8 +6,6 @@
 <meta name="theme-color" content="#0A0E27"/>
 <meta name="description" content="VORA — Your AI personal assistant by Apexlogic. Chat analyser, OCR scanner, smart scheduler, topic briefs and reminders."/>
 <title>VORA — AI Personal Assistant by Apexlogic</title>
-<!-- Google AdSense Auto Ads -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6461655458619662" crossorigin="anonymous"></script>
 <!-- Firebase SDK -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -135,6 +133,41 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .screen.active{display:block}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
+/* ── HAMBURGER & DRAWERS ── */
+.hamburger{width:36px;height:36px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;cursor:pointer;background:none;border:none;padding:4px;flex-shrink:0}
+.hamburger span{display:block;width:20px;height:2px;background:var(--text2);border-radius:2px;transition:all .3s}
+.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:8000;opacity:0;pointer-events:none;transition:opacity .3s}
+.drawer-overlay.open{opacity:1;pointer-events:all}
+.drawer-left{position:fixed;top:0;left:0;bottom:0;width:275px;max-width:85vw;background:var(--surface);z-index:8001;transform:translateX(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow:hidden}
+.drawer-left.open{transform:translateX(0)}
+.drawer-right{position:fixed;top:0;right:0;bottom:0;width:275px;max-width:85vw;background:var(--surface);z-index:8001;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
+.drawer-right.open{transform:translateX(0)}
+.drawer-header{padding:18px 16px 12px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.drawer-logo{font-family:var(--font-head);font-size:20px;font-weight:700;background:linear-gradient(135deg,#fff,#4F6EF7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:2px}
+.drawer-close{background:none;border:none;color:var(--text2);cursor:pointer;font-size:20px;line-height:1;padding:4px}
+.drawer-nav{flex:1;overflow-y:auto;padding:6px 0}
+.drawer-item{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;color:var(--text2);font-size:13px;font-weight:500;transition:background .15s,color .15s;border:none;background:none;width:100%;font-family:var(--font);text-align:left}
+.drawer-item:hover,.drawer-item.active{background:rgba(79,110,247,.1);color:var(--accent)}
+.drawer-item svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.drawer-divider{height:0.5px;background:var(--border);margin:4px 16px}
+.drawer-footer{padding:12px 16px;border-top:0.5px solid var(--border);font-size:10px;color:var(--text3);flex-shrink:0}
+/* Quick links */
+.quick-links{display:flex;gap:8px;padding:8px 16px;overflow-x:auto;flex-shrink:0;scrollbar-width:none;border-bottom:0.5px solid var(--border)}
+.quick-links::-webkit-scrollbar{display:none}
+.ql-pill{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;cursor:pointer;border:0.5px solid var(--border);background:var(--surface2);color:var(--text2);transition:all .15s;flex-shrink:0}
+.ql-pill:hover{border-color:var(--accent);color:var(--accent);background:rgba(79,110,247,.1)}
+.ql-pill svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* Password wrapper */
+.pwd-wrap{position:relative;margin-bottom:8px}
+.pwd-wrap input{width:100%;padding-right:42px;margin-bottom:0}
+.pwd-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);cursor:pointer;padding:4px;font-size:13px;line-height:1}
+/* Cal toggle equal size */
+#cal-view-toggle{display:none}
+#cal-view-toggle.visible{display:flex;background:var(--surface2);border-radius:8px;padding:3px;margin-bottom:10px}
+#cal-btn-list,#cal-btn-grid{flex:1;font-size:11px;font-weight:600;padding:6px 0;border:none;cursor:pointer;font-family:var(--font)}
+#cal-btn-list{border-radius:6px 0 0 6px}
+#cal-btn-grid{border-radius:0 6px 6px 0}
+
 /* ── BOTTOM NAV ── */
 .bottom-nav{display:flex;background:var(--surface);border-top:0.5px solid var(--border);padding:6px 4px calc(6px + env(safe-area-inset-bottom));flex-shrink:0}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;background:none;border:none;cursor:pointer;color:var(--text3);font-family:var(--font);transition:color .2s}
@@ -144,54 +177,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .nav-icon svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .nav-label{font-size:9px;font-weight:500;letter-spacing:.3px}
 
-/* ── HAMBURGER & DRAWERS ── */
-.hamburger{width:36px;height:36px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;cursor:pointer;background:none;border:none;padding:4px}
-.hamburger span{display:block;width:20px;height:2px;background:var(--text2);border-radius:2px;transition:all .3s}
-.hamburger:hover span{background:var(--text)}
-
-/* Left drawer — nav menu */
-.drawer-overlay{position:fixed;inset:0;background:#000a;z-index:8000;opacity:0;pointer-events:none;transition:opacity .3s}
-.drawer-overlay.open{opacity:1;pointer-events:all}
-.drawer-left{position:fixed;top:0;left:0;bottom:0;width:280px;max-width:85vw;background:var(--surface);z-index:8001;transform:translateX(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow:hidden}
-.drawer-left.open{transform:translateX(0)}
-.drawer-header{padding:20px 18px 14px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.drawer-logo{font-family:var(--font-head);font-size:20px;font-weight:700;background:linear-gradient(135deg,#fff,#4F6EF7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:2px}
-.drawer-close{background:none;border:none;color:var(--text2);cursor:pointer;font-size:20px;line-height:1;padding:4px}
-.drawer-nav{flex:1;overflow-y:auto;padding:8px 0}
-.drawer-item{display:flex;align-items:center;gap:12px;padding:13px 18px;cursor:pointer;color:var(--text2);font-size:14px;font-weight:500;transition:background .15s,color .15s;border:none;background:none;width:100%;font-family:var(--font);text-align:left}
-.drawer-item:hover,.drawer-item.active{background:rgba(79,110,247,.1);color:var(--accent)}
-.drawer-item svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
-.drawer-divider{height:0.5px;background:var(--border);margin:6px 18px}
-.drawer-footer{padding:14px 18px;border-top:0.5px solid var(--border);font-size:11px;color:var(--text3)}
-
-/* Right drawer — profile panel */
-.drawer-right{position:fixed;top:0;right:0;bottom:0;width:280px;max-width:85vw;background:var(--surface);z-index:8001;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
-.drawer-right.open{transform:translateX(0)}
-.profile-avatar{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#4F6EF7,#7B5CF0);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff;flex-shrink:0;margin-bottom:10px}
-.profile-name{font-size:15px;font-weight:600;color:var(--text);margin-bottom:2px}
-.profile-email{font-size:11px;color:var(--text3);margin-bottom:8px;word-break:break-all}
-.plan-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600}
-.countdown-bar{background:var(--surface2);border-radius:var(--radius-sm);padding:10px 12px;margin:12px 0}
-.countdown-num{font-size:22px;font-weight:700;color:var(--accent)}
-.countdown-lbl{font-size:10px;color:var(--text3);margin-top:1px}
-.profile-btn{width:100%;padding:10px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;border:0.5px solid var(--border);background:var(--surface2);color:var(--text);font-family:var(--font);text-align:center;transition:background .15s;margin-bottom:8px}
-.profile-btn:hover{background:var(--surface)}
-.profile-btn.danger{border-color:rgba(239,68,68,.4);color:var(--red);background:rgba(239,68,68,.06)}
-
-/* Quick links bar */
-.quick-links{display:flex;gap:8px;padding:8px 16px;overflow-x:auto;flex-shrink:0;scrollbar-width:none}
-.quick-links::-webkit-scrollbar{display:none}
-.quick-link-pill{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;cursor:pointer;border:0.5px solid var(--border);background:var(--surface2);color:var(--text2);transition:all .15s;flex-shrink:0}
-.quick-link-pill:hover{border-color:var(--accent);color:var(--accent);background:rgba(79,110,247,.1)}
-.quick-link-pill svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-
-/* Password input wrapper */
-.pwd-wrap{position:relative;margin-bottom:8px}
-.pwd-wrap input{width:100%;padding-right:44px;margin-bottom:0}
-.pwd-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);cursor:pointer;padding:4px;font-size:14px;line-height:1}
-.pwd-toggle:hover{color:var(--text)}
-
-/* Cards */
 /* ── CARDS ── */
 .card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
 .card-accent{border-left:2.5px solid var(--accent)}
@@ -368,75 +353,48 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
 <div id="app">
 
   <!-- Header -->
-  <div class="app-header">
-    <!-- Hamburger menu button (left) -->
-    <button class="hamburger" onclick="openDrawer('left')" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
-    <div class="logo">VORA</div>
-    <!-- Profile avatar (right) -->
-    <button id="profile-btn" onclick="openDrawer('right')" style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#4F6EF7,#7B5CF0);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0" aria-label="Profile">?</button>
-  </div>
-
-  <!-- Left drawer — navigation -->
-  <div class="drawer-overlay" id="drawer-overlay-left" onclick="closeDrawer('left')"></div>
+  <!-- Left drawer overlay + panel -->
+  <div class="drawer-overlay" id="dov-left" onclick="closeDrawer('left')"></div>
   <div class="drawer-left" id="drawer-left">
     <div class="drawer-header">
       <div class="drawer-logo">VORA</div>
       <button class="drawer-close" onclick="closeDrawer('left')">&#x2715;</button>
     </div>
     <div class="drawer-nav">
-      <button class="drawer-item active" id="dnav-home" onclick="goTo('home');closeDrawer('left')">
-        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home
-      </button>
-      <button class="drawer-item" id="dnav-chats" onclick="goTo('chats');closeDrawer('left')">
-        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Chats
-      </button>
-      <button class="drawer-item" id="dnav-scan" onclick="goTo('scan');closeDrawer('left')">
-        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>Scan to PDF
-      </button>
-      <button class="drawer-item" id="dnav-topics" onclick="handleTopicsTile();closeDrawer('left')">
-        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Topics
-      </button>
+      <button class="drawer-item active" id="dnav-home" onclick="goTo('home');closeDrawer('left')"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</button>
+      <button class="drawer-item" id="dnav-chats" onclick="goTo('chats');closeDrawer('left')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Chats</button>
+      <button class="drawer-item" id="dnav-scan" onclick="goTo('scan');closeDrawer('left')"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>Scan to PDF</button>
+      <button class="drawer-item" id="dnav-topics" onclick="handleTopicsTile();closeDrawer('left')"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Topics</button>
       <div class="drawer-divider"></div>
-      <button class="drawer-item" id="dnav-schedule" onclick="goTo('schedule');closeDrawer('left')">
-        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Schedule
-      </button>
-      <button class="drawer-item" id="dnav-calendar" onclick="goTo('calendar');closeDrawer('left')">
-        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="8" cy="15" r="1"/><circle cx="12" cy="15" r="1"/><circle cx="16" cy="15" r="1"/></svg>Calendar
-      </button>
-      <button class="drawer-item" id="dnav-reminders" onclick="goTo('reminders');closeDrawer('left')">
-        <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Reminders
-      </button>
-      <button class="drawer-item" id="dnav-done" onclick="goTo('calendar');setCalTab('completed');closeDrawer('left')">
-        <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Done / Completed
-      </button>
+      <button class="drawer-item" id="dnav-schedule" onclick="goTo('schedule');closeDrawer('left')"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Schedule</button>
+      <button class="drawer-item" id="dnav-calendar" onclick="goTo('calendar');closeDrawer('left')"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="8" cy="15" r="1"/><circle cx="12" cy="15" r="1"/><circle cx="16" cy="15" r="1"/></svg>Calendar</button>
+      <button class="drawer-item" id="dnav-reminders" onclick="goTo('reminders');closeDrawer('left')"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Reminders</button>
+      <button class="drawer-item" id="dnav-done" onclick="goTo('calendar');setCalTab('completed');closeDrawer('left')"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Done / Completed</button>
       <div class="drawer-divider"></div>
-      <button class="drawer-item" onclick="goTo('privacy');closeDrawer('left')">
-        <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Privacy Policy
-      </button>
-      <button class="drawer-item" onclick="goTo('terms');closeDrawer('left')">
-        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Terms of Use
-      </button>
-      <button class="drawer-item" onclick="showContactModal();closeDrawer('left')">
-        <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Contact / Subscribe
-      </button>
+      <button class="drawer-item" onclick="goTo('privacy');closeDrawer('left')"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Privacy Policy</button>
+      <button class="drawer-item" onclick="goTo('terms');closeDrawer('left')"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Terms of Use</button>
+      <button class="drawer-item" onclick="showContactModal();closeDrawer('left')"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Contact / Subscribe</button>
     </div>
     <div class="drawer-footer">© 2026 VORA by Apexlogic</div>
   </div>
 
-  <!-- Right drawer — profile -->
-  <div class="drawer-overlay" id="drawer-overlay-right" onclick="closeDrawer('right')"></div>
+  <!-- Right drawer overlay + profile panel -->
+  <div class="drawer-overlay" id="dov-right" onclick="closeDrawer('right')"></div>
   <div class="drawer-right" id="drawer-right">
     <div class="drawer-header">
       <div style="font-size:14px;font-weight:600;color:var(--text)">My Profile</div>
       <button class="drawer-close" onclick="closeDrawer('right')">&#x2715;</button>
     </div>
-    <div style="flex:1;overflow-y:auto;padding:18px">
-      <div id="profile-panel-content">
-        <div style="text-align:center;padding:20px 0;color:var(--text2);font-size:13px">Loading...</div>
-      </div>
+    <div style="flex:1;overflow-y:auto;padding:16px" id="profile-panel-body">
+      <div style="text-align:center;color:var(--text3);padding:20px;font-size:13px">Loading...</div>
     </div>
+  </div>
+
+  <!-- App header -->
+  <div class="app-header">
+    <button class="hamburger" onclick="openDrawer('left')" aria-label="Menu"><span></span><span></span><span></span></button>
+    <div class="logo">VORA</div>
+    <button id="profile-avatar-btn" onclick="openDrawer('right')" style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#4F6EF7,#7B5CF0);border:none;cursor:pointer;color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">?</button>
   </div>
 
   <!-- About Banner — home screen only -->
@@ -455,6 +413,15 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
       <button class="about-toggle" onclick="toggleAbout()">Hide ▲</button>
       <span class="about-collapsed-label" onclick="toggleAbout()" style="cursor:pointer">ℹ️</span>
     </div>
+  </div>
+
+  <!-- Quick links — home screen only -->
+  <div class="quick-links" id="quick-links-bar">
+    <div class="ql-pill" onclick="goTo('calendar')"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Calendar</div>
+    <div class="ql-pill" onclick="handleTopicsTile()"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Topics</div>
+    <div class="ql-pill" onclick="goTo('reminders')"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Reminder</div>
+    <div class="ql-pill" onclick="goTo('schedule')"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Schedule</div>
+    <div class="ql-pill" onclick="goTo('calendar');setCalTab('completed')"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Done</div>
   </div>
 
   <!-- Screens -->
@@ -520,26 +487,23 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
     <!-- CHATS -->
     <div class="screen" id="screen-chats">
       <div class="sect" style="margin-top:4px">Chat &amp; image analyser</div>
-      <div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.6">Choose how to add your chat — upload a screenshot or type/paste text directly.</div>
-      <!-- Two option cards -->
+      <div style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.6">Paste chat text or upload a screenshot. VORA extracts every task, meeting and deadline.</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
         <div class="upload-zone" style="padding:16px 8px;margin-bottom:0" onclick="document.getElementById('chat-img-input').click()">
           <input type="file" id="chat-img-input" accept="image/*" style="display:none" onchange="handleChatImage(event)"/>
-          <div style="font-size:26px;margin-bottom:6px">📷</div>
+          <div style="font-size:24px;margin-bottom:6px">📷</div>
           <div style="font-size:12px;font-weight:600;color:var(--text)">Screenshot</div>
           <div style="font-size:10px;color:var(--text3);margin-top:3px">Upload JPG or PNG</div>
         </div>
         <div class="upload-zone" style="padding:16px 8px;margin-bottom:0" onclick="showChatTextInput()">
-          <div style="font-size:26px;margin-bottom:6px">💬</div>
+          <div style="font-size:24px;margin-bottom:6px">💬</div>
           <div style="font-size:12px;font-weight:600;color:var(--text)">Type / Paste</div>
-          <div style="font-size:10px;color:var(--text3);margin-top:3px">WhatsApp, email text</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:3px">Tap to expand</div>
         </div>
       </div>
-      <!-- Image preview area -->
       <div id="chat-img-preview"></div>
-      <!-- Text input — hidden by default, slides in when Text card is tapped -->
       <div id="chat-text-area" style="display:none">
-        <textarea id="chat-input" placeholder="Paste your WhatsApp / email chat here...&#10;&#10;Example:&#10;Rajesh: Can we call Monday 11am for the proposal?&#10;Priya: Please send budget report by Friday evening&#10;Boss: Team meeting tomorrow 3pm sharp&#10;Amit: Submit project by next Wednesday EOD"></textarea>
+      <textarea id="chat-input" placeholder="Paste your WhatsApp / email chat here...&#10;&#10;Example:&#10;Rajesh: Can we call Monday 11am for the proposal?&#10;Priya: Please send budget report by Friday evening&#10;Boss: Team meeting tomorrow 3pm sharp" style="margin-bottom:8px"></textarea>
       </div>
       <button class="btn btn-primary btn-full" id="chat-btn" onclick="analyseChat()" style="margin-top:8px">Extract tasks &amp; schedule</button>
       <div class="status-row" id="chat-status"><div class="spin"></div><span id="chat-status-text">Analysing messages...</span></div>
@@ -636,35 +600,22 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
 
     <!-- CALENDAR -->
     <div class="screen" id="screen-calendar">
-
-      <!-- Row 1: Back + Title + Test button -->
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <div style="display:flex;align-items:center;gap:8px">
-          <button onclick="goTo('home')" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;line-height:1;padding:2px">&#8592;</button>
-          <div class="sect" style="margin:0">My Calendar</div>
-        </div>
-        <button onclick="addTestCalItem()" style="font-size:9px;padding:3px 8px;border-radius:5px;border:0.5px solid var(--border);background:var(--surface2);color:var(--text3);cursor:pointer">+ Test item</button>
+      <!-- Title row -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div class="sect" style="margin:0">My Calendar</div>
       </div>
-
-      <!-- Row 2: List/Month toggle — only for basic/premium -->
-      <div id="cal-view-toggle" style="display:none;background:var(--surface2);border-radius:8px;padding:3px;margin-bottom:10px">
-        <div style="display:flex;width:100%">
-          <button id="cal-btn-list" onclick="setCalView('list')" style="flex:1;font-size:12px;font-weight:600;padding:7px 0;border-radius:6px;border:none;background:var(--accent);color:#fff;cursor:pointer;font-family:var(--font)">List</button>
-          <button id="cal-btn-grid" onclick="setCalView('grid')" style="flex:1;font-size:12px;font-weight:600;padding:7px 0;border-radius:6px;border:none;background:transparent;color:var(--text2);cursor:pointer;font-family:var(--font)">Month</button>
-        </div>
+      <!-- List / Month toggle — shown via JS for basic+ -->
+      <div id="cal-view-toggle">
+        <button id="cal-btn-list" onclick="setCalView('list')">List</button>
+        <button id="cal-btn-grid" onclick="setCalView('grid')">Month</button>
       </div>
-
-      <!-- Row 3: Active / Completed tabs -->
+      <!-- Active / Completed tabs -->
       <div id="cal-tabs" style="display:flex;background:var(--surface2);border-radius:var(--radius-sm);padding:3px;margin-bottom:14px">
         <button class="cal-tab active" id="cal-tab-active" onclick="setCalTab('active')">Active</button>
         <button class="cal-tab" id="cal-tab-completed" onclick="setCalTab('completed')">Completed</button>
       </div>
-
-      <!-- Calendar content -->
       <div id="cal-grid-area" style="display:none"></div>
       <div id="cal-list-area"></div>
-      <div id="cal-debug" style="margin-top:8px"></div>
-
     </div>
 
     <!-- PRIVACY POLICY -->
@@ -694,7 +645,7 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
         <p style="margin-bottom:10px">VORA is intended for users aged 13 and above. We do not knowingly collect information from children under 13.</p>
 
         <div style="font-size:11px;font-weight:600;color:var(--text);margin:12px 0 4px;text-transform:uppercase;letter-spacing:.4px">6. Contact</div>
-        <p>For privacy questions or data deletion: <strong style="color:var(--accent)">apexlogic2025@gmail.com</strong> or <strong style="color:var(--accent)">ceo@apexlogic.in</strong></p>
+        <p>For privacy questions or data deletion: <strong style="color:var(--accent)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6e0f1e0b16020109070d5c5e5c5b2e09030f0702400d0103">[email&#160;protected]</a></strong> or <strong style="color:var(--accent)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="83e0e6ecc3e2f3e6fbefece4eae0adeaed">[email&#160;protected]</a></strong></p>
       </div>
     </div>
 
@@ -728,44 +679,58 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
         <p style="margin-bottom:10px">VORA is provided as-is. Apexlogic is not liable for any loss arising from use of the app including data loss, AI errors, or service interruptions.</p>
 
         <div style="font-size:11px;font-weight:600;color:var(--text);margin:12px 0 4px;text-transform:uppercase;letter-spacing:.4px">7. Contact</div>
-        <p>For questions about these terms: <strong style="color:var(--accent)">apexlogic2025@gmail.com</strong></p>
+        <p>For questions about these terms: <strong style="color:var(--accent)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="076677627f6b68606e643537353247606a666e6b2964686a">[email&#160;protected]</a></strong></p>
       </div>
     </div>
 
   </div><!-- /screens -->
 
   <!-- Bottom Nav -->
-  <!-- Quick links bar — visible on home screen only -->
-  <div class="quick-links" id="quick-links-bar">
-    <div class="quick-link-pill" onclick="goTo('calendar')">
-      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="8" cy="15" r="1"/><circle cx="12" cy="15" r="1"/><circle cx="16" cy="15" r="1"/></svg>
-      Calendar
+  <!-- 2-tier bottom navigation -->
+  <div class="bottom-nav" style="flex-direction:column;padding:0">
+    <!-- Top row: Home, Chats, Scan, Topics -->
+    <div style="display:flex;width:100%;border-bottom:0.5px solid var(--border)">
+      <button class="nav-item active" id="nav-home" onclick="goTo('home')">
+        <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <span class="nav-label">Home</span>
+      </button>
+      <button class="nav-item" id="nav-chats" onclick="goTo('chats')">
+        <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <span class="nav-label">Chats</span>
+      </button>
+      <button class="nav-item" id="nav-scan" onclick="goTo('scan')">
+        <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg></div>
+        <span class="nav-label">Scan</span>
+      </button>
+      <button class="nav-item" id="nav-topics" onclick="handleTopicsTile()">
+        <div class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+        <span class="nav-label">Topics</span>
+      </button>
     </div>
-    <div class="quick-link-pill" onclick="handleTopicsTile()">
-      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      Topics
-    </div>
-    <div class="quick-link-pill" onclick="goTo('reminders')">
-      <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-      Reminder
-    </div>
-    <div class="quick-link-pill" onclick="goTo('schedule')">
-      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      Schedule
-    </div>
-    <div class="quick-link-pill" onclick="goTo('calendar');setCalTab('completed')">
-      <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-      Done
-    </div>
-    <div class="quick-link-pill" onclick="goTo('chats')">
-      <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      Chats
+    <!-- Bottom row: Schedule, Calendar, Reminder, Done -->
+    <div style="display:flex;width:100%">
+      <button class="nav-item" id="nav-schedule" onclick="goTo('schedule')">
+        <div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <span class="nav-label">Schedule</span>
+      </button>
+      <button class="nav-item" id="nav-calendar" onclick="goTo('calendar')">
+        <div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="8" cy="15" r="1"/><circle cx="12" cy="15" r="1"/><circle cx="16" cy="15" r="1"/></svg></div>
+        <span class="nav-label">Calendar</span>
+      </button>
+      <button class="nav-item" id="nav-reminders" onclick="goTo('reminders')">
+        <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+        <span class="nav-label">Reminder</span>
+      </button>
+      <button class="nav-item" id="nav-done" onclick="goTo('calendar');setCalTab('completed')">
+        <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+        <span class="nav-label">Done</span>
+      </button>
     </div>
   </div>
 
 </div><!-- /app -->
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ═══════════════════════════════════════════════════════
 // STEP 1: PASTE YOUR ANTHROPIC API KEY BELOW
 // Replace  YOUR_API_KEY_HERE  with your actual key
@@ -830,15 +795,9 @@ function updateUserBadge(){
   const {text,cls}=getUserLabel(isExpired(u)?null:u);
   const badge=document.getElementById('user-badge');
   if(badge){badge.textContent=text;badge.className='user-badge '+cls;}
-  // Update profile avatar
-  const pb=document.getElementById('profile-btn');
-  if(pb){
-    if(u&&!isExpired(u)){
-      const initials=(u.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-      pb.textContent=initials;
-    } else {
-      pb.textContent='?';
-    }
+  const ab=document.getElementById('profile-avatar-btn');
+  if(ab&&u&&!isExpired(u)){
+    ab.textContent=(u.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
   }
   updateHomeGreeting();
   updateTopicsAccess();
@@ -1036,190 +995,88 @@ if(aboutCollapsed){
 }
 
 // ══════════════════════════════════════════════
-// DRAWER NAVIGATION
+// DRAWER FUNCTIONS
 // ══════════════════════════════════════════════
 function openDrawer(side){
-  document.getElementById('drawer-'+side).classList.add('open');
-  document.getElementById('drawer-overlay-'+side).classList.add('open');
+  const drawer=document.getElementById('drawer-'+side);
+  const overlay=document.getElementById('dov-'+side);
+  if(drawer) drawer.classList.add('open');
+  if(overlay) overlay.classList.add('open');
   document.body.style.overflow='hidden';
   if(side==='right') renderProfilePanel();
 }
 function closeDrawer(side){
-  document.getElementById('drawer-'+side).classList.remove('open');
-  document.getElementById('drawer-overlay-'+side).classList.remove('open');
+  const drawer=document.getElementById('drawer-'+side);
+  const overlay=document.getElementById('dov-'+side);
+  if(drawer) drawer.classList.remove('open');
+  if(overlay) overlay.classList.remove('open');
   document.body.style.overflow='';
-}
-function updateDrawerActive(name){
-  document.querySelectorAll('.drawer-item').forEach(b=>{
-    const id=b.id||'';
-    b.classList.toggle('active', id==='dnav-'+name);
-  });
 }
 
 function renderProfilePanel(){
-  const el=document.getElementById('profile-panel-content');
+  const el=document.getElementById('profile-panel-body');
   if(!el) return;
   const u=getUser();
-  if(!u||isExpired(u)&&u.type!=='admin'){
-    el.innerHTML='<div style="text-align:center;padding:10px 0">'
+  if(!u){
+    el.innerHTML='<div style="text-align:center;padding:20px 0">'
       +'<div style="font-size:32px;margin-bottom:10px">👤</div>'
-      +'<div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:6px">Not signed in</div>'
-      +'<div style="font-size:12px;color:var(--text2);margin-bottom:16px">Sign in or sign up to access all features</div>'
-      +'<button class="btn btn-primary" style="width:100%" onclick="closeDrawerAndSignup()">Sign up free →</button>'
-      +'<button class="btn" style="width:100%;margin-top:8px" onclick="closeDrawerAndLogin()">Sign in</button>'
+      +'<div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px">Not signed in</div>'
+      +'<button class="btn btn-primary" style="width:100%;margin-bottom:8px" onclick="closeDrawer('right');showAuthModal('signup')">Sign up free →</button>'
+      +'<button class="btn" style="width:100%" onclick="closeDrawer('right');showAuthModal('login')">Sign in</button>'
       +'</div>';
     return;
   }
-
   const initials=(u.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
   const days=u.expiresAt?Math.ceil((new Date(u.expiresAt)-new Date())/(1000*60*60*24)):null;
-  const planLabel=u.adminOverride?'Admin':u.type==='premium'?'Premium':u.type==='basic'?'Basic':'Free';
+  const planLabel=u.adminOverride?'Admin':u.type==='premium'?'Premium':u.type==='basic'?'Basic':u.type==='free'?'Free':'Guest';
   const planColor=u.adminOverride?'var(--red)':u.type==='premium'?'#A78BFA':u.type==='basic'?'var(--accent)':'var(--green)';
   const dayColor=days===null?'var(--green)':days>7?'var(--green)':days>3?'var(--amber)':'var(--red)';
-
-  // Update profile button avatar
-  const pb=document.getElementById('profile-btn');
-  if(pb) pb.textContent=initials;
-
-  el.innerHTML='';
-
-  // Avatar + name
-  const avatarDiv=document.createElement('div');
-  avatarDiv.style.cssText='text-align:center;margin-bottom:16px';
-  avatarDiv.innerHTML='<div style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#4F6EF7,#7B5CF0);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;margin:0 auto 10px">'+initials+'</div>'
-    +'<div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:3px">'+esc(u.name||'User')+'</div>'
-    +'<div style="font-size:11px;color:var(--text3);margin-bottom:6px">'+esc(u.email||'')+'</div>'
-    +'<div style="font-size:11px;color:var(--text3)">'+esc(u.place||'')+'</div>';
-  el.appendChild(avatarDiv);
-
-  // Plan badge
-  const planDiv=document.createElement('div');
-  planDiv.style.cssText='display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border-radius:var(--radius-sm);padding:10px 13px;margin-bottom:10px';
-  planDiv.innerHTML='<span style="font-size:12px;color:var(--text2)">Plan</span>'
-    +'<span style="font-size:12px;font-weight:600;color:'+planColor+'">'+planLabel+'</span>';
-  el.appendChild(planDiv);
-
-  // Countdown
+  // Update avatar button
+  const ab=document.getElementById('profile-avatar-btn');
+  if(ab) ab.textContent=initials;
+  let html='<div style="text-align:center;margin-bottom:16px">'
+    +'<div style="width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#4F6EF7,#7B5CF0);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;margin:0 auto 10px">'+initials+'</div>'
+    +'<div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:2px">'+esc(u.name||'User')+'</div>'
+    +'<div style="font-size:11px;color:var(--text3);margin-bottom:4px">'+esc(u.email||'')+'</div>'
+    +'<div style="font-size:11px;color:var(--text3)">'+esc(u.place||'')+'</div>'
+    +'</div>'
+    +'<div style="background:var(--surface2);border-radius:var(--radius-sm);padding:10px 13px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">'
+    +'<span style="font-size:12px;color:var(--text2)">Plan</span>'
+    +'<span style="font-size:12px;font-weight:600;color:'+planColor+'">'+planLabel+'</span>'
+    +'</div>';
   if(days!==null&&!u.adminOverride){
-    const cntDiv=document.createElement('div');
-    cntDiv.className='countdown-bar';
-    cntDiv.innerHTML='<div style="display:flex;align-items:baseline;gap:4px">'
-      +'<div class="countdown-num" style="color:'+dayColor+'">'+Math.max(0,days)+'</div>'
+    html+='<div style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px;margin-bottom:12px">'
+      +'<div style="display:flex;align-items:baseline;gap:5px">'
+      +'<div style="font-size:26px;font-weight:700;color:'+dayColor+'">'+Math.max(0,days)+'</div>'
       +'<div style="font-size:12px;color:var(--text2)">day'+(days!==1?'s':'')+' remaining</div>'
       +'</div>'
-      +'<div class="countdown-lbl">'+(days>0?'Free period ends '+new Date(u.expiresAt).toLocaleDateString('en-IN',{day:'numeric',month:'short'}):'Free period has ended')+'</div>';
-    el.appendChild(cntDiv);
+      +'<div style="font-size:10px;color:var(--text3);margin-top:2px">'+(days>0?'Expires '+new Date(u.expiresAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'Free period ended')+'</div>'
+      +'</div>';
   } else if(u.adminOverride){
-    const cntDiv=document.createElement('div');
-    cntDiv.className='countdown-bar';
-    cntDiv.innerHTML='<div style="font-size:12px;font-weight:600;color:var(--amber)">♾️ Free forever (Admin)</div>';
-    el.appendChild(cntDiv);
+    html+='<div style="background:rgba(245,158,11,.08);border:0.5px solid rgba(245,158,11,.3);border-radius:var(--radius-sm);padding:10px;margin-bottom:12px;text-align:center;font-size:12px;color:var(--amber)">♾️ Free forever (Admin)</div>';
   }
-
-  // Buttons
   if(!u.adminOverride&&u.type!=='premium'&&u.type!=='basic'){
-    const subBtn=document.createElement('button');
-    subBtn.className='profile-btn';
-    subBtn.style.cssText='width:100%;padding:10px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;border:0.5px solid var(--accent);background:var(--accent);color:#fff;font-family:var(--font);text-align:center;margin-bottom:8px';
-    subBtn.textContent='Subscribe — ₹25/month →';
-    subBtn.onclick=()=>{closeDrawer('right');showSubscribeModal();};
-    el.appendChild(subBtn);
+    html+='<button style="width:100%;padding:10px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;border:none;background:var(--accent);color:#fff;font-family:var(--font);margin-bottom:8px" onclick="closeDrawer('right');showSubscribeModal()">Subscribe — ₹25/month →</button>';
   }
-
   if(u.adminOverride||u.type==='admin'){
-    const adminBtn=document.createElement('button');
-    adminBtn.className='profile-btn';
-    adminBtn.style.cssText='width:100%;padding:10px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;border:0.5px solid var(--amber);background:rgba(245,158,11,.1);color:var(--amber);font-family:var(--font);text-align:center;margin-bottom:8px';
-    adminBtn.textContent='🛡️ Admin Panel';
-    adminBtn.onclick=()=>{closeDrawer('right');showAdminPanel();};
-    el.appendChild(adminBtn);
+    html+='<button style="width:100%;padding:10px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;border:0.5px solid var(--amber);background:rgba(245,158,11,.1);color:var(--amber);font-family:var(--font);margin-bottom:8px" onclick="closeDrawer('right');showAdminPanel()">🛡️ Admin Panel</button>';
   }
-
-  const logoutBtn=document.createElement('button');
-  logoutBtn.className='profile-btn danger';
-  logoutBtn.style.cssText='width:100%;padding:10px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;border:0.5px solid rgba(239,68,68,.4);background:rgba(239,68,68,.06);color:var(--red);font-family:var(--font);text-align:center;margin-top:4px';
-  logoutBtn.textContent='Sign out';
-  logoutBtn.onclick=()=>{closeDrawer('right');signOut();};
-  el.appendChild(logoutBtn);
+  html+='<button style="width:100%;padding:10px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;border:0.5px solid rgba(239,68,68,.4);background:rgba(239,68,68,.06);color:var(--red);font-family:var(--font)" onclick="closeDrawer('right');signOut()">Sign out</button>';
+  el.innerHTML=html;
 }
 
-// ── SHOW/HIDE PASSWORD ────────────────────────────────────────────────────────
-function closeDrawerAndSignup(){ closeDrawer('right'); showAuthModal('signup'); }
-function closeDrawerAndLogin(){ closeDrawer('right'); showAuthModal('login'); }
-function togglePwd(inputId, btn){
+function togglePwd(inputId,btn){
   const inp=document.getElementById(inputId);
   if(!inp) return;
-  if(inp.type==='password'){
-    inp.type='text';
-    btn.textContent='🙈';
-  } else {
-    inp.type='password';
-    btn.textContent='👁';
-  }
+  inp.type=inp.type==='password'?'text':'password';
+  btn.textContent=inp.type==='password'?'👁':'🙈';
 }
 
-// ── CHAT TEXT TOGGLE ─────────────────────────────────────────────────────────
 function showChatTextInput(){
-  const area=document.getElementById('chat-text-area');
-  if(!area) return;
-  if(area.style.display==='none'){
-    area.style.display='block';
-    setTimeout(()=>document.getElementById('chat-input')?.focus(), 100);
-  } else {
-    area.style.display='none';
-  }
-}
-
-// ── REMINDER ALARM FIX — SW-based polling ────────────────────────────────────
-// Store alarms in localStorage, SW checks every 60s
-function saveAlarmToSW(title, body, fireAt, sound){
-  try{
-    const alarms=JSON.parse(localStorage.getItem('vora_alarms')||'[]');
-    alarms.push({id:'alarm_'+Date.now(),title,body,fireAt,sound,fired:false});
-    localStorage.setItem('vora_alarms',JSON.stringify(alarms));
-    // Tell service worker about new alarm
-    if(navigator.serviceWorker&&navigator.serviceWorker.controller){
-      navigator.serviceWorker.controller.postMessage({type:'NEW_ALARM',alarms});
-    }
-  }catch(e){ console.log('Alarm save error:',e); }
-}
-
-// Check alarms — called on page load and by SW message
-function checkLocalAlarms(){
-  try{
-    const alarms=JSON.parse(localStorage.getItem('vora_alarms')||'[]');
-    const now=Date.now();
-    let changed=false;
-    alarms.forEach(alarm=>{
-      if(!alarm.fired&&new Date(alarm.fireAt).getTime()<=now){
-        alarm.fired=true;changed=true;
-        playAlarmSound(alarm.sound||'bell');
-        showInAppAlert(alarm.title,alarm.body,alarm.sound||'bell');
-        if(Notification.permission==='granted'){
-          try{ new Notification(alarm.title,{body:alarm.body,icon:'/icon.png'}); }catch(e){}
-        }
-      }
-    });
-    if(changed) localStorage.setItem('vora_alarms',JSON.stringify(alarms));
-    // Clean fired alarms older than 24h
-    const cleaned=alarms.filter(a=>!a.fired||Date.now()-new Date(a.fireAt).getTime()<86400000);
-    if(cleaned.length!==alarms.length) localStorage.setItem('vora_alarms',JSON.stringify(cleaned));
-  }catch(e){}
-}
-
-// Check alarms every 60 seconds while page is open
-// Use 60s to match SW polling interval
-setInterval(checkLocalAlarms, 60000);
-// Also check every 30s for better accuracy
-setInterval(checkLocalAlarms, 30000);
-// Check on load after a short delay
-setTimeout(checkLocalAlarms, 3000);
-
-// Listen for SW messages
-if(navigator.serviceWorker){
-  navigator.serviceWorker.addEventListener('message',e=>{
-    if(e.data&&e.data.type==='CHECK_ALARMS') checkLocalAlarms();
-  });
+  const a=document.getElementById('chat-text-area');
+  if(!a) return;
+  a.style.display=a.style.display==='none'?'block':'none';
+  if(a.style.display==='block') setTimeout(()=>document.getElementById('chat-input')?.focus(),100);
 }
 
 // ══════════════════════════════════════════════
@@ -1231,44 +1088,28 @@ const allTasks=[];
 document.getElementById('live-date').textContent=new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short'});
 
 function goTo(name){
-  // Show/hide screens
   SCREENS.forEach(s=>{
     const sc=document.getElementById('screen-'+s);
     if(sc) sc.classList.toggle('active',s===name);
+    const n=document.getElementById('nav-'+s);
+    if(n) n.classList.toggle('active',s===name);
   });
-
-  // About banner and quick links — home only
   const banner=document.getElementById('about-banner');
   if(banner) banner.style.display=name==='home'?'':'none';
   const ql=document.getElementById('quick-links-bar');
   if(ql) ql.style.display=name==='home'?'flex':'none';
-
-  // Header — hide on privacy/terms
   const noNav=['privacy','terms'];
+  const nav=document.querySelector('.bottom-nav');
   const hdr=document.querySelector('.app-header');
+  if(nav) nav.style.display=noNav.includes(name)?'none':'flex';
   if(hdr) hdr.style.display=noNav.includes(name)?'none':'flex';
-
-  // Scroll to top
-  const scr=document.getElementById('screen-'+name);
-  if(scr) scr.scrollTop=0;
-
-  // Update drawer active state
-  if(typeof updateDrawerActive==='function') updateDrawerActive(name);
-
-  // Home-specific
-  if(name==='home'){
-    renderHomeTasks();
-    if(typeof renderUserBadge==='function') renderUserBadge();
-    if(typeof renderSubscriptionCTA==='function') renderSubscriptionCTA();
-  }
-
-  // Calendar — render immediately from localStorage
-  if(name==='calendar'){
-    renderCalendar();
-    if(window._voraGet){
-      loadCalFromFirebase().then(()=>renderCalendar()).catch(()=>{});
-    }
-  }
+  if(name==='home'){renderHomeTasks();renderUserBadge();renderSubscriptionCTA();}
+  if(name==='calendar') renderCalendar();
+  document.querySelectorAll('.drawer-item').forEach(b=>{
+    b.classList.toggle('active', b.id==='dnav-'+name);
+  });
+  const activeScreen=document.getElementById('screen-'+name);
+  if(activeScreen) activeScreen.scrollTop=0;
 }
 
 // ══════════════════════════════════════════════
@@ -1326,8 +1167,7 @@ function renderAuthTab(tab){
       <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:8px">No password needed · Expires in 24 hours</div>`;
   } else if(tab==='signup'){
     c.innerHTML=`
-      <div class="info-box">🎉 <strong>30 days free</strong> — full access including AI Topic Brief. No credit card required.</div>
-      <div class="warn-box" style="background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.3);color:var(--green)">📧 A verification email will be sent to your inbox. If not received in 2 minutes check Spam and mark as Not Spam.</div>
+      <div class="info-box" style="background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.25);color:var(--green)">🎉 <strong>30 days free</strong> — full access. No credit card required. Verification email sent to your inbox.</div>
       <label class="inp-label">Full name</label>
       <input type="text" id="auth-name" placeholder="e.g. Priya Sharma" style="margin-bottom:8px"/>
       <label class="inp-label">Email address</label>
@@ -1337,27 +1177,18 @@ function renderAuthTab(tab){
       <label class="inp-label">City / Place</label>
       <input type="text" id="auth-place" placeholder="e.g. Mumbai" style="margin-bottom:8px"/>
       <label class="inp-label">Password (min 6 characters)</label>
-      <div class="pwd-wrap">
-        <input type="password" id="auth-pass" placeholder="Create a strong password"/>
-        <button class="pwd-toggle" type="button" onclick="togglePwd('auth-pass',this)">👁</button>
-      </div>
+      <div class="pwd-wrap"><input type="password" id="auth-pass" placeholder="Create a password"/><button class="pwd-eye" type="button" onclick="togglePwd('auth-pass',this)">👁</button></div>
       <label class="inp-label">Confirm password</label>
-      <div class="pwd-wrap">
-        <input type="password" id="auth-pass2" placeholder="Re-enter your password"/>
-        <button class="pwd-toggle" type="button" onclick="togglePwd('auth-pass2',this)">👁</button>
-      </div>
+      <div class="pwd-wrap"><input type="password" id="auth-pass2" placeholder="Re-enter password"/><button class="pwd-eye" type="button" onclick="togglePwd('auth-pass2',this)">👁</button></div>
       <div id="auth-err" class="err-box"></div>
-      <button class="btn btn-primary btn-full" style="margin-top:8px" onclick="startSignup()">Create account &amp; verify email →</button>
+      <button class="btn btn-primary btn-full" style="margin-top:8px" onclick="startSignup()">Create account →</button>
       <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:8px">Already have an account? <span style="color:var(--accent);cursor:pointer" onclick="switchAuthTab('login')">Sign in</span></div>`;
   } else {
     c.innerHTML=`
       <label class="inp-label">Email address</label>
       <input type="email" id="auth-email" placeholder="you@example.com" style="margin-bottom:8px"/>
       <label class="inp-label">Password</label>
-      <div class="pwd-wrap">
-        <input type="password" id="auth-pass" placeholder="Your password" onkeydown="if(event.key==='Enter')signIn()"/>
-        <button class="pwd-toggle" type="button" onclick="togglePwd('auth-pass',this)">👁</button>
-      </div>
+      <div class="pwd-wrap"><input type="password" id="auth-pass" placeholder="Your password" onkeydown="if(event.key==='Enter')signIn()"/><button class="pwd-eye" type="button" onclick="togglePwd('auth-pass',this)">👁</button></div>
       <div id="auth-err" class="err-box"></div>
       <button class="btn btn-primary btn-full" style="margin-top:8px" onclick="signIn()">Sign in →</button>
       <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:8px">No account? <span style="color:var(--accent);cursor:pointer" onclick="switchAuthTab('signup')">Sign up free</span></div>`;
@@ -1395,8 +1226,8 @@ async function startSignup(){
   try{
     const pass=(document.getElementById('auth-pass')?.value||'');
     const pass2=(document.getElementById('auth-pass2')?.value||'');
-    if(pass.length<6){showAuthErr('Password must be at least 6 characters.');if(btn){btn.disabled=false;btn.textContent='Create account & verify email →';}return;}
-    if(pass!==pass2){showAuthErr('Passwords do not match. Please re-enter.');if(btn){btn.disabled=false;btn.textContent='Create account & verify email →';}return;}
+    if(pass.length<6){showAuthErr('Password must be at least 6 characters.');if(btn){btn.disabled=false;btn.textContent='Create account →';}return;}
+    if(pass!==pass2){showAuthErr('Passwords do not match.');if(btn){btn.disabled=false;btn.textContent='Create account →';}return;}
     const cred=await window._createUser(window._voraAuth,email,pass);
     // Use email as password base — user logs in via email link
     await window._updateProfile(cred.user,{displayName:name});
@@ -1419,30 +1250,20 @@ async function startSignup(){
     if(tc) tc.innerHTML=`
       <div style="text-align:center;padding:20px 10px">
         <div style="font-size:40px;margin-bottom:12px">📧</div>
-        <div style="font-family:var(--font-head);font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px">Verify your email</div>
-        <div style="font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:10px">A verification link was sent to<br><strong style="color:var(--text)">${esc(email)}</strong></div>
-        <div style="background:rgba(79,110,247,.08);border:0.5px solid var(--accent);border-radius:10px;padding:10px 12px;text-align:left;font-size:11px;color:var(--text2);line-height:1.7;margin-bottom:12px">
-          <div style="font-weight:600;color:var(--accent);margin-bottom:4px">📬 Check these places:</div>
-          <div>1. Your <strong>Inbox</strong> — look for email from Firebase / noreply</div>
-          <div>2. <strong>Spam / Junk folder</strong> — right-click → Mark as Not Spam</div>
-          <div>3. <strong>Promotions tab</strong> (Gmail) — move to Primary</div>
-        </div>
-        <div id="auto-verify-status" style="font-size:11px;color:var(--green);margin-bottom:8px;display:none">⏳ Checking automatically...</div>
-        <button class="btn btn-primary btn-full" onclick="confirmVerification()">I have clicked the link — continue →</button>
-        <div style="margin-top:10px;font-size:11px;color:var(--text3)">Didn't receive it? <span style="color:var(--accent);cursor:pointer" onclick="resendVerification()">Resend verification email</span></div>
+        <div style="font-family:var(--font-head);font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px">Check your email!</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:8px">A verification link has been sent to <strong style="color:var(--text)">${esc(email)}</strong></div>
+        <div class="warn-box" style="text-align:left">⚠️ If you don't see it in 2 minutes please check your <strong>Spam / Junk folder</strong> and mark it as Not Spam.</div>
+        <button class="btn btn-primary btn-full" style="margin-top:12px" onclick="confirmVerification()">I've verified my email — continue →</button>
+        <div style="margin-top:8px;font-size:11px;color:var(--text3)">Didn't get it? <span style="color:var(--accent);cursor:pointer" onclick="resendVerification()">Resend email</span></div>
       </div>`;
-    // Start auto-polling for verification (checks every 3 seconds for 5 minutes)
-    startAutoVerifyPolling(email);
-  // Start auto-check polling every 3 seconds
-  let _verifyInterval=null;
-  let _verifySecs=5;
-  const secEl=document.getElementById('verify-secs');
-  _verifyInterval=setInterval(async()=>{
-    _verifySecs--;
-    if(secEl) secEl.textContent=_verifySecs;
-    if(_verifySecs<=0){
-      clearInterval(_verifyInterval);
-      // Auto-check verification
+  // Auto-check verification every 3 seconds
+  let _vsi=null,_vsc=5;
+  const _vsEl=document.getElementById('verify-secs');
+  _vsi=setInterval(async()=>{
+    _vsc--;
+    if(_vsEl) _vsEl.textContent=_vsc;
+    if(_vsc<=0){
+      clearInterval(_vsi);
       try{
         if(window._voraAuth?.currentUser){
           await window._voraAuth.currentUser.reload();
@@ -1450,14 +1271,13 @@ async function startSignup(){
             const u=getUser();
             if(u){u.emailVerified=true;saveUser(u);}
             removeModal();updateUserBadge();
-            showToast('Email verified! Welcome to VORA — 30 days free activated ✓');
+            showToast('Email verified! 30 days free access activated ✓');
             return;
           }
         }
-        // Not verified yet — reset countdown
-        _verifySecs=5;
-        if(secEl) secEl.textContent=_verifySecs;
       }catch(e2){}
+      // Not verified yet — reset countdown
+      _vsc=5;if(_vsEl)_vsEl.textContent=_vsc;
     }
   },1000);
   }catch(e){
@@ -1467,42 +1287,6 @@ async function startSignup(){
     showAuthErr(msg);
     if(btn){btn.disabled=false;btn.textContent='Create account & send verification →';}
   }
-}
-
-let _verifyPollInterval=null;
-
-function startAutoVerifyPolling(email){
-  // Clear any existing poll
-  if(_verifyPollInterval) clearInterval(_verifyPollInterval);
-  let attempts=0;
-  const maxAttempts=100; // 5 minutes at 3s intervals
-  const statusEl=document.getElementById('auto-verify-status');
-  if(statusEl) statusEl.style.display='';
-
-  _verifyPollInterval=setInterval(async()=>{
-    attempts++;
-    if(attempts>maxAttempts){
-      clearInterval(_verifyPollInterval);
-      if(statusEl) statusEl.style.display='none';
-      return;
-    }
-    if(!window._voraAuth?.currentUser) return;
-    try{
-      await window._voraAuth.currentUser.reload();
-      if(window._voraAuth.currentUser.emailVerified){
-        clearInterval(_verifyPollInterval);
-        // Auto-complete verification
-        const u=getUser();
-        if(u){u.emailVerified=true;saveUser(u);}
-        if(window._voraUpd&&u?.uid){
-          await window._voraUpd(window._voraRef(window._voraDb,'users/'+u.uid),{emailVerified:true});
-        }
-        removeModal();updateUserBadge();
-        showToast('Email verified! Welcome to VORA ✓ 30 days free access activated.');
-        setTimeout(()=>initPushNotifications(),1000);
-      }
-    }catch(e){}
-  },3000);
 }
 
 async function confirmVerification(){
@@ -1980,23 +1764,19 @@ function renderChatResults(r){
       taskType:t.type||'Task'
     });
   });
+  // Save tasks with dates to calendar
+  tasks.filter(t=>t.date&&t.date!=='No date').forEach(t=>{
+    saveToCalendar('task', {
+      title: t.title,
+      date: guessDateStr(t.date),
+      dateLabel: t.date,
+      priority: t.priority||'Medium',
+      type: t.type||'Task',
+      person: t.person||''
+    });
+  });
   html+=`<div class="btn-row"><button class="btn btn-sm" style="background:rgba(79,110,247,.15);border-color:var(--accent);color:#7B9BFF" onclick="buildScheduleFromChat()">Build schedule from these</button><button class="btn btn-sm" onclick="document.getElementById('chat-results').innerHTML=''">Clear</button></div></div>`;
   document.getElementById('chat-results').innerHTML=html;
-}
-
-function showChatTextInput(){
-  const area=document.getElementById('chat-text-area');
-  const card=document.getElementById('chat-text-card');
-  if(area.style.display==='none'){
-    area.style.display='';
-    card.style.borderColor='var(--accent)';
-    card.style.background='rgba(79,110,247,.08)';
-    setTimeout(()=>document.getElementById('chat-input')?.focus(),100);
-  } else {
-    area.style.display='none';
-    card.style.borderColor='';
-    card.style.background='';
-  }
 }
 
 function buildScheduleFromChat(){
@@ -2224,12 +2004,15 @@ function renderSchedule(r){
       tip:r.tip||''
     });
   }
-  html+=`<div class="btn-row" style="margin-top:10px">
-    <button class="btn btn-sm" style="background:rgba(34,197,94,.12);border-color:var(--green);color:var(--green)" onclick='downloadICS(${JSON.stringify(r)})'>Download .ics</button>
-    <button class="btn btn-sm" style="background:rgba(79,110,247,.12);border-color:var(--accent);color:var(--accent)" onclick="goTo('calendar')">View in Calendar</button>
-    <button class="btn btn-sm" onclick="document.getElementById('sched-results').innerHTML=''">Clear</button>
-  </div></div>`;
+  html+=`<div class="btn-row" style="margin-top:10px"><button class="btn btn-sm" style="background:rgba(34,197,94,.12);border-color:var(--green);color:var(--green)" onclick='downloadICS(${JSON.stringify(r)})'>Download .ics (Google Calendar)</button><button class="btn btn-sm" onclick="document.getElementById('sched-results').innerHTML=''">Clear</button></div></div>`;
   document.getElementById('sched-results').innerHTML=html;
+  // Save to calendar store
+  saveToCalendar('schedule', {
+    title: r.date+' Schedule',
+    date: r._rawDate||new Date().toISOString().slice(0,10),
+    items: r.schedule||[],
+    tip: r.tip||''
+  });
 }
 
 function downloadICS(r){
@@ -2330,6 +2113,18 @@ Return ONLY valid JSON:
       });
     }
     hideStatus('rem');renderReminder(r);
+    // Save to calendar store
+    if(rawDate){
+      saveToCalendar('reminder', {
+        title: r.event||'Reminder',
+        date: rawDate,
+        time: rawTime||'',
+        morning_subject: r.morning_subject||'',
+        morning_body: r.morning_body||'',
+        alert_subject: r.alert_subject||'',
+        alert_body: r.alert_body||''
+      });
+    }
     if(rawDate&&rawTime){
       scheduleAlarm(r);
       // Save to Firebase for push notification
@@ -2373,49 +2168,21 @@ function playAlarmSound(type){
 
 function scheduleAlarm(r){
   const now=new Date();
-  // Validate date and time
-  if(!r._rawDate){showToast('Please select a date for the reminder.');return;}
-  if(!r._rawTime){showToast('Please select a time for the reminder.');return;}
   const eventDate=new Date(r._rawDate+'T'+r._rawTime);
-  if(isNaN(eventDate.getTime())){showToast('Invalid date/time for reminder.');return;}
   const morningDate=new Date(r._rawDate+'T08:00');
   const alertDate=new Date(eventDate.getTime()-30*60*1000);
-
-  // Save to SW alarm queue (works even when tab is backgrounded on Android Chrome)
-  if(morningDate>now){
-    saveAlarmToSW(
-      r.morning_subject||'VORA Morning Reminder',
-      r.morning_body||'',
-      morningDate.toISOString(),
-      r._sound||'bell'
-    );
-  }
-  if(alertDate>now){
-    saveAlarmToSW(
-      r.alert_subject||'VORA Reminder — 30 min',
-      r.alert_body||'',
-      alertDate.toISOString(),
-      r._sound||'bell'
-    );
-  }
-
-  // ALSO keep setTimeout as backup for when tab stays open
   function checkAndFire(targetTime,subject,body){
     const diff=targetTime-now;
-    if(diff>0&&diff<36*60*60*1000){
+    if(diff>0&&diff<24*60*60*1000){
       setTimeout(()=>{
         playAlarmSound(r._sound||'bell');
-        if(Notification.permission==='granted'){
-          try{ new Notification(subject,{body,icon:'/icon.png'}); }catch(e){}
-        }
+        if(Notification.permission==='granted') new Notification(subject,{body});
         showInAppAlert(subject,body,r._sound||'bell');
       },diff);
     }
   }
   checkAndFire(morningDate,r.morning_subject,r.morning_body);
   checkAndFire(alertDate,r.alert_subject,r.alert_body);
-
-  // Request notification permission
   if(Notification.permission==='default') Notification.requestPermission();
 }
 
@@ -2459,28 +2226,6 @@ function renderReminder(r){
 // ── Calendar Firebase path ───────────────────────────────────────────────────
 function calPath(uid){ return 'calendar/'+uid; }
 
-function addTestCalItem(){
-  saveToCalendar('reminder',{
-    title:'Test Reminder — '+new Date().toLocaleTimeString(),
-    date:new Date().toISOString().slice(0,10),
-    time:'09:00',
-    morning_body:'This is a test item to verify calendar is working.'
-  });
-  goTo('calendar');
-  showToast('Test item added to calendar');
-}
-
-function showCalDebug(){
-  const items=getCalStore();
-  const el=document.getElementById('cal-debug');
-  if(!el) return;
-  if(items.length===0){
-    el.innerHTML='<div style="font-size:10px;color:var(--text3);text-align:center;padding:8px">localStorage has 0 items. Build a schedule or set a reminder first.</div>';
-  } else {
-    el.innerHTML='<div style="font-size:10px;color:var(--green);text-align:center;padding:8px">'+items.length+' item(s) in localStorage. Active: '+items.filter(i=>i.status==="active").length+', Completed: '+items.filter(i=>i.status==="completed").length+'</div>';
-  }
-}
-
 function getCalStore(){
   try{ return JSON.parse(localStorage.getItem('vora_calendar')||'[]'); }catch(e){ return []; }
 }
@@ -2489,18 +2234,13 @@ function saveCalStoreLocal(items){
 }
 async function saveCalStoreFirebase(items){
   const u=getUser();
-  if(!u||!u.uid) return;
-  let attempts=0;
-  while(!window._voraSet && attempts<10){
-    await new Promise(r=>setTimeout(r,300));
-    attempts++;
-  }
-  if(!window._voraSet) return;
+  if(!u||!u.uid||!window._voraSet) return;
   try{
+    // Save as object keyed by id for efficient Firebase queries
     const obj={};
-    items.forEach(item=>{ obj[item.id.replace(/[.#$\[\]]/g,'_')]=item; });
+    items.forEach(item=>{ obj[item.id.replace(/[.#$/\[\]]/g,'_')]=item; });
     await window._voraSet(window._voraRef(window._voraDb,calPath(u.uid)),obj);
-  }catch(e){ console.log('Cal Firebase save error:',e.message); }
+  }catch(e){ console.log('Cal Firebase save error:',e); }
 }
 function saveCalStore(items){
   saveCalStoreLocal(items);
@@ -2513,49 +2253,20 @@ async function loadCalFromFirebase(){
     const snap=await window._voraGet(window._voraRef(window._voraDb,calPath(u.uid)));
     const data=snap.val();
     if(data){
-      const fbItems=Object.values(data).filter(Boolean);
-      // Merge with localStorage — prefer Firebase data but keep local items not in Firebase
-      const localItems=getCalStore();
-      const fbIds=new Set(fbItems.map(i=>i.id));
-      const localOnly=localItems.filter(i=>!fbIds.has(i.id));
-      const merged=[...fbItems,...localOnly];
-      saveCalStoreLocal(merged);
+      const items=Object.values(data).filter(Boolean);
+      saveCalStoreLocal(items);
     }
-  }catch(e){ console.log('Cal Firebase sync error:',e.message); }
+  }catch(e){ console.log('Cal Firebase load error:',e); }
 }
 
-function saveToCalendar(type, data){
-  // Synchronous save — no async, no user check blocking
-  try{
-    const items=getCalStore();
-    const id='cal_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
-    const now=new Date().toISOString();
-    const newItem={
-      id:id,
-      type:type,
-      title:data.title||'Untitled',
-      date:data.date||new Date().toISOString().slice(0,10),
-      time:data.time||'',
-      createdAt:now,
-      status:'active'
-    };
-    // Copy extra fields
-    const skipKeys={id:1,type:1,title:1,date:1,time:1,createdAt:1,status:1};
-    Object.keys(data).forEach(function(k){
-      if(!skipKeys[k]&&data[k]!==undefined&&data[k]!==null) newItem[k]=data[k];
-    });
-    items.push(newItem);
-    // Save to localStorage immediately
-    try{ localStorage.setItem('vora_calendar',JSON.stringify(items)); }catch(e){}
-    // Save to Firebase in background if available
-    saveCalStoreFirebase(items);
-    console.log('VORA Calendar: saved',type,newItem.title,newItem.date,'total items:',items.length);
-    // Refresh calendar if visible
-    const calScreen=document.getElementById('screen-calendar');
-    if(calScreen&&calScreen.classList.contains('active')) renderCalendar();
-  }catch(err){
-    console.log('saveToCalendar error:',err.message);
-  }
+async function saveToCalendar(type, data){
+  const u=getUser();
+  const items=getCalStore();
+  const id='cal_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
+  const now=new Date().toISOString();
+  const newItem={id, type, ...data, createdAt:now, status:'active'};
+  items.push(newItem);
+  saveCalStore(items);
 }
 
 function guessDateStr(dateLabel){
@@ -2583,20 +2294,27 @@ function getRetentionDays(u){
 }
 
 function purgeExpiredItems(){
-  // Only remove completed items past retention period
-  // Never auto-move active items — user must manually mark done
   const u=getUser();
   const retDays=getRetentionDays(u);
-  const retMs=retDays*24*60*60*1000;
-  const now=Date.now();
   const items=getCalStore();
+  const now=Date.now();
   const filtered=items.filter(item=>{
-    if(item.status==='active') return true;
-    // Remove completed items past retention
-    const completedAt=new Date(item.completedAt||item.createdAt).getTime();
-    return (now-completedAt)<retMs;
+    const created=new Date(item.createdAt).getTime();
+    const ageHours=(now-created)/(1000*60*60);
+    if(item.status==='active') return true; // never auto-purge active
+    // Completed items — check retention
+    const retHours=retDays*24;
+    return ageHours < retHours;
   });
-  if(filtered.length!==items.length) saveCalStoreLocal(filtered);
+  // Auto-move past items to completed
+  const itemDate=(item)=>item.date?new Date(item.date+'T23:59:59').getTime():0;
+  filtered.forEach(item=>{
+    if(item.status==='active' && itemDate(item) < now && itemDate(item) > 0){
+      item.status='completed';
+      item.completedAt=new Date().toISOString();
+    }
+  });
+  saveCalStore(filtered);
 }
 
 // ── CALENDAR VIEW ─────────────────────────────────────────────────────────────
@@ -2607,40 +2325,44 @@ let _calSelectedDate=null;
 
 function setCalView(v){
   _calView=v;
-  document.getElementById('cal-btn-list').style.background=v==='list'?'var(--accent)':'var(--surface2)';
-  document.getElementById('cal-btn-list').style.color=v==='list'?'#fff':'var(--text2)';
-  document.getElementById('cal-btn-grid').style.background=v==='grid'?'var(--accent)':'var(--surface2)';
-  document.getElementById('cal-btn-grid').style.color=v==='grid'?'#fff':'var(--text2)';
-  document.getElementById('cal-grid-area').style.display=v==='grid'?'':'none';
   renderCalendar();
 }
 
 function setCalTab(t){
   _calTab=t;
   const a=document.getElementById('cal-tab-active');
-  const comp=document.getElementById('cal-tab-completed');
+  const cp=document.getElementById('cal-tab-completed');
   if(a) a.classList.toggle('active',t==='active');
-  if(comp) comp.classList.toggle('active',t==='completed');
+  if(cp) cp.classList.toggle('active',t==='completed');
   renderCalendar();
 }
 
 function renderCalendar(){
-  showCalDebug();
   purgeExpiredItems();
   const u=getUser();
   const isPrem=u&&(u.type==='premium'||u.adminOverride);
-  const isBasic=u&&(u.type==='basic');
-  const isLoggedIn=u&&u.type!=='guest';
+  const isBasic=u&&u.type==='basic';
 
-  // Show toggle for basic and premium users
+  // Toggle visibility using CSS class
   const toggle=document.getElementById('cal-view-toggle');
-  if(toggle) toggle.style.display=(isPrem||isBasic)?'flex':'none';
+  if(toggle){
+    if(isPrem||isBasic) toggle.classList.add('visible');
+    else toggle.classList.remove('visible');
+  }
 
-  // View logic: premium uses _calView toggle, basic defaults grid, others list
+  // View logic
   const effectiveView=isPrem?_calView:(isBasic?'grid':'list');
 
+  // Update toggle button styles
+  const btnList=document.getElementById('cal-btn-list');
+  const btnGrid=document.getElementById('cal-btn-grid');
+  if(btnList) btnList.style.background=effectiveView==='list'?'var(--accent)':'transparent';
+  if(btnList) btnList.style.color=effectiveView==='list'?'#fff':'var(--text2)';
+  if(btnGrid) btnGrid.style.background=effectiveView==='grid'?'var(--accent)':'transparent';
+  if(btnGrid) btnGrid.style.color=effectiveView==='grid'?'#fff':'var(--text2)';
+
   const gridArea=document.getElementById('cal-grid-area');
-  if(gridArea) gridArea.style.display=effectiveView==='grid'?'block':'none';
+  if(gridArea) gridArea.style.display=effectiveView==='grid'?'':'none';
   if(effectiveView==='grid') renderCalGrid();
   renderCalList(_calSelectedDate);
 }
@@ -2720,105 +2442,149 @@ function calSelectDate(dateStr){
 function renderCalList(filterDate){
   const area=document.getElementById('cal-list-area');
   if(!area) return;
+  const items=getCalStore().filter(i=>i.status===_calTab);
+  let filtered=filterDate?items.filter(i=>i.date===filterDate):items;
 
-  let items=getCalStore().filter(i=>i.status===_calTab);
+  // For non-premium, limit future view to 3 months
+  const u=getUser();
+  const isPrem=u&&(u.type==='premium'||u.adminOverride);
+  if(!isPrem){
+    const cutoff=new Date();
+    cutoff.setMonth(cutoff.getMonth()+3);
+    filtered=filtered.filter(i=>!i.date||new Date(i.date+'T12:00:00')<=cutoff);
+  }
 
-  // Filter by date if selected
-  if(filterDate) items=items.filter(i=>i.date===filterDate);
-
-  // Sort by date ascending
-  items.sort((a,b)=>(a.date||'9999').localeCompare(b.date||'9999'));
-
-  if(!items.length){
-    area.innerHTML='<div style="text-align:center;padding:30px 16px;color:var(--text3)">'
-      +(_calTab==='active'
-        ?'<div style="font-size:28px;margin-bottom:10px">📅</div><div style="font-size:13px;line-height:1.8">No active items.<br>Build a schedule or set a reminder<br>— it will appear here automatically.</div>'
-        :'<div style="font-size:28px;margin-bottom:10px">✅</div><div style="font-size:13px;line-height:1.8">No completed items yet.<br>Mark active items Done to see them here.</div>')
-      +'</div>';
+  if(!filtered.length){
+    const msg=_calTab==='active'
+      ?'<div style="font-size:24px;margin-bottom:8px">📅</div><div style="font-size:13px">No active items yet.<br>Your schedules, reminders and tasks appear here automatically.</div>'
+      :'<div style="font-size:24px;margin-bottom:8px">✅</div><div style="font-size:13px">No completed items yet.</div>';
+    area.innerHTML='<div style="text-align:center;padding:24px 16px;color:var(--text3)">'+msg+'</div>';
     return;
   }
 
-  const today=new Date().toISOString().slice(0,10);
+  // Sort by date
+  filtered.sort((a,b)=>(a.date||'').localeCompare(b.date||''));
 
   // Group by date
   const groups={};
-  items.forEach(item=>{
+  filtered.forEach(item=>{
     const key=item.date||'No date';
     if(!groups[key]) groups[key]=[];
     groups[key].push(item);
   });
 
-  let html='';
+  const today=new Date().toISOString().slice(0,10);
+  const frag=document.createDocumentFragment();
+
   Object.entries(groups).forEach(([date,gItems])=>{
     const isToday=date===today;
     const isPast=date<today&&date!=='No date';
-    let dateDisplay='No date set';
-    if(date!=='No date'){
-      try{
-        dateDisplay=new Date(date+'T12:00:00').toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-      }catch(e){ dateDisplay=date; }
-    }
-    const prefix=isToday?'📅 Today — ':isPast&&_calTab==='active'?'⚠️ ':'🔜 ';
-    html+='<div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin:14px 0 8px;padding-bottom:5px;border-bottom:0.5px solid var(--border)">'
-      +(date==='No date'?'No date set':prefix+dateDisplay)+'</div>';
+    const dateDisplay=date==='No date'?'No date set':
+      new Date(date+'T12:00:00').toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    const prefix=isToday?'📅 Today — ':isPast?'':'🔜 ';
+
+    const header=document.createElement('div');
+    header.className='cal-date-group';
+    header.textContent=prefix+dateDisplay;
+    frag.appendChild(header);
 
     gItems.forEach(item=>{
-      const borderColor=_calTab==='completed'?'var(--text3)':isToday?'var(--accent)':isPast?'var(--red)':'var(--green)';
-      const typeLabel={'schedule':'📅 Schedule','reminder':'🔔 Reminder','task':'✅ Task'}[item.type]||item.type||'Item';
-      const typeBg={'schedule':'rgba(79,110,247,.12)','reminder':'rgba(34,197,94,.12)','task':'rgba(245,158,11,.12)'}[item.type]||'rgba(255,255,255,.06)';
-      const typeColor={'schedule':'var(--accent)','reminder':'var(--green)','task':'var(--amber)'}[item.type]||'var(--text2)';
+      const card=document.createElement('div');
+      const borderClass=item.status==='completed'?'completed':isToday?'today':isPast&&item.status==='active'?'overdue':'upcoming';
+      card.className='cal-item '+borderClass;
 
-      html+='<div style="background:var(--surface);border:0.5px solid var(--border);border-left:3px solid '+borderColor+';border-radius:var(--radius-sm);padding:11px 13px;margin-bottom:8px">';
-      html+='<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">';
-      html+='<div style="flex:1;min-width:0">';
-      html+='<div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px">'+esc(item.title||'Untitled')+'</div>';
+      // Build inner HTML safely using DOM
+      const row=document.createElement('div');
+      row.style.cssText='display:flex;align-items:flex-start;justify-content:space-between;gap:8px';
 
-      // Details by type
-      if(item.time) html+='<div style="font-size:11px;color:var(--text2);margin-bottom:3px">⏰ '+esc(item.time)+'</div>';
-      if(item.type==='schedule'&&item.items&&item.items.length){
-        html+='<div style="font-size:11px;color:var(--text2);margin-bottom:3px">'+item.items.length+' time blocks';
-        if(item.items[0]) html+=' · Starts '+esc(item.items[0].time||item.items[0].time12||'');
-        html+='</div>';
+      // Left — content
+      const left=document.createElement('div');
+      left.style.flex='1';
+
+      const title=document.createElement('div');
+      title.className='cal-item-title';
+      title.textContent=item.title||'Untitled';
+      left.appendChild(title);
+
+      // Type-specific details
+      if(item.type==='schedule'&&item.items){
+        const meta=document.createElement('div');
+        meta.className='cal-item-meta';
+        meta.textContent=item.items.length+' time blocks'+(item.items[0]?' · Starts '+( item.items[0].time||item.items[0].time12||''):'');
+        left.appendChild(meta);
         // Show first 3 blocks
-        html+='<div style="margin-top:6px;display:grid;gap:2px">';
+        const blocks=document.createElement('div');
+        blocks.style.cssText='margin-top:6px;display:grid;gap:3px';
         item.items.slice(0,3).forEach(s=>{
-          const lc={'Meeting':'var(--accent)','Break':'var(--text3)','Personal':'var(--green)'}[s.type]||'var(--amber)';
-          html+='<div style="display:flex;gap:6px;font-size:10px;color:var(--text2);border-left:2px solid '+lc+';padding-left:5px">'
-            +'<span style="color:var(--text3);min-width:38px">'+esc(s.time||s.time12||'')+'</span>'
-            +'<span>'+esc(s.title)+'</span></div>';
+          const lc=s.type==='Meeting'?'var(--accent)':s.type==='Break'?'var(--text3)':s.type==='Personal'?'var(--green)':'var(--amber)';
+          const blk=document.createElement('div');
+          blk.style.cssText='display:flex;gap:8px;font-size:11px;color:var(--text2);padding:3px 0;border-left:2px solid '+lc+';padding-left:6px';
+          blk.innerHTML='<span style="color:var(--text3);min-width:40px">'+esc(s.time||s.time12||'')+'</span><span>'+esc(s.title)+'</span>';
+          blocks.appendChild(blk);
         });
-        if(item.items.length>3) html+='<div style="font-size:10px;color:var(--text3);padding-left:5px">+'+( item.items.length-3)+' more</div>';
-        html+='</div>';
-      } else if(item.type==='reminder'&&item.morning_body){
-        html+='<div style="font-size:10px;color:var(--text2);margin-top:3px;line-height:1.5">'+esc(item.morning_body.slice(0,80))+(item.morning_body.length>80?'…':'')+'</div>';
+        if(item.items.length>3){
+          const more=document.createElement('div');
+          more.style.cssText='font-size:10px;color:var(--text3);padding-left:6px';
+          more.textContent='+'+(item.items.length-3)+' more';
+          blocks.appendChild(more);
+        }
+        left.appendChild(blocks);
+      } else if(item.type==='reminder'){
+        if(item.time){
+          const m=document.createElement('div');m.className='cal-item-meta';
+          m.textContent='⏰ '+item.time;left.appendChild(m);
+        }
+        if(item.morning_body){
+          const m=document.createElement('div');
+          m.className='cal-item-meta';m.style.cssText='margin-top:3px;font-size:10px';
+          m.textContent=item.morning_body.slice(0,80)+(item.morning_body.length>80?'…':'');
+          left.appendChild(m);
+        }
       } else if(item.type==='task'){
         const parts=[];
         if(item.dateLabel) parts.push(item.dateLabel);
         if(item.person) parts.push('from '+item.person);
         if(item.priority) parts.push(item.priority);
-        if(parts.length) html+='<div style="font-size:11px;color:var(--text2);margin-top:2px">'+esc(parts.join(' · '))+'</div>';
+        if(parts.length){
+          const m=document.createElement('div');m.className='cal-item-meta';
+          m.textContent=parts.join(' · ');left.appendChild(m);
+        }
       }
 
-      html+='<span style="font-size:9px;font-weight:600;padding:2px 7px;border-radius:8px;background:'+typeBg+';color:'+typeColor+';display:inline-block;margin-top:5px">'+typeLabel+'</span>';
-      html+='</div>';
+      const typeLabel=item.type==='schedule'?'Schedule':item.type==='reminder'?'Reminder':'Task';
+      const badge=document.createElement('span');
+      badge.className='cal-item-type cal-type-'+(item.type||'task');
+      badge.textContent=typeLabel;
+      left.appendChild(badge);
+      row.appendChild(left);
 
-      // Action buttons — use data-id attribute
-      html+='<div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">';
-      const iid=item.id;
-      if(_calTab==='active'){
-        html+='<button data-id="'+iid+'" onclick="calComplete(this.dataset.id)" style="font-size:9px;padding:4px 8px;border-radius:5px;border:0.5px solid var(--green);background:rgba(34,197,94,.1);color:var(--green);cursor:pointer;white-space:nowrap">✓ Done</button>';
-        html+='<button data-id="'+iid+'" onclick="calReschedule(this.dataset.id)" style="font-size:9px;padding:4px 8px;border-radius:5px;border:0.5px solid var(--accent);background:rgba(79,110,247,.1);color:var(--accent);cursor:pointer;white-space:nowrap">✏️ Edit</button>';
+      // Right — action buttons
+      const btns=document.createElement('div');
+      btns.style.cssText='display:flex;flex-direction:column;gap:4px;flex-shrink:0';
+
+      const makeBtn=(label,color,bg,fn)=>{
+        const b=document.createElement('button');
+        b.style.cssText='font-size:9px;padding:3px 8px;border-radius:5px;border:0.5px solid '+color+';background:'+bg+';color:'+color+';cursor:pointer;font-family:inherit';
+        b.textContent=label;
+        b.onclick=()=>fn(item.id);
+        return b;
+      };
+
+      if(item.status==='active'){
+        btns.appendChild(makeBtn('✓ Done','var(--green)','rgba(34,197,94,.1)',calComplete));
+        btns.appendChild(makeBtn('✏️ Edit','var(--accent)','rgba(79,110,247,.1)',calReschedule));
       } else {
-        html+='<button data-id="'+iid+'" onclick="calRestore(this.dataset.id)" style="font-size:9px;padding:4px 8px;border-radius:5px;border:0.5px solid var(--amber);background:rgba(245,158,11,.1);color:var(--amber);cursor:pointer;white-space:nowrap">↩ Restore</button>';
+        btns.appendChild(makeBtn('↩ Restore','var(--amber)','rgba(245,158,11,.1)',calRestore));
       }
-      html+='<button data-id="'+iid+'" onclick="calDelete(this.dataset.id)" style="font-size:9px;padding:4px 8px;border-radius:5px;border:0.5px solid var(--border);background:transparent;color:var(--text3);cursor:pointer;white-space:nowrap">🗑 Del</button>';
-      html+='</div>';
-      html+='</div>';
-      html+='</div>';
+      btns.appendChild(makeBtn('🗑 Del','var(--text3)','transparent',calDelete));
+      row.appendChild(btns);
+      card.appendChild(row);
+      frag.appendChild(card);
     });
   });
 
-  area.innerHTML=html;
+  area.innerHTML='';
+  area.appendChild(frag);
 }
 
 
@@ -2930,26 +2696,6 @@ const _origGoTo=goTo;
 const _baseGoTo=goTo;
 
 // ══════════════════════════════════════════════
-// CALENDAR TEST HELPER
-// ══════════════════════════════════════════════
-function addTestCalItem(){
-  const today=new Date().toISOString().slice(0,10);
-  const tomorrow=new Date(Date.now()+86400000).toISOString().slice(0,10);
-  const items=getCalStore();
-  items.push({id:'test_'+Date.now(),type:'reminder',title:'Test Reminder — Dinner at Hotel',
-    date:today,time:'19:00',morning_body:'Sample morning reminder text',status:'active',
-    createdAt:new Date().toISOString()});
-  items.push({id:'test2_'+Date.now(),type:'schedule',title:tomorrow+' Schedule',
-    date:tomorrow,time:'09:00',
-    items:[{time:'09:00',title:'Morning standup',type:'Meeting',duration:'30 min'},
-           {time:'10:00',title:'Deep work',type:'Work',duration:'2 hours'}],
-    status:'active',createdAt:new Date().toISOString()});
-  saveCalStoreLocal(items);
-  showToast('Test items added to calendar');
-  renderCalendar();
-}
-
-// ══════════════════════════════════════════════
 // HOME TASKS
 // ══════════════════════════════════════════════
 function renderHomeTasks(){
@@ -2969,18 +2715,4 @@ function renderHomeTasks(){
 updateUserBadge();
 
 // Listen for Firebase auth restore
-window.addEventListener('voraAuthReady', function(e){
-  const profile = e.detail;
-  if(profile){
-    try{ localStorage.setItem('vora_user', JSON.stringify(profile)); }catch(err){}
-    updateUserBadge();
-    if(typeof updateTopicsAccess === 'function') updateTopicsAccess();
-    if(typeof renderSubscriptionCTA === 'function') renderSubscriptionCTA();
-    setTimeout(()=>{ if(typeof initPushNotifications==='function') initPushNotifications(); }, 1500);
-  } else {
-    updateUserBadge();
-  }
-});
-</script>
-</body>
-</html>
+window.addEventListener('voraAuthReady', f
