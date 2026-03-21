@@ -162,9 +162,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .pwd-wrap input{width:100%;padding-right:42px;margin-bottom:0}
 .pwd-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);cursor:pointer;padding:4px;font-size:13px;line-height:1}
 /* Cal toggle equal size */
-#cal-view-toggle{display:none}
-#cal-view-toggle.visible{display:flex;background:var(--surface2);border-radius:8px;padding:3px;margin-bottom:10px}
-#cal-btn-list,#cal-btn-grid{flex:1;font-size:11px;font-weight:600;padding:6px 0;border:none;cursor:pointer;font-family:var(--font)}
+#cal-view-toggle{display:none;margin-bottom:10px}
+#cal-view-toggle.visible{display:inline-flex;background:var(--surface2);border-radius:8px;padding:3px}
+#cal-btn-list,#cal-btn-grid{font-size:11px;font-weight:600;padding:6px 0;border:none;cursor:pointer;font-family:var(--font)}
 #cal-btn-list{border-radius:6px 0 0 6px}
 #cal-btn-grid{border-radius:0 6px 6px 0}
 
@@ -2227,6 +2227,17 @@ function renderReminder(r){
 
 // ── Calendar Firebase path ───────────────────────────────────────────────────
 function calPath(uid){ return 'calendar/'+uid; }
+function addTestCalItem(){
+  const today=new Date().toISOString().slice(0,10);
+  saveToCalendar('reminder',{
+    title:'Test — tap Done to complete it',
+    date:today,
+    time:'12:00',
+    morning_body:'This is a test calendar item.'
+  });
+  renderCalendar();
+  showToast('Test item added ✓');
+}
 
 function getCalStore(){
   try{ return JSON.parse(localStorage.getItem('vora_calendar')||'[]'); }catch(e){ return []; }
@@ -2296,27 +2307,21 @@ function getRetentionDays(u){
 }
 
 function purgeExpiredItems(){
+  // Only remove completed items past their retention period
+  // NEVER auto-move active items — user must tap Done manually
   const u=getUser();
   const retDays=getRetentionDays(u);
-  const items=getCalStore();
+  const retMs=retDays*24*60*60*1000;
   const now=Date.now();
+  const items=getCalStore();
   const filtered=items.filter(item=>{
-    const created=new Date(item.createdAt).getTime();
-    const ageHours=(now-created)/(1000*60*60);
-    if(item.status==='active') return true; // never auto-purge active
-    // Completed items — check retention
-    const retHours=retDays*24;
-    return ageHours < retHours;
+    if(item.status==='active') return true; // always keep active
+    const completedAt=new Date(item.completedAt||item.createdAt).getTime();
+    return (now-completedAt)<retMs; // keep if within retention window
   });
-  // Auto-move past items to completed
-  const itemDate=(item)=>item.date?new Date(item.date+'T23:59:59').getTime():0;
-  filtered.forEach(item=>{
-    if(item.status==='active' && itemDate(item) < now && itemDate(item) > 0){
-      item.status='completed';
-      item.completedAt=new Date().toISOString();
-    }
-  });
-  saveCalStore(filtered);
+  if(filtered.length!==items.length){
+    try{ localStorage.setItem('vora_calendar',JSON.stringify(filtered)); }catch(e){}
+  }
 }
 
 // ── CALENDAR VIEW ─────────────────────────────────────────────────────────────
@@ -2444,149 +2449,89 @@ function calSelectDate(dateStr){
 function renderCalList(filterDate){
   const area=document.getElementById('cal-list-area');
   if(!area) return;
-  const items=getCalStore().filter(i=>i.status===_calTab);
-  let filtered=filterDate?items.filter(i=>i.date===filterDate):items;
 
-  // For non-premium, limit future view to 3 months
-  const u=getUser();
-  const isPrem=u&&(u.type==='premium'||u.adminOverride);
-  if(!isPrem){
-    const cutoff=new Date();
-    cutoff.setMonth(cutoff.getMonth()+3);
-    filtered=filtered.filter(i=>!i.date||new Date(i.date+'T12:00:00')<=cutoff);
-  }
+  const allItems=getCalStore();
+  let items=allItems.filter(i=>i.status===_calTab);
+  if(filterDate) items=items.filter(i=>i.date===filterDate);
+  items.sort((a,b)=>(a.date||'9999').localeCompare(b.date||'9999'));
 
-  if(!filtered.length){
-    const msg=_calTab==='active'
-      ?'<div style="font-size:24px;margin-bottom:8px">📅</div><div style="font-size:13px">No active items yet.<br>Your schedules, reminders and tasks appear here automatically.</div>'
-      :'<div style="font-size:24px;margin-bottom:8px">✅</div><div style="font-size:13px">No completed items yet.</div>';
-    area.innerHTML='<div style="text-align:center;padding:24px 16px;color:var(--text3)">'+msg+'</div>';
+  if(!items.length){
+    const isActive=_calTab==='active';
+    area.innerHTML='<div style="text-align:center;padding:32px 16px;color:var(--text3)">'
+      +'<div style="font-size:32px;margin-bottom:10px">'+(isActive?'📅':'✅')+'</div>'
+      +'<div style="font-size:13px;font-weight:500;color:var(--text2);margin-bottom:6px">'+(isActive?'No active items':'No completed items')+'</div>'
+      +'<div style="font-size:12px;line-height:1.7">'+(isActive?'Build a schedule or set a reminder<br>and it will appear here.':'Mark active items as Done<br>to see them here.')+'</div>'
+      +(isActive?'<button onclick="addTestCalItem()" style="margin-top:14px;padding:8px 16px;border-radius:8px;border:0.5px solid var(--accent);background:rgba(79,110,247,.1);color:var(--accent);cursor:pointer;font-size:12px;font-family:inherit">+ Add test item</button>':'')
+      +'</div>';
     return;
   }
 
-  // Sort by date
-  filtered.sort((a,b)=>(a.date||'').localeCompare(b.date||''));
-
-  // Group by date
+  const today=new Date().toISOString().slice(0,10);
   const groups={};
-  filtered.forEach(item=>{
-    const key=item.date||'No date';
-    if(!groups[key]) groups[key]=[];
-    groups[key].push(item);
+  items.forEach(item=>{
+    const k=item.date||'No date';
+    if(!groups[k]) groups[k]=[];
+    groups[k].push(item);
   });
 
-  const today=new Date().toISOString().slice(0,10);
-  const frag=document.createDocumentFragment();
-
+  let html='';
   Object.entries(groups).forEach(([date,gItems])=>{
     const isToday=date===today;
     const isPast=date<today&&date!=='No date';
-    const dateDisplay=date==='No date'?'No date set':
-      new Date(date+'T12:00:00').toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-    const prefix=isToday?'📅 Today — ':isPast?'':'🔜 ';
-
-    const header=document.createElement('div');
-    header.className='cal-date-group';
-    header.textContent=prefix+dateDisplay;
-    frag.appendChild(header);
+    let label='No date';
+    if(date!=='No date'){
+      try{ label=new Date(date+'T12:00:00').toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'}); }
+      catch(e){ label=date; }
+    }
+    const prefix=isToday?'📅 Today — ':isPast&&_calTab==='active'?'⚠️ Overdue — ':'📌 ';
+    html+='<div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin:14px 0 7px;padding-bottom:5px;border-bottom:0.5px solid var(--border)">'+(date==='No date'?'No date':prefix+label)+'</div>';
 
     gItems.forEach(item=>{
-      const card=document.createElement('div');
-      const borderClass=item.status==='completed'?'completed':isToday?'today':isPast&&item.status==='active'?'overdue':'upcoming';
-      card.className='cal-item '+borderClass;
+      const bc=_calTab==='completed'?'var(--text3)':isToday?'var(--accent)':isPast?'var(--red)':'var(--green)';
+      const typeEmoji={'schedule':'📅','reminder':'🔔','task':'✅'}[item.type]||'📌';
+      const typeName={'schedule':'Schedule','reminder':'Reminder','task':'Task'}[item.type]||'Item';
+      const iid=item.id;
 
-      // Build inner HTML safely using DOM
-      const row=document.createElement('div');
-      row.style.cssText='display:flex;align-items:flex-start;justify-content:space-between;gap:8px';
-
-      // Left — content
-      const left=document.createElement('div');
-      left.style.flex='1';
-
-      const title=document.createElement('div');
-      title.className='cal-item-title';
-      title.textContent=item.title||'Untitled';
-      left.appendChild(title);
-
-      // Type-specific details
-      if(item.type==='schedule'&&item.items){
-        const meta=document.createElement('div');
-        meta.className='cal-item-meta';
-        meta.textContent=item.items.length+' time blocks'+(item.items[0]?' · Starts '+( item.items[0].time||item.items[0].time12||''):'');
-        left.appendChild(meta);
-        // Show first 3 blocks
-        const blocks=document.createElement('div');
-        blocks.style.cssText='margin-top:6px;display:grid;gap:3px';
+      html+='<div style="background:var(--surface);border:0.5px solid var(--border);border-left:3px solid '+bc+';border-radius:var(--radius-sm);padding:11px 13px;margin-bottom:8px">';
+      html+='<div style="display:flex;gap:8px;align-items:flex-start">';
+      html+='<div style="flex:1;min-width:0">';
+      html+='<div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px">'+esc(item.title||'Untitled')+'</div>';
+      if(item.time) html+='<div style="font-size:11px;color:var(--text2);margin-bottom:2px">⏰ '+esc(item.time)+'</div>';
+      if(item.type==='schedule'&&item.items&&item.items.length){
+        html+='<div style="font-size:11px;color:var(--text2);margin-bottom:4px">'+item.items.length+' time blocks'+(item.items[0]?' · starts '+esc(item.items[0].time||''):'')+'</div>';
+        html+='<div style="display:grid;gap:2px;margin-top:4px">';
         item.items.slice(0,3).forEach(s=>{
-          const lc=s.type==='Meeting'?'var(--accent)':s.type==='Break'?'var(--text3)':s.type==='Personal'?'var(--green)':'var(--amber)';
-          const blk=document.createElement('div');
-          blk.style.cssText='display:flex;gap:8px;font-size:11px;color:var(--text2);padding:3px 0;border-left:2px solid '+lc+';padding-left:6px';
-          blk.innerHTML='<span style="color:var(--text3);min-width:40px">'+esc(s.time||s.time12||'')+'</span><span>'+esc(s.title)+'</span>';
-          blocks.appendChild(blk);
+          const lc={'Meeting':'var(--accent)','Break':'var(--text3)','Personal':'var(--green)'}[s.type]||'var(--amber)';
+          html+='<div style="font-size:10px;color:var(--text2);border-left:2px solid '+lc+';padding-left:5px">'+esc(s.time||'')+'  '+esc(s.title)+'</div>';
         });
-        if(item.items.length>3){
-          const more=document.createElement('div');
-          more.style.cssText='font-size:10px;color:var(--text3);padding-left:6px';
-          more.textContent='+'+(item.items.length-3)+' more';
-          blocks.appendChild(more);
-        }
-        left.appendChild(blocks);
-      } else if(item.type==='reminder'){
-        if(item.time){
-          const m=document.createElement('div');m.className='cal-item-meta';
-          m.textContent='⏰ '+item.time;left.appendChild(m);
-        }
-        if(item.morning_body){
-          const m=document.createElement('div');
-          m.className='cal-item-meta';m.style.cssText='margin-top:3px;font-size:10px';
-          m.textContent=item.morning_body.slice(0,80)+(item.morning_body.length>80?'…':'');
-          left.appendChild(m);
-        }
+        if(item.items.length>3) html+='<div style="font-size:10px;color:var(--text3);padding-left:5px">+'+(item.items.length-3)+' more</div>';
+        html+='</div>';
+      } else if(item.type==='reminder'&&item.morning_body){
+        html+='<div style="font-size:11px;color:var(--text2);margin-top:3px">'+esc((item.morning_body||'').slice(0,80))+'</div>';
       } else if(item.type==='task'){
-        const parts=[];
-        if(item.dateLabel) parts.push(item.dateLabel);
-        if(item.person) parts.push('from '+item.person);
-        if(item.priority) parts.push(item.priority);
-        if(parts.length){
-          const m=document.createElement('div');m.className='cal-item-meta';
-          m.textContent=parts.join(' · ');left.appendChild(m);
-        }
+        const m=[];
+        if(item.person) m.push('from '+item.person);
+        if(item.priority) m.push(item.priority);
+        if(m.length) html+='<div style="font-size:11px;color:var(--text2)">'+esc(m.join(' · '))+'</div>';
       }
+      html+='<span style="font-size:9px;font-weight:600;padding:2px 7px;border-radius:8px;background:var(--surface2);color:var(--text2);display:inline-block;margin-top:5px">'+typeEmoji+' '+typeName+'</span>';
+      html+='</div>';
 
-      const typeLabel=item.type==='schedule'?'Schedule':item.type==='reminder'?'Reminder':'Task';
-      const badge=document.createElement('span');
-      badge.className='cal-item-type cal-type-'+(item.type||'task');
-      badge.textContent=typeLabel;
-      left.appendChild(badge);
-      row.appendChild(left);
-
-      // Right — action buttons
-      const btns=document.createElement('div');
-      btns.style.cssText='display:flex;flex-direction:column;gap:4px;flex-shrink:0';
-
-      const makeBtn=(label,color,bg,fn)=>{
-        const b=document.createElement('button');
-        b.style.cssText='font-size:9px;padding:3px 8px;border-radius:5px;border:0.5px solid '+color+';background:'+bg+';color:'+color+';cursor:pointer;font-family:inherit';
-        b.textContent=label;
-        b.onclick=()=>fn(item.id);
-        return b;
-      };
-
-      if(item.status==='active'){
-        btns.appendChild(makeBtn('✓ Done','var(--green)','rgba(34,197,94,.1)',calComplete));
-        btns.appendChild(makeBtn('✏️ Edit','var(--accent)','rgba(79,110,247,.1)',calReschedule));
+      // Buttons
+      html+='<div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">';
+      if(_calTab==='active'){
+        html+='<button data-id="'+iid+'" onclick="calComplete(this.dataset.id)" style="font-size:9px;padding:4px 8px;border-radius:5px;border:0.5px solid var(--green);background:rgba(34,197,94,.1);color:var(--green);cursor:pointer">✓ Done</button>';
+        html+='<button data-id="'+iid+'" onclick="calReschedule(this.dataset.id)" style="font-size:9px;padding:4px 8px;border-radius:5px;border:0.5px solid var(--accent);background:rgba(79,110,247,.1);color:var(--accent);cursor:pointer">✏️ Edit</button>';
       } else {
-        btns.appendChild(makeBtn('↩ Restore','var(--amber)','rgba(245,158,11,.1)',calRestore));
+        html+='<button data-id="'+iid+'" onclick="calRestore(this.dataset.id)" style="font-size:9px;padding:4px 8px;border-radius:5px;border:0.5px solid var(--amber);background:rgba(245,158,11,.1);color:var(--amber);cursor:pointer">↩ Restore</button>';
       }
-      btns.appendChild(makeBtn('🗑 Del','var(--text3)','transparent',calDelete));
-      row.appendChild(btns);
-      card.appendChild(row);
-      frag.appendChild(card);
+      html+='<button data-id="'+iid+'" onclick="calDelete(this.dataset.id)" style="font-size:9px;padding:4px 8px;border-radius:5px;border:0.5px solid var(--border);background:transparent;color:var(--text3);cursor:pointer">🗑 Del</button>';
+      html+='</div>';
+      html+='</div></div>';
     });
   });
 
-  area.innerHTML='';
-  area.appendChild(frag);
+  area.innerHTML=html;
 }
 
 
