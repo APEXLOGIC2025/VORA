@@ -133,26 +133,24 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .screen.active{display:block}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
-/* ── HAMBURGER ── */
 .hamburger{background:none;border:none;cursor:pointer;padding:4px;display:flex;flex-direction:column;gap:5px;justify-content:center;align-items:center;width:32px;height:32px;flex-shrink:0}
 .hamburger span{display:block;width:18px;height:2px;background:var(--text2);border-radius:2px}
-/* ── DRAWERS ── */
-.drw-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:8000;opacity:0;pointer-events:none;transition:opacity .25s}
-.drw-overlay.open{opacity:1;pointer-events:all}
-.drw-left{position:fixed;top:0;left:0;bottom:0;width:270px;max-width:82vw;background:var(--surface);z-index:8001;transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
-.drw-left.open{transform:translateX(0)}
-.drw-right{position:fixed;top:0;right:0;bottom:0;width:270px;max-width:82vw;background:var(--surface);z-index:8001;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
-.drw-right.open{transform:translateX(0)}
-.drw-head{padding:18px 16px 12px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.drw-logo{font-family:var(--font-head);font-size:19px;font-weight:700;background:linear-gradient(135deg,#fff,#4F6EF7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:2px}
-.drw-close{background:none;border:none;color:var(--text2);cursor:pointer;font-size:19px;line-height:1;padding:4px}
-.drw-body{flex:1;overflow-y:auto;padding:6px 0}
-.drw-item{width:100%;display:flex;align-items:center;gap:11px;padding:12px 16px;background:none;border:none;color:var(--text2);font-size:13px;font-weight:500;font-family:var(--font);cursor:pointer;text-align:left;transition:background .15s,color .15s}
-.drw-item:hover,.drw-item.active{background:rgba(79,110,247,.1);color:var(--accent)}
-.drw-item svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.drw-ov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:8000;opacity:0;pointer-events:none;transition:opacity .25s}
+.drw-ov.open{opacity:1;pointer-events:all}
+.drw-l{position:fixed;top:0;left:0;bottom:0;width:270px;max-width:82vw;background:var(--surface);z-index:8001;transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow:hidden}
+.drw-l.open{transform:translateX(0)}
+.drw-r{position:fixed;top:0;right:0;bottom:0;width:270px;max-width:82vw;background:var(--surface);z-index:8001;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
+.drw-r.open{transform:translateX(0)}
+.drw-hd{padding:16px 16px 12px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.drw-logo{font-family:var(--font-head);font-size:18px;font-weight:700;background:linear-gradient(135deg,#fff,#4F6EF7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:2px}
+.drw-x{background:none;border:none;color:var(--text2);cursor:pointer;font-size:18px;line-height:1;padding:4px}
+.drw-bd{flex:1;overflow-y:auto;padding:5px 0}
+.drw-it{width:100%;display:flex;align-items:center;gap:10px;padding:11px 16px;background:none;border:none;color:var(--text2);font-size:13px;font-weight:500;font-family:var(--font);cursor:pointer;text-align:left;transition:background .15s,color .15s}
+.drw-it:hover,.drw-it.act{background:rgba(79,110,247,.1);color:var(--accent)}
+.drw-it svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 .drw-sep{height:0.5px;background:var(--border);margin:4px 16px}
-.drw-foot{padding:12px 16px;border-top:0.5px solid var(--border);font-size:10px;color:var(--text3);flex-shrink:0}
-.profile-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#4F6EF7,#7B5CF0);border:none;cursor:pointer;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.drw-ft{padding:10px 16px;border-top:0.5px solid var(--border);font-size:10px;color:var(--text3);flex-shrink:0}
+.pav{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#4F6EF7,#7B5CF0);border:none;cursor:pointer;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--font)}
 /* ── BOTTOM NAV ── */
 .bottom-nav{display:flex;background:var(--surface);border-top:0.5px solid var(--border);padding:6px 4px calc(6px + env(safe-area-inset-bottom));flex-shrink:0}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;background:none;border:none;cursor:pointer;color:var(--text3);font-family:var(--font);transition:color .2s}
@@ -338,40 +336,39 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
 <div id="app">
 
   <!-- Header -->
-  <!-- Left nav drawer -->
-  <div class="drw-overlay" id="dov-l" onclick="closeDrw('l')"></div>
-  <div class="drw-left" id="drw-l">
-    <div class="drw-head"><div class="drw-logo">VORA</div><button class="drw-close" onclick="closeDrw('l')">&#x2715;</button></div>
-    <div class="drw-body">
-      <button class="drw-item active" id="dni-home" onclick="goTo('home');closeDrw('l')"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</button>
-      <button class="drw-item" id="dni-chats" onclick="goTo('chats');closeDrw('l')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Chats</button>
-      <button class="drw-item" id="dni-scan" onclick="goTo('scan');closeDrw('l')"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>Scan to PDF</button>
-      <button class="drw-item" id="dni-topics" onclick="handleTopicsTile();closeDrw('l')"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Topics</button>
+  <div class="drw-ov" id="ov-l" onclick="cDrw('l')"></div>
+  <div class="drw-l" id="dl">
+    <div class="drw-hd"><span class="drw-logo">VORA</span><button class="drw-x" onclick="cDrw('l')">&#x2715;</button></div>
+    <div class="drw-bd">
+      <button class="drw-it act" id="di-home" onclick="goTo('home');cDrw('l')"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</button>
+      <button class="drw-it" id="di-chats" onclick="goTo('chats');cDrw('l')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Chats</button>
+      <button class="drw-it" id="di-scan" onclick="goTo('scan');cDrw('l')"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>Scan to PDF</button>
+      <button class="drw-it" id="di-topics" onclick="handleTopicsTile();cDrw('l')"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Topics</button>
       <div class="drw-sep"></div>
-      <button class="drw-item" id="dni-schedule" onclick="goTo('schedule');closeDrw('l')"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Schedule</button>
-      <button class="drw-item" id="dni-calendar" onclick="goTo('calendar');closeDrw('l')"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="8" cy="15" r="1"/><circle cx="12" cy="15" r="1"/><circle cx="16" cy="15" r="1"/></svg>Calendar</button>
-      <button class="drw-item" id="dni-reminders" onclick="goTo('reminders');closeDrw('l')"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Reminders</button>
-      <button class="drw-item" id="dni-done" onclick="goTo('calendar');setCalTab('completed');closeDrw('l')"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Done</button>
+      <button class="drw-it" id="di-schedule" onclick="goTo('schedule');cDrw('l')"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Schedule</button>
+      <button class="drw-it" id="di-calendar" onclick="goTo('calendar');cDrw('l')"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="8" cy="15" r="1"/><circle cx="12" cy="15" r="1"/><circle cx="16" cy="15" r="1"/></svg>Calendar</button>
+      <button class="drw-it" id="di-reminders" onclick="goTo('reminders');cDrw('l')"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Reminders</button>
+      <button class="drw-it" onclick="goTo('calendar');setCalTab('completed');cDrw('l')"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Done</button>
       <div class="drw-sep"></div>
-      <button class="drw-item" onclick="goTo('privacy');closeDrw('l')"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Privacy Policy</button>
-      <button class="drw-item" onclick="goTo('terms');closeDrw('l')"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Terms of Use</button>
-      <button class="drw-item" onclick="showContactModal();closeDrw('l')"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Contact</button>
+      <button class="drw-it" onclick="goTo('privacy');cDrw('l')"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Privacy Policy</button>
+      <button class="drw-it" onclick="goTo('terms');cDrw('l')"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Terms of Use</button>
+      <button class="drw-it" onclick="showContactModal();cDrw('l')"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Contact</button>
     </div>
-    <div class="drw-foot">© 2026 VORA by Apexlogic</div>
+    <div class="drw-ft">&#169; 2026 VORA by Apexlogic</div>
   </div>
-
-  <!-- Right profile drawer -->
-  <div class="drw-overlay" id="dov-r" onclick="closeDrw('r')"></div>
-  <div class="drw-right" id="drw-r">
-    <div class="drw-head"><div style="font-size:14px;font-weight:600;color:var(--text)">My Profile</div><button class="drw-close" onclick="closeDrw('r')">&#x2715;</button></div>
-    <div style="flex:1;overflow-y:auto;padding:16px" id="drw-profile"></div>
+  <div class="drw-ov" id="ov-r" onclick="cDrw('r')"></div>
+  <div class="drw-r" id="dr">
+    <div class="drw-hd"><span style="font-size:14px;font-weight:600;color:var(--text)">My Profile</span><button class="drw-x" onclick="cDrw('r')">&#x2715;</button></div>
+    <div style="flex:1;overflow-y:auto;padding:16px" id="dp"></div>
   </div>
-
   <div class="app-header">
-    <button class="hamburger" onclick="openDrw('l')"><span></span><span></span><span></span></button>
+    <button class="hamburger" onclick="oDrw('l')"><span></span><span></span><span></span></button>
     <div class="logo">VORA</div>
-    <button class="profile-avatar" id="pav-btn" onclick="openDrw('r')">?</button>
-    <span id="user-badge" class="user-badge guest" style="display:none"></span>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span class="date-text" id="live-date"></span>
+      <button class="pav" id="pav" onclick="oDrw('r')">?</button>
+      <span id="user-badge" class="user-badge guest" style="display:none"></span>
+    </div>
   </div>
 
   <!-- About Banner — home screen only -->
@@ -608,7 +605,7 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
         <p style="margin-bottom:10px">VORA is intended for users aged 13 and above. We do not knowingly collect information from children under 13.</p>
 
         <div style="font-size:11px;font-weight:600;color:var(--text);margin:12px 0 4px;text-transform:uppercase;letter-spacing:.4px">6. Contact</div>
-        <p>For privacy questions or data deletion: <strong style="color:var(--accent)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c2a3b2a7baaeada5aba1f0f2f0f782a5afa3abaeeca1adaf">[email&#160;protected]</a></strong> or <strong style="color:var(--accent)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8be8eee4cbeafbeef3e7e4ece2e8a5e2e5">[email&#160;protected]</a></strong></p>
+        <p>For privacy questions or data deletion: <strong style="color:var(--accent)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="274657425f4b48404e441517151267404a464e4b0944484a">[email&#160;protected]</a></strong> or <strong style="color:var(--accent)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b0d3d5dff0d1c0d5c8dcdfd7d9d39ed9de">[email&#160;protected]</a></strong></p>
       </div>
     </div>
 
@@ -642,7 +639,7 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
         <p style="margin-bottom:10px">VORA is provided as-is. Apexlogic is not liable for any loss arising from use of the app including data loss, AI errors, or service interruptions.</p>
 
         <div style="font-size:11px;font-weight:600;color:var(--text);margin:12px 0 4px;text-transform:uppercase;letter-spacing:.4px">7. Contact</div>
-        <p>For questions about these terms: <strong style="color:var(--accent)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0a6b7a6f7266656d6369383a383f4a6d676b636624696567">[email&#160;protected]</a></strong></p>
+        <p>For questions about these terms: <strong style="color:var(--accent)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1978697c6175767e707a2b292b2c597e74787075377a7674">[email&#160;protected]</a></strong></p>
       </div>
     </div>
 
@@ -650,35 +647,45 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
 
   <!-- Bottom Nav -->
   <!-- 2-tier bottom navigation -->
-  <div class="bottom-nav">
-    <button class="nav-item active" id="nav-home" onclick="goTo('home')">
-      <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-      <span class="nav-label">Home</span>
-    </button>
-    <button class="nav-item" id="nav-chats" onclick="goTo('chats')">
-      <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
-      <span class="nav-label">Chats</span>
-    </button>
-    <button class="nav-item" id="nav-scan" onclick="goTo('scan')">
-      <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg></div>
-      <span class="nav-label">Scan</span>
-    </button>
-    <button class="nav-item" id="nav-schedule" onclick="goTo('schedule')">
-      <div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
-      <span class="nav-label">Schedule</span>
-    </button>
-    <button class="nav-item" id="nav-calendar" onclick="goTo('calendar')">
-      <div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="8" cy="15" r="1"/><circle cx="12" cy="15" r="1"/><circle cx="16" cy="15" r="1"/></svg></div>
-      <span class="nav-label">Calendar</span>
-    </button>
-    <button class="nav-item" id="nav-reminders" onclick="goTo('reminders')">
-      <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
-      <span class="nav-label">Reminder</span>
-    </button>
-    <button class="nav-item" id="nav-done" onclick="goTo('calendar');setCalTab('completed')">
-      <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-      <span class="nav-label">Done</span>
-    </button>
+  <div class="bottom-nav" style="flex-direction:column;padding:0">
+    <!-- Top row: Home, Chats, Scan, Topics -->
+    <div style="display:flex;width:100%;border-bottom:0.5px solid var(--border)">
+      <button class="nav-item active" id="nav-home" onclick="goTo('home')">
+        <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <span class="nav-label">Home</span>
+      </button>
+      <button class="nav-item" id="nav-chats" onclick="goTo('chats')">
+        <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <span class="nav-label">Chats</span>
+      </button>
+      <button class="nav-item" id="nav-scan" onclick="goTo('scan')">
+        <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg></div>
+        <span class="nav-label">Scan</span>
+      </button>
+      <button class="nav-item" id="nav-topics" onclick="handleTopicsTile()">
+        <div class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+        <span class="nav-label">Topics</span>
+      </button>
+    </div>
+    <!-- Bottom row: Schedule, Calendar, Reminder, Done -->
+    <div style="display:flex;width:100%">
+      <button class="nav-item" id="nav-schedule" onclick="goTo('schedule')">
+        <div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <span class="nav-label">Schedule</span>
+      </button>
+      <button class="nav-item" id="nav-calendar" onclick="goTo('calendar')">
+        <div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="8" cy="15" r="1"/><circle cx="12" cy="15" r="1"/><circle cx="16" cy="15" r="1"/></svg></div>
+        <span class="nav-label">Calendar</span>
+      </button>
+      <button class="nav-item" id="nav-reminders" onclick="goTo('reminders')">
+        <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+        <span class="nav-label">Reminder</span>
+      </button>
+      <button class="nav-item" id="nav-done" onclick="goTo('calendar');setCalTab('completed')">
+        <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+        <span class="nav-label">Done</span>
+      </button>
+    </div>
   </div>
 
 </div><!-- /app -->
@@ -746,16 +753,12 @@ function renderSubscriptionCTA(){
 function updateUserBadge(){
   const u=getUser();
   const {text,cls}=getUserLabel(isExpired(u)?null:u);
-  const badge=document.getElementById('user-badge');
+  var badge=document.getElementById('user-badge');
   if(badge){badge.textContent=text;badge.className='user-badge '+cls;}
+  var pb2=document.getElementById('pav');
+  if(pb2){var u3=getUser();pb2.textContent=u3&&!isExpired(u3)?(u3.name||'?').split(' ').map(function(w){return w[0];}).join('').slice(0,2).toUpperCase():'?';}
   updateHomeGreeting();
   updateTopicsAccess();
-  const pab=document.getElementById('pav-btn');
-  if(pab){
-    const u2=getUser();
-    if(u2&&!isExpired(u2)) pab.textContent=(u2.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-    else pab.textContent='?';
-  }
 }
 
 function updateHomeGreeting(){
@@ -952,75 +955,69 @@ if(aboutCollapsed){
 // ══════════════════════════════════════════════
 // DRAWER
 // ══════════════════════════════════════════════
-function drwSignup(){ closeDrw('r'); showAuthModal('signup'); }
-function drwLogin(){ closeDrw('r'); showAuthModal('login'); }
-function drwSubscribe(){ closeDrw('r'); showSubscribeModal(); }
-function drwAdmin(){ closeDrw('r'); showAdminPanel(); }
-function drwSignout(){ closeDrw('r'); signOut(); }
-function openDrw(side){
-  document.getElementById('drw-'+(side==='l'?'l':'r')).classList.add('open');
-  document.getElementById('dov-'+(side==='l'?'l':'r')).classList.add('open');
+function oDrw(s){
+  var el=document.getElementById(s==='l'?'dl':'dr');
+  var ov=document.getElementById(s==='l'?'ov-l':'ov-r');
+  if(el) el.classList.add('open');
+  if(ov) ov.classList.add('open');
   document.body.style.overflow='hidden';
-  if(side==='r') renderProfileDrw();
+  if(s==='r') rPrf();
 }
-function closeDrw(side){
-  document.getElementById('drw-'+(side==='l'?'l':'r')).classList.remove('open');
-  document.getElementById('dov-'+(side==='l'?'l':'r')).classList.remove('open');
+function cDrw(s){
+  var el=document.getElementById(s==='l'?'dl':'dr');
+  var ov=document.getElementById(s==='l'?'ov-l':'ov-r');
+  if(el) el.classList.remove('open');
+  if(ov) ov.classList.remove('open');
   document.body.style.overflow='';
 }
-function updateDrwActive(name){
-  document.querySelectorAll('.drw-item').forEach(b=>{
-    b.classList.toggle('active', b.id==='dni-'+name);
-  });
-}
-function renderProfileDrw(){
-  const el=document.getElementById('drw-profile');
+function pSub(){cDrw('r');showSubscribeModal();}
+function pAdmin(){cDrw('r');showAdminPanel();}
+function pOut(){cDrw('r');signOut();}
+function pSignup(){cDrw('r');showAuthModal('signup');}
+function pLogin(){cDrw('r');showAuthModal('login');}
+function rPrf(){
+  var el=document.getElementById('dp');
   if(!el) return;
-  const u=getUser();
+  var u=getUser();
   if(!u){
-    el.innerHTML='<div style="text-align:center;padding:20px 0">'
-      +'<div style="font-size:30px;margin-bottom:10px">👤</div>'
-      +'<div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:10px">Not signed in</div>'
-      +'<button class="btn btn-primary" style="width:100%;margin-bottom:8px" onclick="drwSignup()">Sign up free →</button>'
-      +'<button class="btn" style="width:100%" onclick="drwLogin()">Sign in</button>'
-      +'</div>';
+    el.innerHTML='<div style="text-align:center;padding:20px 0"><div style="font-size:30px;margin-bottom:10px">&#128100;</div><div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px">Not signed in</div><button class="btn btn-primary" style="width:100%;margin-bottom:8px" onclick="pSignup()">Sign up free</button><button class="btn" style="width:100%" onclick="pLogin()">Sign in</button></div>';
     return;
   }
-  const ini=(u.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-  const ab=document.getElementById('pav-btn');
-  if(ab) ab.textContent=ini;
-  const days=u.expiresAt?Math.ceil((new Date(u.expiresAt)-new Date())/(864e5)):null;
-  const plan=u.adminOverride?'Admin':u.type==='premium'?'Premium':u.type==='basic'?'Basic':u.type==='free'?'Free':'Guest';
-  const pc=u.adminOverride?'var(--red)':u.type==='premium'?'#A78BFA':u.type==='basic'?'var(--accent)':'var(--green)';
-  const dc=days===null?'var(--green)':days>7?'var(--green)':days>3?'var(--amber)':'var(--red)';
-  let h='<div style="text-align:center;margin-bottom:14px">'
-    +'<div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#4F6EF7,#7B5CF0);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff;margin:0 auto 10px">'+ini+'</div>'
+  var ini=(u.name||'?').split(' ').map(function(w){return w[0];}).join('').slice(0,2).toUpperCase();
+  var pb=document.getElementById('pav');
+  if(pb) pb.textContent=ini;
+  var days=u.expiresAt?Math.ceil((new Date(u.expiresAt)-new Date())/864e5):null;
+  var plan=u.adminOverride?'Admin':u.type==='premium'?'Premium':u.type==='basic'?'Basic':u.type==='free'?'Free':'Guest';
+  var pc=u.adminOverride?'var(--red)':u.type==='premium'?'#A78BFA':u.type==='basic'?'var(--accent)':'var(--green)';
+  var dc=days===null?'var(--green)':days>7?'var(--green)':days>3?'var(--amber)':'var(--red)';
+  var h='<div style="text-align:center;margin-bottom:14px">'
+    +'<div style="width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#4F6EF7,#7B5CF0);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff;margin:0 auto 10px">'+ini+'</div>'
     +'<div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:2px">'+esc(u.name||'')+'</div>'
     +'<div style="font-size:11px;color:var(--text3)">'+esc(u.email||'')+'</div>'
     +(u.place?'<div style="font-size:11px;color:var(--text3)">'+esc(u.place)+'</div>':'')
     +'</div>'
-    +'<div style="background:var(--surface2);border-radius:var(--radius-sm);padding:10px 13px;margin-bottom:10px;display:flex;justify-content:space-between">'
+    +'<div style="background:var(--surface2);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">'
     +'<span style="font-size:12px;color:var(--text2)">Plan</span>'
     +'<span style="font-size:12px;font-weight:600;color:'+pc+'">'+plan+'</span>'
     +'</div>';
   if(days!==null&&!u.adminOverride){
-    h+='<div style="background:var(--surface2);border-radius:var(--radius-sm);padding:11px 13px;margin-bottom:12px">'
+    h+='<div style="background:var(--surface2);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:12px">'
       +'<div style="display:flex;align-items:baseline;gap:5px">'
-      +'<span style="font-size:24px;font-weight:700;color:'+dc+'">'+Math.max(0,days)+'</span>'
+      +'<span style="font-size:22px;font-weight:700;color:'+dc+'">'+Math.max(0,days)+'</span>'
       +'<span style="font-size:12px;color:var(--text2)">day'+(days!==1?'s':'')+' left</span>'
       +'</div>'
       +'<div style="font-size:10px;color:var(--text3);margin-top:2px">'+(days>0?'Expires '+new Date(u.expiresAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'Expired')+'</div>'
       +'</div>';
   } else if(u.adminOverride){
-    h+='<div style="background:rgba(245,158,11,.08);border:0.5px solid rgba(245,158,11,.3);border-radius:var(--radius-sm);padding:10px;margin-bottom:12px;text-align:center;font-size:12px;color:var(--amber)">♾️ Free forever (Admin)</div>';
+    h+='<div style="background:rgba(245,158,11,.08);border:0.5px solid rgba(245,158,11,.3);border-radius:var(--radius-sm);padding:10px;margin-bottom:12px;text-align:center;font-size:12px;color:var(--amber)">Free forever (Admin)</div>';
   }
   if(!u.adminOverride&&u.type!=='premium'&&u.type!=='basic'){
-    h+='<button style="width:100%;padding:10px;margin-bottom:8px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;border:none;background:var(--accent);color:#fff;cursor:pointer;font-family:var(--font)" onclick="drwSubscribe()">Subscribe — ₹25/month →</button>';
+    h+='<button style="width:100%;padding:10px;margin-bottom:8px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;border:none;background:var(--accent);color:#fff;cursor:pointer;font-family:var(--font)" onclick="pSub()">Subscribe &#8212; &#8377;25/month</button>';
   }
   if(u.adminOverride||u.type==='admin'){
-    h+='<button style="width:100%;padding:10px;margin-bottom:8px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;border:0.5px solid var(--amber);background:rgba(245,158,11,.1);color:var(--amber);cursor:pointer;font-family:var(--font)" onclick="drwAdmin()">🛡️ Admin Panel</button>';
+    h+='<button style="width:100%;padding:10px;margin-bottom:8px;border-radius:var(--radius-sm);font-size:13px;border:0.5px solid var(--amber);background:rgba(245,158,11,.1);color:var(--amber);cursor:pointer;font-family:var(--font)" onclick="pAdmin()">Admin Panel</button>';
   }
-  h+='<button style="width:100%;padding:10px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;border:0.5px solid rgba(239,68,68,.4);background:rgba(239,68,68,.06);color:var(--red);cursor:pointer;font-family:var(--font)" onclick="drwSignout()">Sign out</button>';
+  h+='<button style="width:100%;padding:10px;border-radius:var(--radius-sm);font-size:13px;border:0.5px solid rgba(239,68,68,.4);background:rgba(239,68,68,.06);color:var(--red);cursor:pointer;font-family:var(--font)" onclick="pOut()">Sign out</button>';
   el.innerHTML=h;
 }
 
@@ -1050,8 +1047,10 @@ function goTo(name){
   if(nav) nav.style.display=noNav.includes(name)?'none':'flex';
   if(hdr) hdr.style.display=noNav.includes(name)?'none':'flex';
   if(name==='home'){renderHomeTasks();renderUserBadge();renderSubscriptionCTA();}
-  if(name==='calendar') renderCalendar();
-  updateDrwActive(name);
+  document.querySelectorAll('.drw-it').forEach(function(b){b.classList.toggle('act',b.id==='di-'+name);});
+  if(name==='calendar'){
+    loadCalFromFirebase().then(()=>renderCalendar());
+  }
 }
 
 // ══════════════════════════════════════════════
@@ -2209,16 +2208,17 @@ function getRetentionDays(u){
 }
 
 function purgeExpiredItems(){
-  // Only remove completed items past retention — NEVER move active to completed
   const u=getUser();
   const retDays=getRetentionDays(u);
-  const retMs=retDays*24*60*60*1000;
-  const now=Date.now();
   const items=getCalStore();
+  const now=Date.now();
   const filtered=items.filter(item=>{
-    if(item.status==='active') return true;
-    const doneAt=new Date(item.completedAt||item.createdAt).getTime();
-    return (now-doneAt)<retMs;
+    const created=new Date(item.createdAt).getTime();
+    const ageHours=(now-created)/(1000*60*60);
+    if(item.status==='active') return true; // never auto-purge active
+    // Completed items — check retention
+    const retHours=retDays*24;
+    return ageHours < retHours;
   });
   if(filtered.length!==items.length) saveCalStore(filtered);
 }
@@ -2241,10 +2241,10 @@ function setCalView(v){
 
 function setCalTab(t){
   _calTab=t;
-  const a=document.getElementById('cal-tab-active');
-  const cp=document.getElementById('cal-tab-completed');
+  var a=document.getElementById('cal-tab-active');
+  var d=document.getElementById('cal-tab-completed');
   if(a) a.classList.toggle('active',t==='active');
-  if(cp) cp.classList.toggle('active',t==='completed');
+  if(d) d.classList.toggle('active',t==='completed');
   renderCalendar();
 }
 
@@ -2619,15 +2619,13 @@ updateUserBadge();
 
 // Listen for Firebase auth restore
 window.addEventListener('voraAuthReady', function(e){
-  const profile=e.detail;
+  var profile=e.detail;
   if(profile){
     try{ localStorage.setItem('vora_user',JSON.stringify(profile)); }catch(err){}
     updateUserBadge();
     if(typeof updateTopicsAccess==='function') updateTopicsAccess();
     if(typeof renderSubscriptionCTA==='function') renderSubscriptionCTA();
-  } else {
-    updateUserBadge();
-  }
+  } else { updateUserBadge(); }
 });
 </script>
 </body>
