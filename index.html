@@ -637,7 +637,10 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
     <!-- CALENDAR -->
     <div class="screen" id="screen-calendar">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-        <div class="sect" style="margin:0">My Calendar</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <button onclick="goTo('home')" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;line-height:1;padding:2px">&#8592;</button>
+          <div class="sect" style="margin:0">My Calendar</div>
+        </div>
       <div id="cal-view-toggle" style="display:none;background:var(--surface2);border-radius:8px;padding:3px;width:160px">
         <div style="display:flex;width:100%">
           <button id="cal-btn-list" onclick="setCalView('list')" style="flex:1;min-width:0;font-size:11px;font-weight:600;padding:6px 0;border-radius:5px;border:none;background:var(--accent);color:#fff;cursor:pointer;font-family:var(--font)">List</button>
@@ -1231,7 +1234,12 @@ function goTo(name){
   if(hdr) hdr.style.display=noNav.includes(name)?'none':'flex';
   if(name==='home'){renderHomeTasks();renderUserBadge();renderSubscriptionCTA();}
   if(name==='calendar'){
-    loadCalFromFirebase().then(()=>renderCalendar());
+    // Show loading state first
+    const listArea=document.getElementById('cal-list-area');
+    if(listArea) listArea.innerHTML='<div style="text-align:center;padding:20px;color:var(--text2);font-size:12px">Loading calendar...</div>';
+    loadCalFromFirebase().then(()=>{
+      renderCalendar();
+    }).catch(()=>renderCalendar()); // render from localStorage even if Firebase fails
   }
 }
 
@@ -2199,7 +2207,11 @@ function renderSchedule(r){
       tip:r.tip||''
     });
   }
-  html+=`<div class="btn-row" style="margin-top:10px"><button class="btn btn-sm" style="background:rgba(34,197,94,.12);border-color:var(--green);color:var(--green)" onclick='downloadICS(${JSON.stringify(r)})'>Download .ics (Google Calendar)</button><button class="btn btn-sm" onclick="document.getElementById('sched-results').innerHTML=''">Clear</button></div></div>`;
+  html+=`<div class="btn-row" style="margin-top:10px">
+    <button class="btn btn-sm" style="background:rgba(34,197,94,.12);border-color:var(--green);color:var(--green)" onclick='downloadICS(${JSON.stringify(r)})'>Download .ics</button>
+    <button class="btn btn-sm" style="background:rgba(79,110,247,.12);border-color:var(--accent);color:var(--accent)" onclick="goTo('calendar')">View in Calendar</button>
+    <button class="btn btn-sm" onclick="document.getElementById('sched-results').innerHTML=''">Clear</button>
+  </div></div>`;
   document.getElementById('sched-results').innerHTML=html;
   // Save to calendar store
   saveToCalendar('schedule', {
@@ -2499,12 +2511,27 @@ async function loadCalFromFirebase(){
 
 async function saveToCalendar(type, data){
   const u=getUser();
+  if(!u||isExpired(u)) return; // don't save for guests
   const items=getCalStore();
   const id='cal_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
   const now=new Date().toISOString();
-  const newItem={id, type, ...data, createdAt:now, status:'active'};
+  // Ensure all fields are plain values (no undefined)
+  const newItem={
+    id,
+    type,
+    title: data.title||'Untitled',
+    date: data.date||new Date().toISOString().slice(0,10),
+    time: data.time||'',
+    createdAt: now,
+    status: 'active'
+  };
+  // Copy all other data fields
+  Object.keys(data).forEach(k=>{
+    if(data[k]!==undefined&&data[k]!==null) newItem[k]=data[k];
+  });
   items.push(newItem);
   saveCalStore(items);
+  console.log('Saved to calendar:',type,newItem.title,newItem.date);
 }
 
 function guessDateStr(dateLabel){
@@ -2544,10 +2571,16 @@ function purgeExpiredItems(){
     const retHours=retDays*24;
     return ageHours < retHours;
   });
-  // Auto-move past items to completed
-  const itemDate=(item)=>item.date?new Date(item.date+'T23:59:59').getTime():0;
+  // Auto-move items to completed only if more than 24 hours past their date
+  // This prevents today's items from vanishing immediately
+  const itemDate=(item)=>{
+    if(!item.date) return 0;
+    if(item.time) return new Date(item.date+'T'+item.time).getTime();
+    return new Date(item.date+'T23:59:59').getTime();
+  };
+  const oneDayMs=24*60*60*1000;
   filtered.forEach(item=>{
-    if(item.status==='active' && itemDate(item) < now && itemDate(item) > 0){
+    if(item.status==='active' && itemDate(item)>0 && (now-itemDate(item))>oneDayMs){
       item.status='completed';
       item.completedAt=new Date().toISOString();
     }
@@ -2690,9 +2723,9 @@ function renderCalList(filterDate){
 
   if(!filtered.length){
     const msg=_calTab==='active'
-      ?'<div style="font-size:24px;margin-bottom:8px">📅</div><div style="font-size:13px">No active items yet.<br>Your schedules, reminders and tasks appear here automatically.</div>'
-      :'<div style="font-size:24px;margin-bottom:8px">✅</div><div style="font-size:13px">No completed items yet.</div>';
-    area.innerHTML='<div style="text-align:center;padding:24px 16px;color:var(--text3)">'+msg+'</div>';
+      ?'<div style="font-size:24px;margin-bottom:8px">📅</div><div style="font-size:13px;line-height:1.7">No active items yet.<br>Build a schedule or set a reminder<br>and it will appear here automatically.</div>'
+      :'<div style="font-size:24px;margin-bottom:8px">✅</div><div style="font-size:13px;line-height:1.7">No completed items yet.<br>Mark active items as Done<br>to see them here.</div>';
+    area.innerHTML='<div style="text-align:center;padding:30px 16px;color:var(--text3)">'+msg+'</div>';
     return;
   }
 
