@@ -577,9 +577,9 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
     <div class="screen" id="screen-calendar">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
         <div class="sect" style="margin:0">My Calendar</div>
-        <div id="cal-view-toggle" style="display:none;width:200px">
-          <button id="cal-btn-list" onclick="setCalView('list')" style="width:50%;text-align:center;font-size:11px;font-weight:600;padding:7px 0;border-radius:6px 0 0 6px;border:0.5px solid var(--border);background:var(--accent);color:#fff;cursor:pointer;font-family:var(--font)">List</button>
-          <button id="cal-btn-grid" onclick="setCalView('grid')" style="width:50%;text-align:center;font-size:11px;font-weight:600;padding:7px 0;border-radius:0 6px 6px 0;border:0.5px solid var(--border);background:var(--surface2);color:var(--text2);cursor:pointer;font-family:var(--font)">Month</button>
+        <div id="cal-view-toggle" style="display:none;flex-direction:row;background:var(--surface2);border-radius:8px;padding:2px">
+          <button id="cal-btn-list" onclick="setCalView('list')" style="flex:1;font-size:11px;font-weight:600;padding:6px 12px;border-radius:6px 0 0 6px;border:none;background:var(--accent);color:#fff;cursor:pointer;font-family:var(--font)">List</button>
+          <button id="cal-btn-grid" onclick="setCalView('grid')" style="flex:1;font-size:11px;font-weight:600;padding:6px 12px;border-radius:0 6px 6px 0;border:none;background:transparent;color:var(--text2);cursor:pointer;font-family:var(--font)">Month</button>
         </div>
       </div>
       <div id="cal-tabs" style="display:flex;background:var(--surface2);border-radius:var(--radius-sm);padding:3px;margin-bottom:14px">
@@ -2494,7 +2494,7 @@ function renderCalendar(){
 
   // Show view toggle only for premium
   const toggle=document.getElementById('cal-view-toggle');
-  if(toggle) toggle.style.display=isPrem?'block':'none';
+  if(toggle){if(isPrem){toggle.style.display='flex';}else{toggle.style.display='none';}}
 
   // For basic — force grid only; for premium — respect toggle; for others — list only
   const effectiveView=isPrem?_calView:(isBasic?'grid':'list');
