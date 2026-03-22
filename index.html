@@ -818,6 +818,16 @@ function handleTopicsTile(){
 // ══════════════════════════════════════════════
 const VAPID_KEY = 'BFCYzDnvANmQxP8qRTNB0LvOLvIRloSgkfdE5XNxOc6EYSxaGrwGQq5-SEAQhkwTXPRw84vWUio9FZIqRx6unzc';
 
+async function syncAlarmsToSW(){
+  try{
+    var reg=await navigator.serviceWorker.ready;
+    if(reg&&reg.active){
+      var alarms=getAlarms().filter(function(a){return !a.fired;});
+      reg.active.postMessage({type:'SET_ALARMS',alarms:alarms});
+    }
+  }catch(e){}
+}
+
 async function registerServiceWorker(){
   if(!('serviceWorker' in navigator)){
     console.log('Service workers not supported');
@@ -915,6 +925,8 @@ async function initPushNotifications(){
   if(!u || isExpired(u)) return;
   const sw = await registerServiceWorker();
   if(!sw) return;
+  // Sync existing alarms to SW
+  setTimeout(syncAlarmsToSW, 1000);
   const granted = await requestPushPermission();
   if(!granted) return;
   const token = await getFCMToken();
@@ -2373,24 +2385,92 @@ function playAlarmSound(type){
   });
 }
 
+// ── Alarm storage ────────────────────────────────────────────────────────────
+function getAlarms(){
+  try{return JSON.parse(localStorage.getItem('vora_alarms')||'[]');}catch(e){return [];}
+}
+function saveAlarms(alarms){
+  try{localStorage.setItem('vora_alarms',JSON.stringify(alarms));}catch(e){}
+}
+function addAlarm(title,body,fireAt,sound){
+  var alarm={id:'a'+Date.now()+Math.random().toString(36).slice(2,6),title:title,body:body,fireAt:fireAt,sound:sound||'bell',fired:false};
+  var alarms=getAlarms();
+  alarms.push(alarm);
+  saveAlarms(alarms);
+  // Send to service worker so it can fire even when tab is backgrounded
+  if(navigator.serviceWorker&&navigator.serviceWorker.controller){
+    navigator.serviceWorker.controller.postMessage({type:'ADD_ALARM',alarm:alarm});
+  }
+}
+
+// ── Check and fire due alarms ─────────────────────────────────────────────────
+function checkAlarms(){
+  var alarms=getAlarms();
+  var now=Date.now();
+  var changed=false;
+  alarms.forEach(function(a){
+    if(!a.fired&&new Date(a.fireAt).getTime()<=now){
+      a.fired=true;changed=true;
+      playAlarmSound(a.sound||'bell');
+      showInAppAlert(a.title,a.body,a.sound||'bell');
+      if(Notification.permission==='granted'){
+        try{new Notification(a.title,{body:a.body,icon:'/icon.png'});}catch(e){}
+      }
+    }
+  });
+  if(changed) saveAlarms(alarms);
+  // Clean old fired alarms (>24h)
+  var cleaned=alarms.filter(function(a){
+    return !a.fired||(now-new Date(a.fireAt).getTime())<86400000;
+  });
+  if(cleaned.length!==alarms.length) saveAlarms(cleaned);
+}
+
+// Check every 30 seconds while tab is open
+setInterval(checkAlarms,30000);
+// Check on load
+setTimeout(checkAlarms,2000);
+
+// ── Schedule alarm ────────────────────────────────────────────────────────────
 function scheduleAlarm(r){
-  const now=new Date();
-  const eventDate=new Date(r._rawDate+'T'+r._rawTime);
-  const morningDate=new Date(r._rawDate+'T08:00');
-  const alertDate=new Date(eventDate.getTime()-30*60*1000);
-  function checkAndFire(targetTime,subject,body){
-    const diff=targetTime-now;
-    if(diff>0&&diff<24*60*60*1000){
-      setTimeout(()=>{
-        playAlarmSound(r._sound||'bell');
-        if(Notification.permission==='granted') new Notification(subject,{body});
-        showInAppAlert(subject,body,r._sound||'bell');
+  if(!r._rawDate){showToast('Please set a date for the reminder.');return;}
+  if(!r._rawTime){showToast('Please set a time for the reminder.');return;}
+  var sound=r._sound||'bell';
+  var now=new Date();
+  var eventDate=new Date(r._rawDate+'T'+r._rawTime);
+  var morningDate=new Date(r._rawDate+'T08:00');
+  var alertDate=new Date(eventDate.getTime()-30*60*1000);
+
+  function schedule(targetDate,subject,body){
+    if(isNaN(targetDate.getTime())) return;
+    var diff=targetDate-now;
+    // Save to localStorage for persistent polling
+    addAlarm(subject,body,targetDate.toISOString(),sound);
+    // Also set setTimeout as immediate backup (works while tab open)
+    if(diff>0&&diff<48*60*60*1000){
+      setTimeout(function(){
+        playAlarmSound(sound);
+        if(Notification.permission==='granted'){
+          try{new Notification(subject,{body:body,icon:'/icon.png'});}catch(e){}
+        }
+        showInAppAlert(subject,body,sound);
       },diff);
     }
   }
-  checkAndFire(morningDate,r.morning_subject,r.morning_body);
-  checkAndFire(alertDate,r.alert_subject,r.alert_body);
-  if(Notification.permission==='default') Notification.requestPermission();
+
+  if(morningDate>now) schedule(morningDate,r.morning_subject,r.morning_body);
+  if(alertDate>now) schedule(alertDate,r.alert_subject,r.alert_body);
+  // Also fire at exact event time
+  if(eventDate>now) schedule(eventDate,r.alert_subject||r.morning_subject,r.alert_body||r.morning_body);
+
+  if(Notification.permission==='default'){
+    Notification.requestPermission().then(function(p){
+      if(p==='granted') syncAlarmsToSW();
+    });
+  } else if(Notification.permission==='granted'){
+    syncAlarmsToSW();
+  }
+  renderActiveReminders();
 }
 
 function showInAppAlert(subject,body,sound){
@@ -2936,6 +3016,16 @@ function renderHomeTasks(){
 // INIT
 // ══════════════════════════════════════════════
 updateUserBadge();
+
+// Service Worker registration + alarm message listener
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/sw.js').then(function(reg){
+    console.log('SW registered');
+  }).catch(function(e){ console.log('SW error:',e); });
+  navigator.serviceWorker.addEventListener('message',function(e){
+    if(e.data&&e.data.type==='CHECK_ALARMS') checkAlarms();
+  });
+}
 
 // Listen for Firebase auth restore
 window.addEventListener('voraAuthReady', function(e){
