@@ -2481,6 +2481,11 @@ function showInAppAlert(subject,body,sound){
   setTimeout(()=>{if(d.parentNode)d.remove();},30000);
 }
 
+function renderActiveReminders(){
+  // Active reminders are shown inline in rem-results — nothing extra needed
+  // This function exists to prevent errors from scheduleAlarm calls
+}
+
 function renderReminder(r){
   const safeText=JSON.stringify(esc(r.morning_body+'\n\n30-min alert:\n'+r.alert_body));
   const alarmSet=r._rawDate&&r._rawTime;
