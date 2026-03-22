@@ -151,6 +151,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .drw-sep{height:0.5px;background:var(--border);margin:4px 16px}
 .drw-ft{padding:10px 16px;border-top:0.5px solid var(--border);font-size:10px;color:var(--text3);flex-shrink:0}
 .pav{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#4F6EF7,#7B5CF0);border:none;cursor:pointer;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--font)}
+.pwd-wrap{position:relative;margin-bottom:8px}
+.pwd-wrap input{width:100%;padding-right:40px;margin-bottom:0}
+.pwd-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;line-height:1;padding:4px}
+.pwd-eye:hover{color:var(--text)}
 /* ── BOTTOM NAV ── */
 .bottom-nav{display:flex;background:var(--surface);border-top:0.5px solid var(--border);padding:6px 4px calc(6px + env(safe-area-inset-bottom));flex-shrink:0}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;background:none;border:none;cursor:pointer;color:var(--text3);font-family:var(--font);transition:color .2s}
@@ -452,23 +456,28 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
     <!-- CHATS -->
     <div class="screen" id="screen-chats">
       <div class="sect" style="margin-top:4px">Chat &amp; image analyser</div>
-      <div style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.6">Paste chat text or upload a screenshot. VORA extracts every task, meeting and deadline.</div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.6">Choose how to add your chat — upload a screenshot or type/paste the text directly.</div>
+      <!-- Two option cards -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
-        <div class="upload-zone" style="padding:14px 8px;margin-bottom:0" onclick="document.getElementById('chat-img-input').click()">
+        <div class="upload-zone" style="padding:18px 8px;margin-bottom:0" onclick="document.getElementById('chat-img-input').click()">
           <input type="file" id="chat-img-input" accept="image/*" style="display:none" onchange="handleChatImage(event)"/>
-          <div style="font-size:20px;margin-bottom:4px">🖼️</div>
-          <div style="font-size:11px;font-weight:600;color:var(--text2)">Upload screenshot</div>
-          <div style="font-size:10px;color:var(--text3);margin-top:2px">JPG, PNG of chat</div>
+          <div style="font-size:28px;margin-bottom:6px">📷</div>
+          <div style="font-size:12px;font-weight:600;color:var(--text)">Screenshot</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:3px">Upload JPG or PNG</div>
         </div>
-        <div class="upload-zone" style="padding:14px 8px;margin-bottom:0;cursor:default" onclick="document.getElementById('chat-input').focus()">
-          <div style="font-size:20px;margin-bottom:4px">💬</div>
-          <div style="font-size:11px;font-weight:600;color:var(--text2)">Paste chat text</div>
-          <div style="font-size:10px;color:var(--text3);margin-top:2px">Type or paste below</div>
+        <div class="upload-zone" style="padding:18px 8px;margin-bottom:0" id="chat-text-card" onclick="toggleChatText()">
+          <div style="font-size:28px;margin-bottom:6px">💬</div>
+          <div style="font-size:12px;font-weight:600;color:var(--text)">Type / Paste</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:3px" id="chat-text-hint">Tap to expand</div>
         </div>
       </div>
+      <!-- Image preview -->
       <div id="chat-img-preview"></div>
-      <textarea id="chat-input" placeholder="Paste your WhatsApp / email chat here...&#10;&#10;Example:&#10;Rajesh: Can we call Monday 11am for the proposal?&#10;Priya: Please send budget report by Friday evening&#10;Boss: Team meeting tomorrow 3pm sharp" style="margin-bottom:8px"></textarea>
-      <button class="btn btn-primary btn-full" id="chat-btn" onclick="analyseChat()">Extract tasks &amp; schedule</button>
+      <!-- Text input — hidden by default -->
+      <div id="chat-text-area" style="display:none">
+        <textarea id="chat-input" placeholder="Paste your WhatsApp / email chat here...&#10;&#10;Example:&#10;Rajesh: Can we call Monday 11am for the proposal?&#10;Priya: Please send budget report by Friday evening&#10;Boss: Team meeting tomorrow 3pm sharp&#10;Amit: Submit project by next Wednesday" style="margin-bottom:8px"></textarea>
+      </div>
+      <button class="btn btn-primary btn-full" id="chat-btn" onclick="analyseChat()" style="margin-top:4px">Extract tasks &amp; schedule</button>
       <div class="status-row" id="chat-status"><div class="spin"></div><span id="chat-status-text">Analysing messages...</span></div>
       <div id="chat-results" style="margin-top:4px"></div>
     </div>
@@ -960,6 +969,21 @@ if(aboutCollapsed){
 }
 
 // ══════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════
+function tPwd(id,btn){
+  var inp=document.getElementById(id);
+  if(!inp) return;
+  if(inp.type==='password'){
+    inp.type='text';
+    btn.innerHTML='&#128064;';
+  } else {
+    inp.type='password';
+    btn.innerHTML='&#128065;';
+  }
+}
+
+// ══════════════════════════════════════════════
 // DRAWER
 // ══════════════════════════════════════════════
 function oDrw(s){
@@ -1127,7 +1151,9 @@ function renderAuthTab(tab){
       <label class="inp-label">City / Place</label>
       <input type="text" id="auth-place" placeholder="e.g. Mumbai" style="margin-bottom:8px"/>
       <label class="inp-label">Password (min 6 characters)</label>
-      <input type="password" id="auth-pass" placeholder="Create a password" style="margin-bottom:8px"/>
+      <div class="pwd-wrap"><input type="password" id="auth-pass" placeholder="Create a password"/><button class="pwd-eye" type="button" onclick="tPwd('auth-pass',this)">&#128065;</button></div>
+      <label class="inp-label">Confirm password</label>
+      <div class="pwd-wrap"><input type="password" id="auth-pass2" placeholder="Re-enter your password"/><button class="pwd-eye" type="button" onclick="tPwd('auth-pass2',this)">&#128065;</button></div>
       <div id="auth-err" class="err-box"></div>
       <button class="btn btn-primary btn-full" style="margin-top:4px" onclick="startSignup()">Create account &amp; send verification →</button>
       <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:8px">Already have an account? <span style="color:var(--accent);cursor:pointer" onclick="switchAuthTab('login')">Sign in</span></div>`;
@@ -1136,7 +1162,7 @@ function renderAuthTab(tab){
       <label class="inp-label">Email address</label>
       <input type="email" id="auth-email" placeholder="you@example.com" style="margin-bottom:8px"/>
       <label class="inp-label">Password</label>
-      <input type="password" id="auth-pass" placeholder="Your password" style="margin-bottom:8px" onkeydown="if(event.key==='Enter')signIn()"/>
+      <div class="pwd-wrap"><input type="password" id="auth-pass" placeholder="Your password" onkeydown="if(event.key==='Enter')signIn()"/><button class="pwd-eye" type="button" onclick="tPwd('auth-pass',this)">&#128065;</button></div>
       <div id="auth-err" class="err-box"></div>
       <button class="btn btn-primary btn-full" style="margin-top:4px" onclick="signIn()">Sign in →</button>
       <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:8px">No account? <span style="color:var(--accent);cursor:pointer" onclick="switchAuthTab('signup')">Sign up free</span></div>`;
@@ -1172,8 +1198,10 @@ async function startSignup(){
   const btn=document.querySelector('#auth-tab-content .btn-primary');
   if(btn){btn.disabled=true;btn.textContent='Creating account...';}
   try{
-    const pass=(document.getElementById('auth-pass')?.value||'').trim();
+    const pass=(document.getElementById('auth-pass')?.value||'');
+    const pass2=(document.getElementById('auth-pass2')?.value||'');
     if(pass.length<6){showAuthErr('Password must be at least 6 characters.');if(btn){btn.disabled=false;btn.textContent='Create account & send verification →';}return;}
+    if(pass!==pass2){showAuthErr('Passwords do not match. Please re-enter.');if(btn){btn.disabled=false;btn.textContent='Create account & send verification →';}return;}
     const cred=await window._createUser(window._voraAuth,email,pass);
     // Use email as password base — user logs in via email link
     await window._updateProfile(cred.user,{displayName:name});
@@ -1653,6 +1681,23 @@ if(ti)ti.addEventListener('keydown',e=>{if(e.key==='Enter')runTopic();});
 // ══════════════════════════════════════════════
 // CHATS
 // ══════════════════════════════════════════════
+function toggleChatText(){
+  var area=document.getElementById('chat-text-area');
+  var hint=document.getElementById('chat-text-hint');
+  var card=document.getElementById('chat-text-card');
+  if(!area) return;
+  if(area.style.display==='none'){
+    area.style.display='block';
+    if(hint) hint.textContent='Tap to collapse';
+    if(card) card.style.borderColor='var(--accent)';
+    setTimeout(function(){document.getElementById('chat-input').focus();},100);
+  } else {
+    area.style.display='none';
+    if(hint) hint.textContent='Tap to expand';
+    if(card) card.style.borderColor='';
+  }
+}
+
 async function analyseChat(){
   const txt=document.getElementById('chat-input').value.trim();if(!txt)return;
   const btn=document.getElementById('chat-btn');btn.disabled=true;
