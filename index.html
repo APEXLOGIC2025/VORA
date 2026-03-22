@@ -1823,6 +1823,8 @@ function buildScheduleFromChat(){
 
   if(!withDate.length){ showToast('Selected items have no dates — cannot save.'); return; }
 
+  // Store saved tasks for schedule builder
+  window._chatLastSaved=withDate;
   // Save each to VORA Calendar with correct date + time — no ICS download
   withDate.forEach(function(t){
     saveToCalendar('task',{
@@ -1905,10 +1907,10 @@ function guessTimeStr(timeVal){
 }
 
 function sendToScheduleBuilder(){
-  var tasks=window._chatExtractedTasks||[];
-  var withDate=tasks.filter(function(t){return t.date&&t.date!=='No date';});
-  if(!withDate.length){goTo('schedule');return;}
-  var taskList=withDate.map(function(t){
+  // Use only the tasks that were just saved (window._chatLastSaved)
+  var tasks=window._chatLastSaved||[];
+  if(!tasks.length){goTo('schedule');return;}
+  var taskList=tasks.map(function(t){
     return t.title+(t.date?' ('+t.date+')':'')+(t.time?' at '+t.time:'');
   }).join('\n');
   goTo('schedule');
