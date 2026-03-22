@@ -1703,7 +1703,8 @@ Chat text:
 ${txt}
 """
 Return ONLY valid JSON:
-{"tasks":[{"title":"clear task title","date":"date/time or No date","priority":"High or Medium or Low","person":"who assigned it or empty","type":"Meeting or Task or Deadline or Event"}],"summary":"1 sentence summary"}`);
+{"tasks":[{"title":"clear task title","date":"YYYY-MM-DD or descriptive date or No date","time":"HH:MM in 24h format or empty","priority":"High or Medium or Low","person":"who assigned it or empty","type":"Meeting or Task or Deadline or Event"}],"summary":"1 sentence summary"}
+Important: For date use YYYY-MM-DD format whenever possible. Today is ${new Date().toISOString().slice(0,10)}. Extract time separately in HH:MM 24h format.`);
     hideStatus('chat');renderChatResults(r);
     if(r.tasks&&r.tasks.length)allTasks.push(...r.tasks);
   }catch(e){hideStatus('chat');document.getElementById('chat-results').innerHTML=errCard(e.message);}
@@ -1721,7 +1722,8 @@ async function handleChatImage(e){
       const body={model:'claude-sonnet-4-20250514',max_tokens:1500,messages:[{role:'user',content:[
         {type:'image',source:{type:'base64',media_type:mime,data:b64}},
         {type:'text',text:`Extract ALL text from this chat screenshot, then identify every task, meeting, deadline or commitment. Return ONLY valid JSON:
-{"tasks":[{"title":"clear task title","date":"date/time or No date","priority":"High or Medium or Low","person":"who assigned it or empty","type":"Meeting or Task or Deadline or Event"}],"summary":"1 sentence summary"}`}
+{"tasks":[{"title":"clear task title","date":"YYYY-MM-DD or descriptive date or No date","time":"HH:MM in 24h format or empty","priority":"High or Medium or Low","person":"who assigned it or empty","type":"Meeting or Task or Deadline or Event"}],"summary":"1 sentence summary"}
+Important: For date use YYYY-MM-DD format whenever possible. Today is ${new Date().toISOString().slice(0,10)}. Extract time separately in HH:MM 24h format.`}
       ]}]};
       const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify(body)});
       if(!res.ok){const err=await res.json();throw new Error(err.error?.message||'API error');}
@@ -2368,17 +2370,42 @@ async function saveToCalendar(type, data){
 }
 
 function guessDateStr(dateLabel){
-  // Try to parse common date formats from chat extraction
   if(!dateLabel||dateLabel==='No date') return new Date().toISOString().slice(0,10);
-  const today=new Date();
-  const lower=dateLabel.toLowerCase();
-  if(lower.includes('today')) return today.toISOString().slice(0,10);
-  if(lower.includes('tomorrow')){
-    const t=new Date(today); t.setDate(t.getDate()+1);
-    return t.toISOString().slice(0,10);
+  var today=new Date();
+  var lower=dateLabel.toLowerCase().trim();
+  // Already YYYY-MM-DD
+  if(/^\d{4}-\d{2}-\d{2}$/.test(dateLabel.trim())) return dateLabel.trim();
+  if(lower.indexOf('today')>=0) return today.toISOString().slice(0,10);
+  if(lower.indexOf('tomorrow')>=0){
+    var t=new Date(today);t.setDate(t.getDate()+1);return t.toISOString().slice(0,10);
   }
-  // Try direct parse
-  const d=new Date(dateLabel);
+  // Day names
+  var days=['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+  for(var di=0;di<days.length;di++){
+    if(lower.indexOf(days[di])>=0){
+      var diff=di-today.getDay();if(diff<=0)diff+=7;
+      var nd=new Date(today);nd.setDate(today.getDate()+diff);return nd.toISOString().slice(0,10);
+    }
+  }
+  // Month names
+  var months=['january','february','march','april','may','june','july','august','september','october','november','december'];
+  for(var mi=0;mi<months.length;mi++){
+    if(lower.indexOf(months[mi])>=0){
+      var dm=lower.match(/(\d{1,2})/);
+      if(dm){
+        var ds=today.getFullYear()+'-'+String(mi+1).padStart(2,'0')+'-'+String(parseInt(dm[1])).padStart(2,'0');
+        var td=new Date(ds);if(!isNaN(td.getTime())) return ds;
+      }
+    }
+  }
+  // DD/MM/YYYY
+  var m2=dateLabel.match(/(\d{1,2})[\/-](\d{1,2})[\/-](\d{2,4})/);
+  if(m2){
+    var yr=m2[3].length===2?'20'+m2[3]:m2[3];
+    var ds2=yr+'-'+m2[2].padStart(2,'0')+'-'+m2[1].padStart(2,'0');
+    var td2=new Date(ds2);if(!isNaN(td2.getTime())) return ds2;
+  }
+  var d=new Date(dateLabel);
   if(!isNaN(d.getTime())) return d.toISOString().slice(0,10);
   return today.toISOString().slice(0,10);
 }
