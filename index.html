@@ -477,7 +477,10 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
       <div id="chat-text-area" style="display:none">
         <textarea id="chat-input" placeholder="Paste your WhatsApp / email chat here...&#10;&#10;Example:&#10;Rajesh: Can we call Monday 11am for the proposal?&#10;Priya: Please send budget report by Friday evening&#10;Boss: Team meeting tomorrow 3pm sharp&#10;Amit: Submit project by next Wednesday" style="margin-bottom:8px"></textarea>
       </div>
-      <button class="btn btn-primary btn-full" id="chat-btn" onclick="analyseChat()" style="margin-top:4px">Extract tasks &amp; schedule</button>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button class="btn btn-primary" id="chat-btn" onclick="analyseChat()" style="flex:1">Extract tasks &amp; schedule</button>
+        <button class="btn" onclick="clearChatScreen()" style="padding:9px 14px;flex-shrink:0">&#x2715; Clear</button>
+      </div>
       <div class="status-row" id="chat-status"><div class="spin"></div><span id="chat-status-text">Analysing messages...</span></div>
       <div id="chat-results" style="margin-top:4px"></div>
     </div>
@@ -654,47 +657,24 @@ img.preview{width:100%;border-radius:var(--radius-sm);margin-bottom:10px;border:
 
   </div><!-- /screens -->
 
-  <!-- Bottom Nav -->
-  <!-- 2-tier bottom navigation -->
-  <div class="bottom-nav" style="flex-direction:column;padding:0">
-    <!-- Top row: Home, Chats, Scan, Topics -->
-    <div style="display:flex;width:100%;border-bottom:0.5px solid var(--border)">
-      <button class="nav-item active" id="nav-home" onclick="goTo('home')">
-        <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-        <span class="nav-label">Home</span>
-      </button>
-      <button class="nav-item" id="nav-chats" onclick="goTo('chats')">
-        <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
-        <span class="nav-label">Chats</span>
-      </button>
-      <button class="nav-item" id="nav-scan" onclick="goTo('scan')">
-        <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg></div>
-        <span class="nav-label">Scan</span>
-      </button>
-      <button class="nav-item" id="nav-topics" onclick="handleTopicsTile()">
-        <div class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
-        <span class="nav-label">Topics</span>
-      </button>
-    </div>
-    <!-- Bottom row: Schedule, Calendar, Reminder, Done -->
-    <div style="display:flex;width:100%">
-      <button class="nav-item" id="nav-schedule" onclick="goTo('schedule')">
-        <div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
-        <span class="nav-label">Schedule</span>
-      </button>
-      <button class="nav-item" id="nav-calendar" onclick="goTo('calendar')">
-        <div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="8" cy="15" r="1"/><circle cx="12" cy="15" r="1"/><circle cx="16" cy="15" r="1"/></svg></div>
-        <span class="nav-label">Calendar</span>
-      </button>
-      <button class="nav-item" id="nav-reminders" onclick="goTo('reminders')">
-        <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
-        <span class="nav-label">Reminder</span>
-      </button>
-      <button class="nav-item" id="nav-done" onclick="goTo('calendar');setCalTab('completed')">
-        <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-        <span class="nav-label">Done</span>
-      </button>
-    </div>
+  <!-- Sleek 4-button floating quick bar -->
+  <div id="quick-bar" style="display:flex;justify-content:center;padding:8px 16px calc(8px + env(safe-area-inset-bottom));background:var(--surface);border-top:0.5px solid var(--border);gap:8px;flex-shrink:0">
+    <button onclick="goTo('schedule')" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:var(--surface2);border:0.5px solid var(--border);border-radius:12px;padding:8px 4px;cursor:pointer;color:var(--text2);font-family:var(--font);transition:all .15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text2)'">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span style="font-size:9px;font-weight:600;letter-spacing:.3px">Schedule</span>
+    </button>
+    <button onclick="goTo('reminders')" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:var(--surface2);border:0.5px solid var(--border);border-radius:12px;padding:8px 4px;cursor:pointer;color:var(--text2);font-family:var(--font);transition:all .15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text2)'">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span style="font-size:9px;font-weight:600;letter-spacing:.3px">Reminder</span>
+    </button>
+    <button onclick="handleTopicsTile()" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:var(--surface2);border:0.5px solid var(--border);border-radius:12px;padding:8px 4px;cursor:pointer;color:var(--text2);font-family:var(--font);transition:all .15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text2)'">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span style="font-size:9px;font-weight:600;letter-spacing:.3px">Topics</span>
+    </button>
+    <button onclick="goTo('scan')" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:var(--surface2);border:0.5px solid var(--border);border-radius:12px;padding:8px 4px;cursor:pointer;color:var(--text2);font-family:var(--font);transition:all .15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text2)'">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+      <span style="font-size:9px;font-weight:600;letter-spacing:.3px">Scan</span>
+    </button>
   </div>
 
 </div><!-- /app -->
@@ -1074,7 +1054,7 @@ function goTo(name){
   const activeScreen=document.getElementById('screen-'+name);
   if(activeScreen) activeScreen.scrollTop=0;
   const noNav=['privacy','terms'];
-  const nav=document.querySelector('.bottom-nav');
+  const nav=document.getElementById('quick-bar');
   const hdr=document.querySelector('.app-header');
   if(nav) nav.style.display=noNav.includes(name)?'none':'flex';
   if(hdr) hdr.style.display=noNav.includes(name)?'none':'flex';
@@ -1696,6 +1676,19 @@ function toggleChatText(){
     if(hint) hint.textContent='Tap to expand';
     if(card) card.style.borderColor='';
   }
+}
+
+function clearChatScreen(){
+  document.getElementById('chat-input').value='';
+  document.getElementById('chat-img-preview').innerHTML='';
+  document.getElementById('chat-results').innerHTML='';
+  var ta=document.getElementById('chat-text-area');
+  if(ta){ta.style.display='none';}
+  var hint=document.getElementById('chat-text-hint');
+  if(hint) hint.textContent='Tap to expand';
+  var card=document.getElementById('chat-text-card');
+  if(card) card.style.borderColor='';
+  window._chatExtractedTasks=[];
 }
 
 async function analyseChat(){
