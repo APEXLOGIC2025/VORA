@@ -1794,7 +1794,7 @@ function renderChatResults(r){
   const btnRow=document.createElement('div');
   btnRow.className='btn-row';
   btnRow.style.marginTop='12px';
-  btnRow.innerHTML='<button class="btn btn-sm" style="background:rgba(79,110,247,.15);border-color:var(--accent);color:#7B9BFF" onclick="buildScheduleFromChat()">&#128197; Add to Schedule + Calendar</button>';
+  btnRow.innerHTML='<button class="btn btn-sm" style="background:rgba(79,110,247,.15);border-color:var(--accent);color:#7B9BFF" onclick="buildScheduleFromChat()">&#10003; Save selected to Calendar</button>';
   area.appendChild(btnRow);
 }
 
@@ -1821,66 +1821,69 @@ function buildScheduleFromChat(){
   var withDate=selected.filter(function(t){ return t.date&&t.date!=='No date'; });
   var noDate=selected.filter(function(t){ return !t.date||t.date==='No date'; });
 
-  if(!withDate.length){ showToast('Selected items have no dates. Cannot schedule.'); return; }
+  if(!withDate.length){ showToast('Selected items have no dates — cannot save.'); return; }
 
-  // Build ICS with one event per task, each with its own date and time
-  var icsLines=['BEGIN:VCALENDAR','VERSION:2.0','CALSCALE:GREGORIAN','PRODID:-//VORA//Apexlogic//EN'];
+  // Save each to VORA Calendar with correct date + time — no ICS download
   withDate.forEach(function(t){
-    var dateStr=guessDateStr(t.date);
-    var timeStr=guessTimeStr(t.time);
-    // Format: YYYYMMDDTHHMMSS
-    var dtStart=dateStr.replace(/-/g,'')+'T'+timeStr.replace(':','')+'00';
-    var dtEnd=dateStr.replace(/-/g,'')+'T'+incHour(timeStr)+'00';
-    var uid='vora-'+Date.now()+Math.random().toString(36).slice(2,8)+'@apexlogic.in';
-    icsLines.push('BEGIN:VEVENT');
-    icsLines.push('UID:'+uid);
-    icsLines.push('DTSTART:'+dtStart);
-    icsLines.push('DTEND:'+dtEnd);
-    icsLines.push('SUMMARY:'+t.title.replace(/[,;\\]/g,' '));
-    icsLines.push('DESCRIPTION:'+(t.person?'From: '+t.person:'')+(t.date?' | '+t.date:''));
-    icsLines.push('END:VEVENT');
-    // Save to VORA Calendar with correct date+time
     saveToCalendar('task',{
       title:t.title,
-      date:dateStr,
-      time:timeStr,
+      date:guessDateStr(t.date),
+      time:guessTimeStr(t.time),
       dateLabel:t.date,
       person:t.person||'',
       priority:t.priority||'Medium',
       type:t.type||'Task'
     });
   });
-  icsLines.push('END:VCALENDAR');
 
-  // Download ICS
-  var icsContent=icsLines.join('\r\n');
-  var blob=new Blob([icsContent],{type:'text/calendar'});
-  var url=URL.createObjectURL(blob);
-  var a=document.createElement('a');
-  a.href=url; a.download='VORA_Events.ics'; a.click();
-  URL.revokeObjectURL(url);
+  // Mark selected tasks as saved (grey them out)
+  document.querySelectorAll('.chat-cb').forEach(function(cb){
+    if(cb.checked){
+      cb.disabled=true;
+      var card=cb.closest('.todo-item');
+      if(card){
+        card.style.opacity='0.45';
+        card.style.pointerEvents='none';
+        card.style.background='var(--surface2)';
+      }
+      cb.checked=false;
+    }
+  });
+  // Uncheck select-all
+  var sa=document.getElementById('chat-select-all');
+  if(sa) sa.checked=false;
+  // Store saved IDs so they stay grey if user leaves and comes back
+  if(!window._chatSavedIndices) window._chatSavedIndices=[];
+  document.querySelectorAll('.chat-cb[disabled]').forEach(function(cb){
+    window._chatSavedIndices.push(parseInt(cb.dataset.idx));
+  });
 
-  // Show result summary in chat results area
+  // Show result summary
   var area=document.getElementById('chat-results');
   if(area){
+    // Remove old summary if exists
+    var old=area.querySelector('.chat-saved-summary');
+    if(old) old.remove();
     var summary=document.createElement('div');
-    summary.style.cssText='margin-top:12px;background:rgba(34,197,94,.08);border:0.5px solid var(--green);border-radius:var(--radius-sm);padding:12px 14px';
+    summary.className='chat-saved-summary';
+    summary.style.cssText='margin-top:10px;background:rgba(34,197,94,.08);border:0.5px solid var(--green);border-radius:var(--radius-sm);padding:11px 13px';
     var lines=withDate.map(function(t){
-      return '<div style="font-size:11px;color:var(--text2);padding:2px 0">&#10003; <strong>'+esc(t.title)+'</strong> &mdash; '+esc(t.date)+(t.time?' at '+esc(t.time):'')+'</div>';
+      return '<div style="font-size:11px;color:var(--text2);padding:1px 0">&#10003; <b>'+esc(t.title)+'</b> &mdash; '+esc(t.date)+(t.time?' at '+esc(t.time):'')+'</div>';
     }).join('');
-    summary.innerHTML='<div style="font-size:12px;font-weight:600;color:var(--green);margin-bottom:6px">&#10003; '+withDate.length+' event'+(withDate.length>1?'s':'')+' saved to Calendar &amp; .ics downloaded</div>'
+    summary.innerHTML='<div style="font-size:12px;font-weight:600;color:var(--green);margin-bottom:5px">&#10003; '+withDate.length+' event'+(withDate.length>1?'s':'')+' saved to VORA Calendar</div>'
       +lines
-      +(noDate.length?'<div style="font-size:11px;color:var(--text3);margin-top:4px">'+noDate.length+' item'+(noDate.length>1?'s':'')+' skipped (no date)</div>':'')
-      +'<div style="display:flex;gap:8px;margin-top:10px">'
-      +'<button class="btn btn-sm" style="background:rgba(79,110,247,.12);border-color:var(--accent);color:var(--accent)" onclick="chatViewCalendar()">View in Calendar</button>'
-      +'<button class="btn btn-sm" onclick="sendToScheduleBuilder()">Build day schedule</button>'
+      +(noDate.length?'<div style="font-size:11px;color:var(--text3);margin-top:3px">'+noDate.length+' skipped (no date)</div>':'')
+      +'<div style="margin-top:8px;font-size:11px;color:var(--text3);line-height:1.6">&#128197; To sync with Google Calendar: go to <b>Schedule</b>, enter the event details and download the .ics file.</div>'
+      +'<div style="display:flex;gap:8px;margin-top:8px">'
+      +'<button class="btn btn-sm" style="background:rgba(79,110,247,.1);border-color:var(--accent);color:var(--accent)" onclick="chatViewCalendar()">View Calendar</button>'
+      +'<button class="btn btn-sm" onclick="sendToScheduleBuilder()">Open Schedule</button>'
       +'</div>';
     area.appendChild(summary);
     area.scrollTop=area.scrollHeight;
   }
 }
 
-function chatViewCalendar(){goTo('calendar');}
+
 function guessTimeStr(timeVal){
   if(!timeVal) return '09:00';
   var t=String(timeVal).trim();
