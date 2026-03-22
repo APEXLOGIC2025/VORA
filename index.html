@@ -1971,43 +1971,109 @@ function renderScanResults(r,imgSrc){
   const defTitle=r.title||'Scanned Document';
   const lines=r.lines||(r.raw_text||'').split('\n').filter(l=>l.trim());
   const raw=r.raw_text||lines.join('\n');
-  const safeRaw=JSON.stringify(esc(raw));
-  const safeLines=JSON.stringify(lines.map(esc));
+  window._scanData={raw,lines,imgSrc};
 
-  // Store scan data globally to avoid onclick injection issues
-  window._scanData = {raw, lines, imgSrc};
+  const el=document.getElementById('scan-results');
+  el.innerHTML='';
 
-  document.getElementById('scan-results').innerHTML=
-    '<div style="margin-top:10px">'+
-    '<div class="sect">Extracted text — '+lines.length+' lines</div>'+
-    '<div class="ocr-preview">'+esc(raw)+'</div>'+
-    '<div class="sect">File name</div>'+
-    '<div style="display:flex;gap:8px;margin-bottom:12px;align-items:center">'+
-    '<input type="text" id="doc-title-input" value="'+esc(uName+' - '+defTitle)+'" style="flex:1"/>'+
-    '</div>'+
-    '<div class="sect">Export as</div>'+
-    '<div class="fmt-row">'+
-    '<div class="fmt-btn" onclick="downloadPDFStored()">'+
-    '<span class="fmt-icon">📄</span>'+
-    '<div class="fmt-name">PDF / HTML</div>'+
-    '<div class="fmt-ext">Print to PDF</div>'+
-    '</div>'+
-    '<div class="fmt-btn" onclick="downloadRTFStored()">'+
-    '<span class="fmt-icon">📝</span>'+
-    '<div class="fmt-name">Word</div>'+
-    '<div class="fmt-ext">.rtf file</div>'+
-    '</div>'+
-    '<div class="fmt-btn" onclick="downloadCSVStored()">'+
-    '<span class="fmt-icon">📊</span>'+
-    '<div class="fmt-name">Excel</div>'+
-    '<div class="fmt-ext">.csv file</div>'+
-    '</div>'+
-    '</div>'+
-    '<div class="btn-row">'+
-    '<button class="btn btn-sm" onclick="copyToClipStored()">Copy text</button>'+
-    '<button class="btn btn-sm" onclick="clearScanResults()">Clear</button>'+
-    '</div>'+
-    '</div>';
+  const wrap=document.createElement('div');
+  wrap.style.marginTop='10px';
+
+  // ── Image preview thumbnail ───────────────────────────────────────────────
+  if(imgSrc&&imgSrc!=='undefined'){
+    const prevSect=document.createElement('div');
+    prevSect.className='sect';
+    prevSect.textContent='Original scan';
+    wrap.appendChild(prevSect);
+    const prevWrap=document.createElement('div');
+    prevWrap.style.cssText='position:relative;margin-bottom:12px;border-radius:var(--radius-sm);overflow:hidden;border:0.5px solid var(--border)';
+    const img=document.createElement('img');
+    img.src=imgSrc;
+    img.style.cssText='width:100%;max-height:200px;object-fit:contain;background:#000;display:block';
+    prevWrap.appendChild(img);
+    // "Save original as PDF" button overlaid on image
+    const saveOrig=document.createElement('button');
+    saveOrig.textContent='💾 Save original scan as PDF';
+    saveOrig.style.cssText='position:absolute;bottom:8px;right:8px;padding:5px 10px;font-size:10px;font-weight:600;border-radius:6px;border:none;background:rgba(0,0,0,.65);color:#fff;cursor:pointer;font-family:inherit;backdrop-filter:blur(4px)';
+    saveOrig.onclick=function(){ downloadOriginalScanPDF(); };
+    prevWrap.appendChild(saveOrig);
+    wrap.appendChild(prevWrap);
+  }
+
+  // ── Extracted text preview ────────────────────────────────────────────────
+  const textSect=document.createElement('div');
+  textSect.className='sect';
+  textSect.textContent='Extracted text — '+lines.length+' lines';
+  wrap.appendChild(textSect);
+
+  const preview=document.createElement('div');
+  preview.className='ocr-preview';
+  preview.style.cssText='max-height:120px;overflow-y:auto;margin-bottom:12px';
+  preview.textContent=raw;
+  wrap.appendChild(preview);
+
+  // Show more / collapse
+  const showMore=document.createElement('button');
+  showMore.style.cssText='font-size:10px;color:var(--accent);background:none;border:none;cursor:pointer;padding:0;margin-bottom:10px;font-family:inherit';
+  showMore.textContent='Show full text ▼';
+  let expanded=false;
+  showMore.onclick=function(){
+    expanded=!expanded;
+    preview.style.maxHeight=expanded?'none':'120px';
+    showMore.textContent=expanded?'Collapse ▲':'Show full text ▼';
+  };
+  if(lines.length>6) wrap.appendChild(showMore);
+
+  // ── File name ─────────────────────────────────────────────────────────────
+  const fnSect=document.createElement('div');
+  fnSect.className='sect';
+  fnSect.textContent='File name';
+  wrap.appendChild(fnSect);
+
+  const fnRow=document.createElement('div');
+  fnRow.style.cssText='display:flex;gap:8px;margin-bottom:12px;align-items:center';
+  const fnInput=document.createElement('input');
+  fnInput.type='text';
+  fnInput.id='doc-title-input';
+  fnInput.value=esc(uName+' - '+defTitle);
+  fnInput.style.flex='1';
+  fnRow.appendChild(fnInput);
+  wrap.appendChild(fnRow);
+
+  // ── Export buttons ────────────────────────────────────────────────────────
+  const expSect=document.createElement('div');
+  expSect.className='sect';
+  expSect.textContent='Export extracted text as';
+  wrap.appendChild(expSect);
+
+  const fmtRow=document.createElement('div');
+  fmtRow.className='fmt-row';
+
+  const btns=[
+    {icon:'📄',name:'PDF + Image',ext:'With scan photo',fn:'downloadPDFStored()'},
+    {icon:'📝',name:'Word',ext:'.rtf file',fn:'downloadRTFStored()'},
+    {icon:'📊',name:'Excel',ext:'.csv file',fn:'downloadCSVStored()'},
+  ];
+  btns.forEach(function(b){
+    const btn=document.createElement('div');
+    btn.className='fmt-btn';
+    btn.onclick=new Function(b.fn);
+    btn.innerHTML='<span class="fmt-icon">'+b.icon+'</span>'
+      +'<div class="fmt-name">'+b.name+'</div>'
+      +'<div class="fmt-ext">'+b.ext+'</div>';
+    fmtRow.appendChild(btn);
+  });
+  wrap.appendChild(fmtRow);
+
+  // ── Action buttons ────────────────────────────────────────────────────────
+  const actRow=document.createElement('div');
+  actRow.className='btn-row';
+  actRow.style.marginTop='10px';
+  actRow.innerHTML='<button class="btn btn-sm" onclick="copyToClipStored()">Copy text</button>'
+    +'<button class="btn btn-sm" onclick="clearScanResults()">Clear</button>';
+  wrap.appendChild(actRow);
+
+  el.appendChild(wrap);
 }
 
 function clearScanResults(){
@@ -2021,6 +2087,22 @@ function getDocTitle(){
   const inp=document.getElementById('doc-title-input');
   return inp?unesc(inp.value)||'VORA Document':'VORA Document';
 }
+function downloadOriginalScanPDF(){
+  const d=window._scanData||{};
+  if(!d.imgSrc||d.imgSrc==='undefined'){showToast('No image available.');return;}
+  const title=getDocTitle();
+  const date=new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
+  const html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+title+'</title>'
+    +'<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#fff}'
+    +'@page{margin:0}@media print{body{margin:0}}'
+    +'img{width:100vw;height:100vh;object-fit:contain;display:block}'
+    +'</style></head><body>'
+    +'<img src="'+d.imgSrc+'" alt="'+title+'"/>'
+    +'</body></html>';
+  dl(html,'text/html',title.replace(/\s+/g,'_')+'_original.html');
+  showToast('Original scan downloaded. Open and Print → Save as PDF.');
+}
+
 function downloadPDFStored(){
   const d=window._scanData||{};
   downloadPDF(JSON.stringify(esc(d.raw||'')),d.imgSrc||'');
