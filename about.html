@@ -4,11 +4,10 @@
 <meta charset="UTF-8"/>
 <meta name="google-adsense-account" content="ca-pub-6461655458619662">
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<meta name="description" content="VORA — Your AI-powered personal assistant by Apexlogic. Chat analyser, document scanner, smart scheduler, live topic briefs and smart reminders. Free for 30 days."/>
-<meta name="keywords" content="AI assistant, chat analyser, document scanner, smart scheduler, reminders, Apexlogic, VORA"/>
-<title>VORA — AI Personal Assistant by Apexlogic</title>
+<meta name="description" content="VORA — AI personal assistant by Apexlogic. Extract tasks from chats, scan documents, build schedules and set smart reminders. Free for 30 days. Built in India."/>
+<meta name="keywords" content="AI assistant India, WhatsApp task extractor, document scanner OCR, smart scheduler, AI reminders, productivity app India, Apexlogic VORA"/>
+<title>VORA — AI Personal Assistant | Chat Analyser, Document Scanner, Smart Scheduler</title>
 <link rel="canonical" href="https://apex-vora.vercel.app/about.html"/>
-<!-- Google AdSense -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6461655458619662" crossorigin="anonymous"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
@@ -22,110 +21,132 @@
   --font:'DM Sans',sans-serif;--font-head:'Syne',sans-serif;
 }
 html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.6;overflow-x:hidden}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.7;overflow-x:hidden}
 
-/* ── NOISE TEXTURE ── */
-body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.4}
-
-/* ── NAV ── */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;background:rgba(6,8,15,.85);backdrop-filter:blur(16px);border-bottom:0.5px solid var(--border)}
-.nav-logo{font-family:var(--font-head);font-size:22px;font-weight:800;background:linear-gradient(135deg,#fff 0%,var(--accent) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:3px}
-.nav-links{display:flex;align-items:center;gap:24px}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;background:rgba(6,8,15,.9);backdrop-filter:blur(16px);border-bottom:0.5px solid var(--border)}
+.nav-logo{font-family:var(--font-head);font-size:22px;font-weight:800;background:linear-gradient(135deg,#fff 0%,var(--accent) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:3px;text-decoration:none}
+.nav-links{display:flex;align-items:center;gap:20px}
 .nav-links a{color:var(--text2);text-decoration:none;font-size:13px;font-weight:500;transition:color .2s}
 .nav-links a:hover{color:var(--text)}
-.nav-cta{background:var(--accent);color:#fff;padding:8px 20px;border-radius:20px;font-size:13px;font-weight:600;text-decoration:none;transition:background .2s;white-space:nowrap}
-.nav-cta:hover{background:#4A6AEE;-webkit-text-fill-color:#fff}
+.nav-cta{background:var(--accent);color:#fff!important;padding:8px 20px;border-radius:20px;font-size:13px;font-weight:600;text-decoration:none;transition:background .2s}
+.nav-cta:hover{background:#4A6AEE}
 
-/* ── HERO ── */
-.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 24px 60px;position:relative;z-index:1}
-.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(91,123,255,.1);border:0.5px solid rgba(91,123,255,.3);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:600;color:var(--accent);letter-spacing:.8px;text-transform:uppercase;margin-bottom:28px;animation:fadeUp .6s ease both}
+/* Hero */
+.hero{min-height:92vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 24px 60px;position:relative;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none}
+.orb-1{width:500px;height:500px;background:rgba(91,123,255,.1);top:-100px;left:-150px}
+.orb-2{width:400px;height:400px;background:rgba(139,92,246,.08);bottom:0;right:-100px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(91,123,255,.1);border:0.5px solid rgba(91,123,255,.3);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:600;color:var(--accent);letter-spacing:.8px;text-transform:uppercase;margin-bottom:24px}
 .hero-badge span{width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 2s ease-in-out infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-.hero-title{font-family:var(--font-head);font-size:clamp(42px,8vw,80px);font-weight:800;line-height:1.05;letter-spacing:-1px;margin-bottom:22px;animation:fadeUp .6s .1s ease both}
-.hero-title .gradient{background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hero-sub{font-size:clamp(15px,2.5vw,19px);color:var(--text2);max-width:560px;margin:0 auto 40px;font-weight:300;line-height:1.7;animation:fadeUp .6s .2s ease both}
-.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;animation:fadeUp .6s .3s ease both}
-.btn-primary{background:var(--accent);color:#fff;padding:14px 32px;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
-.btn-primary:hover{background:#4A6AEE;transform:translateY(-2px);box-shadow:0 12px 32px rgba(91,123,255,.3)}
-.btn-secondary{background:transparent;color:var(--text);padding:14px 32px;border-radius:12px;font-size:15px;font-weight:500;text-decoration:none;border:0.5px solid var(--border);transition:all .2s;display:inline-flex;align-items:center;gap:8px}
-.btn-secondary:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero h1{font-family:var(--font-head);font-size:clamp(38px,7vw,72px);font-weight:800;line-height:1.05;letter-spacing:-1px;margin-bottom:20px;position:relative}
+.grad{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:clamp(15px,2vw,18px);color:var(--text2);max-width:580px;margin:0 auto 36px;font-weight:300;line-height:1.8}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:48px}
+.btn-p{background:var(--accent);color:#fff;padding:14px 30px;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-p:hover{background:#4A6AEE;transform:translateY(-2px);box-shadow:0 12px 32px rgba(91,123,255,.3)}
+.btn-s{background:transparent;color:var(--text);padding:14px 30px;border-radius:12px;font-size:15px;font-weight:500;text-decoration:none;border:0.5px solid var(--border);transition:all .2s}
+.btn-s:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+.hero-stats{display:flex;gap:40px;justify-content:center;flex-wrap:wrap}
+.stat{text-align:center}
+.stat-num{font-family:var(--font-head);font-size:28px;font-weight:800;color:var(--accent)}
+.stat-lbl{font-size:12px;color:var(--text3);margin-top:2px}
 
-/* ── GLOW ORBS ── */
-.orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0}
-.orb-1{width:500px;height:500px;background:rgba(91,123,255,.12);top:-100px;left:-100px}
-.orb-2{width:400px;height:400px;background:rgba(139,92,246,.1);bottom:0;right:-100px}
+/* Sections */
+.wrap{max-width:1100px;margin:0 auto;padding:0 24px}
+.section{padding:80px 0}
+.sec-label{font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px}
+.sec-title{font-family:var(--font-head);font-size:clamp(26px,4vw,40px);font-weight:700;line-height:1.15;margin-bottom:12px}
+.sec-sub{font-size:16px;color:var(--text2);max-width:520px;line-height:1.7}
+.divider{height:0.5px;background:linear-gradient(90deg,transparent,var(--border),transparent)}
 
-/* ── FEATURES ── */
-.section{padding:80px 24px;max-width:1100px;margin:0 auto;position:relative;z-index:1}
-.section-label{font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px}
-.section-title{font-family:var(--font-head);font-size:clamp(28px,4vw,42px);font-weight:700;line-height:1.15;margin-bottom:14px}
-.section-sub{font-size:16px;color:var(--text2);max-width:500px;line-height:1.7}
+/* Features */
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:44px}
+.feat{background:var(--surface);border:0.5px solid var(--border);border-radius:16px;padding:26px;transition:all .25s}
+.feat:hover{border-color:rgba(91,123,255,.35);transform:translateY(-3px);box-shadow:0 16px 40px rgba(0,0,0,.3)}
+.feat-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:14px}
+.feat-title{font-family:var(--font-head);font-size:16px;font-weight:700;margin-bottom:8px}
+.feat-desc{font-size:13px;color:var(--text2);line-height:1.75}
+.feat-tag{display:inline-block;font-size:10px;font-weight:600;padding:3px 8px;border-radius:6px;margin-top:12px;text-transform:uppercase;letter-spacing:.5px}
 
-.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:48px}
-.feature-card{background:var(--surface);border:0.5px solid var(--border);border-radius:16px;padding:28px;transition:all .25s;position:relative;overflow:hidden}
-.feature-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(91,123,255,.04),transparent);opacity:0;transition:opacity .25s}
-.feature-card:hover{border-color:rgba(91,123,255,.3);transform:translateY(-3px);box-shadow:0 16px 40px rgba(0,0,0,.3)}
-.feature-card:hover::before{opacity:1}
-.feature-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:16px}
-.feature-title{font-family:var(--font-head);font-size:17px;font-weight:700;margin-bottom:8px}
-.feature-desc{font-size:13px;color:var(--text2);line-height:1.7}
-.feature-tag{display:inline-block;font-size:10px;font-weight:600;padding:3px 8px;border-radius:6px;margin-top:12px;text-transform:uppercase;letter-spacing:.5px}
+/* Steps */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin-top:44px;counter-reset:s}
+.step{counter-increment:s;background:var(--surface);border-radius:14px;border:0.5px solid var(--border);padding:22px;position:relative}
+.step::after{content:counter(s);position:absolute;top:18px;right:18px;font-family:var(--font-head);font-size:32px;font-weight:800;color:var(--text3);line-height:1}
+.step-title{font-family:var(--font-head);font-size:15px;font-weight:700;margin-bottom:6px}
+.step-desc{font-size:12px;color:var(--text2);line-height:1.65}
 
-/* ── HOW IT WORKS ── */
-.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px;margin-top:48px;counter-reset:steps}
-.step{counter-increment:steps;position:relative;padding:24px;background:var(--surface);border-radius:14px;border:0.5px solid var(--border)}
-.step::before{content:counter(steps);position:absolute;top:20px;right:20px;font-family:var(--font-head);font-size:36px;font-weight:800;color:var(--text3);line-height:1}
-.step-title{font-family:var(--font-head);font-size:15px;font-weight:700;margin-bottom:6px;color:var(--text)}
-.step-desc{font-size:12px;color:var(--text2);line-height:1.6}
+/* Blog */
+.blog-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px;margin-top:44px}
+.blog-card{background:var(--surface);border:0.5px solid var(--border);border-radius:16px;overflow:hidden;transition:all .25s}
+.blog-card:hover{border-color:rgba(91,123,255,.3);transform:translateY(-2px)}
+.blog-header{padding:22px 22px 0}
+.blog-cat{font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.blog-title{font-family:var(--font-head);font-size:18px;font-weight:700;line-height:1.3;margin-bottom:10px}
+.blog-excerpt{font-size:13px;color:var(--text2);line-height:1.75}
+.blog-body{padding:16px 22px 22px;font-size:13px;color:var(--text2);line-height:1.85}
+.blog-body h3{font-family:var(--font-head);font-size:14px;font-weight:700;color:var(--text);margin:14px 0 6px}
+.blog-body p{margin-bottom:10px}
+.blog-body ul{padding-left:16px;margin-bottom:10px}
+.blog-body ul li{margin-bottom:5px}
+.blog-read-more{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--accent);margin-top:12px;cursor:pointer;background:none;border:none;font-family:var(--font);padding:0}
+.blog-full{display:none;padding:0 22px 22px;border-top:0.5px solid var(--border);margin-top:12px}
+.blog-full.open{display:block}
+.blog-full h3{font-family:var(--font-head);font-size:14px;font-weight:700;color:var(--text);margin:16px 0 7px}
+.blog-full p{font-size:13px;color:var(--text2);line-height:1.85;margin-bottom:10px}
+.blog-full ul{padding-left:16px;margin-bottom:10px}
+.blog-full ul li{font-size:13px;color:var(--text2);margin-bottom:6px;line-height:1.7}
+.blog-full strong{color:var(--text)}
 
-/* ── PRICING ── */
-.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:48px}
-.plan{background:var(--surface);border:0.5px solid var(--border);border-radius:16px;padding:28px;position:relative}
-.plan.featured{border-color:var(--accent);background:rgba(91,123,255,.06)}
-.plan-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-size:10px;font-weight:700;padding:3px 12px;border-radius:10px;letter-spacing:.5px;white-space:nowrap}
-.plan-name{font-family:var(--font-head);font-size:18px;font-weight:700;margin-bottom:4px}
-.plan-price{font-family:var(--font-head);font-size:36px;font-weight:800;color:var(--accent);margin:12px 0 4px}
-.plan-price span{font-size:14px;font-weight:400;color:var(--text2)}
-.plan-period{font-size:12px;color:var(--text3);margin-bottom:20px}
-.plan-features{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
-.plan-features li{font-size:13px;color:var(--text2);display:flex;align-items:center;gap:8px}
-.plan-features li::before{content:'✓';color:var(--green);font-weight:700;flex-shrink:0}
-.plan-cta{display:block;text-align:center;padding:11px;border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;transition:all .2s}
-.plan-cta-primary{background:var(--accent);color:#fff}
-.plan-cta-primary:hover{background:#4A6AEE}
-.plan-cta-secondary{background:var(--surface2);color:var(--text);border:0.5px solid var(--border)}
-.plan-cta-secondary:hover{border-color:var(--accent);color:var(--accent)}
+/* Pricing */
+.price-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:44px}
+.plan{background:var(--surface);border:0.5px solid var(--border);border-radius:16px;padding:26px;position:relative}
+.plan.pop{border-color:var(--accent);background:rgba(91,123,255,.05)}
+.plan-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-size:10px;font-weight:700;padding:3px 12px;border-radius:10px;white-space:nowrap}
+.plan-name{font-family:var(--font-head);font-size:17px;font-weight:700;margin-bottom:4px}
+.plan-price{font-family:var(--font-head);font-size:34px;font-weight:800;color:var(--accent);margin:10px 0 3px}
+.plan-price span{font-size:13px;font-weight:400;color:var(--text2)}
+.plan-desc{font-size:12px;color:var(--text3);margin-bottom:18px}
+.plan-feats{list-style:none;display:flex;flex-direction:column;gap:7px;margin-bottom:22px}
+.plan-feats li{font-size:13px;color:var(--text2);display:flex;align-items:flex-start;gap:7px;line-height:1.5}
+.plan-feats li::before{content:'✓';color:var(--green);font-weight:700;flex-shrink:0;margin-top:1px}
+.plan-btn{display:block;text-align:center;padding:11px;border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;transition:all .2s}
+.plan-btn-p{background:var(--accent);color:#fff}
+.plan-btn-p:hover{background:#4A6AEE}
+.plan-btn-s{background:var(--surface2);color:var(--text);border:0.5px solid var(--border)}
+.plan-btn-s:hover{border-color:var(--accent);color:var(--accent)}
 
-/* ── FOOTER ── */
-footer{border-top:0.5px solid var(--border);padding:40px 24px;text-align:center;position:relative;z-index:1}
-.footer-logo{font-family:var(--font-head);font-size:24px;font-weight:800;background:linear-gradient(135deg,#fff,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:3px;margin-bottom:8px}
-.footer-tagline{font-size:13px;color:var(--text3);margin-bottom:20px}
-.footer-links{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
-.footer-links a{font-size:12px;color:var(--text3);text-decoration:none;transition:color .2s}
-.footer-links a:hover{color:var(--accent)}
-.footer-copy{font-size:11px;color:var(--text3)}
+/* FAQ */
+.faq{margin-top:44px;display:flex;flex-direction:column;gap:10px}
+.faq-item{background:var(--surface);border:0.5px solid var(--border);border-radius:12px;overflow:hidden}
+.faq-q{padding:16px 20px;font-size:14px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;color:var(--text)}
+.faq-q span{color:var(--text3);font-size:18px;transition:transform .2s}
+.faq-q.open span{transform:rotate(45deg)}
+.faq-a{display:none;padding:0 20px 16px;font-size:13px;color:var(--text2);line-height:1.8}
+.faq-a.open{display:block}
 
-/* ── DIVIDER ── */
-.divider{height:0.5px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:0 24px}
+/* Footer */
+footer{border-top:0.5px solid var(--border);padding:40px 24px;text-align:center}
+.foot-logo{font-family:var(--font-head);font-size:22px;font-weight:800;background:linear-gradient(135deg,#fff,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:3px;margin-bottom:6px}
+.foot-tag{font-size:13px;color:var(--text3);margin-bottom:18px}
+.foot-links{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-bottom:18px}
+.foot-links a{font-size:12px;color:var(--text3);text-decoration:none;transition:color .2s}
+.foot-links a:hover{color:var(--accent)}
+.foot-copy{font-size:11px;color:var(--text3)}
 
-/* ── RESPONSIVE ── */
-@media(max-width:640px){
-  .nav-links{display:none}
-  .hero{padding:90px 20px 50px}
-}
+@media(max-width:640px){.nav-links{display:none}.hero{padding:90px 20px 50px}.hero-stats{gap:24px}}
 </style>
 </head>
 <body>
 
-<!-- Navigation -->
 <nav>
-  <div class="nav-logo">VORA</div>
+  <a href="/" class="nav-logo">VORA</a>
   <div class="nav-links">
     <a href="#features">Features</a>
-    <a href="#how">How it works</a>
+    <a href="#blog">Articles</a>
     <a href="#pricing">Pricing</a>
-    <a href="/cdn-cgi/l/email-protection#93f2e3f6ebfffcf4faf0a1a3a1a6d3f4fef2faffbdf0fcfe">Contact</a>
+    <a href="#faq">FAQ</a>
+    <a href="mailto:apexlogic2025@gmail.com">Contact</a>
   </div>
   <a href="/" class="nav-cta">Launch App →</a>
 </nav>
@@ -134,12 +155,18 @@ footer{border-top:0.5px solid var(--border);padding:40px 24px;text-align:center;
 <section class="hero">
   <div class="orb orb-1"></div>
   <div class="orb orb-2"></div>
-  <div class="hero-badge"><span></span>AI-Powered · Free for 30 Days</div>
-  <h1 class="hero-title">Your AI personal<br/>assistant. <span class="gradient">Always ready.</span></h1>
-  <p class="hero-sub">VORA reads your chats, scans your documents, builds your schedule and reminds you — all powered by AI. Built for busy professionals in India.</p>
+  <div class="hero-badge"><span></span>AI-Powered · Free for 30 Days · Made in India</div>
+  <h1>Your AI personal assistant.<br/><span class="grad">Built for busy people.</span></h1>
+  <p class="hero-sub">VORA extracts tasks from your WhatsApp chats, scans documents with AI-OCR, builds smart schedules, delivers live topic briefs and sets contextual reminders — all in one lightweight web app.</p>
   <div class="hero-btns">
-    <a href="/" class="btn-primary">Start free — 30 days →</a>
-    <a href="#features" class="btn-secondary">See features</a>
+    <a href="/" class="btn-p">Start free — 30 days →</a>
+    <a href="#features" class="btn-s">See all features</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">5</div><div class="stat-lbl">AI-powered tools</div></div>
+    <div class="stat"><div class="stat-num">30</div><div class="stat-lbl">Days free trial</div></div>
+    <div class="stat"><div class="stat-num">₹25</div><div class="stat-lbl">Per month after trial</div></div>
+    <div class="stat"><div class="stat-num">0</div><div class="stat-lbl">Credit card needed</div></div>
   </div>
 </section>
 
@@ -147,46 +174,47 @@ footer{border-top:0.5px solid var(--border);padding:40px 24px;text-align:center;
 
 <!-- Features -->
 <section class="section" id="features">
-  <div class="section-label">What VORA does</div>
-  <h2 class="section-title">Five AI tools.<br/>One assistant.</h2>
-  <p class="section-sub">Everything you need to stay on top of your tasks, meetings and documents — in one lightweight app.</p>
-
-  <div class="features-grid">
-    <div class="feature-card">
-      <div class="feature-icon" style="background:rgba(91,123,255,.12)">💬</div>
-      <div class="feature-title">Chat Analyser</div>
-      <div class="feature-desc">Paste any WhatsApp, email or Slack conversation. VORA extracts every task, deadline and meeting automatically — no manual reading required.</div>
-      <span class="feature-tag" style="background:rgba(91,123,255,.12);color:var(--accent)">Free</span>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon" style="background:rgba(34,197,94,.1)">📄</div>
-      <div class="feature-title">Scan to PDF · Word · Excel</div>
-      <div class="feature-desc">Photograph any document, whiteboard or handwritten note. VORA reads the text via AI-OCR and lets you download it as PDF, Word or Excel instantly.</div>
-      <span class="feature-tag" style="background:rgba(34,197,94,.1);color:var(--green)">Free</span>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon" style="background:rgba(245,158,11,.1)">📅</div>
-      <div class="feature-title">Smart Scheduler</div>
-      <div class="feature-desc">Describe your tasks for the day. VORA builds a realistic time-blocked schedule and creates a .ics calendar file you can open in Google Calendar or iPhone Calendar.</div>
-      <span class="feature-tag" style="background:rgba(245,158,11,.1);color:#F59E0B">Free</span>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon" style="background:rgba(6,182,212,.1)">🔍</div>
-      <div class="feature-title">Topic Brief</div>
-      <div class="feature-desc">Enter any topic and VORA searches the web in real time and delivers a concise, sourced summary — perfect for staying informed before a meeting or presentation.</div>
-      <span class="feature-tag" style="background:rgba(6,182,212,.1);color:#06B6D4">Registered users</span>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon" style="background:rgba(139,92,246,.1)">🔔</div>
-      <div class="feature-title">Smart Reminders</div>
-      <div class="feature-desc">Tell VORA about your event and it writes a personalised morning brief and a 30-minute alert — contextual, human-sounding reminders, not generic notifications.</div>
-      <span class="feature-tag" style="background:rgba(139,92,246,.1);color:#A78BFA">Free</span>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon" style="background:rgba(239,68,68,.1)">📆</div>
-      <div class="feature-title">VORA Calendar</div>
-      <div class="feature-desc">All your schedules, reminders and extracted tasks automatically saved in one calendar. Active and completed views with retention based on your plan.</div>
-      <span class="feature-tag" style="background:rgba(239,68,68,.1);color:#EF4444">All plans</span>
+  <div class="wrap">
+    <div class="sec-label">What VORA does</div>
+    <h2 class="sec-title">Five powerful AI tools.<br/>One simple app.</h2>
+    <p class="sec-sub">No complex setup. No subscriptions upfront. Just open the app and start using it — everything works in your browser.</p>
+    <div class="feat-grid">
+      <div class="feat">
+        <div class="feat-icon" style="background:rgba(91,123,255,.12)">💬</div>
+        <div class="feat-title">Chat Analyser</div>
+        <div class="feat-desc">Paste any WhatsApp, email or team chat message. VORA's AI reads through the entire conversation and automatically extracts every task, deadline, meeting and commitment — saving you 15-20 minutes of manual reading and note-taking per day.</div>
+        <span class="feat-tag" style="background:rgba(91,123,255,.12);color:#5B7BFF">Works with any chat text</span>
+      </div>
+      <div class="feat">
+        <div class="feat-icon" style="background:rgba(34,197,94,.1)">📄</div>
+        <div class="feat-title">Scan to PDF · Word · Excel</div>
+        <div class="feat-desc">Take a photo of any document — printed reports, handwritten notes, whiteboards, receipts or contracts. VORA uses AI-powered OCR to extract every line of text and lets you download it as a formatted PDF, editable Word file or structured Excel spreadsheet in seconds.</div>
+        <span class="feat-tag" style="background:rgba(34,197,94,.1);color:#22C55E">Supports JPG, PNG, HEIC</span>
+      </div>
+      <div class="feat">
+        <div class="feat-icon" style="background:rgba(245,158,11,.1)">📅</div>
+        <div class="feat-title">Smart Scheduler</div>
+        <div class="feat-desc">Describe your tasks and meetings for the day in plain language. VORA builds a realistic, time-blocked schedule accounting for breaks, travel time and task complexity. Download as a .ics file and open directly in Google Calendar, Apple Calendar or Outlook.</div>
+        <span class="feat-tag" style="background:rgba(245,158,11,.1);color:#F59E0B">Exports to Google Calendar</span>
+      </div>
+      <div class="feat">
+        <div class="feat-icon" style="background:rgba(6,182,212,.1)">🔍</div>
+        <div class="feat-title">Live Topic Brief</div>
+        <div class="feat-desc">Enter any topic — a company name, news event, policy, technology or industry trend. VORA searches the web in real time and delivers a concise, factual 4-5 sentence brief with key points. Perfect for preparing before a meeting, interview or client call in under 30 seconds.</div>
+        <span class="feat-tag" style="background:rgba(6,182,212,.1);color:#06B6D4">Live web search</span>
+      </div>
+      <div class="feat">
+        <div class="feat-icon" style="background:rgba(139,92,246,.1)">🔔</div>
+        <div class="feat-title">Smart Reminders</div>
+        <div class="feat-desc">Tell VORA about an upcoming event — a dinner, meeting, presentation or birthday. It writes a personalised morning briefing note and a 30-minute alert, both in natural, human-sounding language specific to your event. Set the time and VORA rings an alarm with the written reminder.</div>
+        <span class="feat-tag" style="background:rgba(139,92,246,.1);color:#A78BFA">AI-written alerts</span>
+      </div>
+      <div class="feat">
+        <div class="feat-icon" style="background:rgba(239,68,68,.1)">📆</div>
+        <div class="feat-title">Personal Calendar</div>
+        <div class="feat-desc">Every schedule, reminder and extracted task is automatically saved to your personal VORA Calendar. View active and completed items, edit dates, reschedule events and restore completed tasks — a complete productivity log that follows you across sessions.</div>
+        <span class="feat-tag" style="background:rgba(239,68,68,.1);color:#EF4444">Syncs with Firebase</span>
+      </div>
     </div>
   </div>
 </section>
@@ -195,25 +223,156 @@ footer{border-top:0.5px solid var(--border);padding:40px 24px;text-align:center;
 
 <!-- How it works -->
 <section class="section" id="how">
-  <div class="section-label">Simple to use</div>
-  <h2 class="section-title">Up and running<br/>in 30 seconds.</h2>
+  <div class="wrap">
+    <div class="sec-label">Simple to use</div>
+    <h2 class="sec-title">From sign-up to productive<br/>in under two minutes.</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-title">Create your free account</div>
+        <div class="step-desc">Enter your name, email and mobile number. Verify your email with one click — no credit card, no app download required. Works in any browser.</div>
+      </div>
+      <div class="step">
+        <div class="step-title">Choose your tool</div>
+        <div class="step-desc">Pick from Chat Analyser, Document Scanner, Scheduler, Topic Brief or Reminders. Each tool is one tap away from the main screen.</div>
+      </div>
+      <div class="step">
+        <div class="step-title">Paste, upload or describe</div>
+        <div class="step-desc">Paste chat text, photograph a document, or type what you need. VORA's AI processes your input and delivers results in 5-15 seconds.</div>
+      </div>
+      <div class="step">
+        <div class="step-title">Download or save</div>
+        <div class="step-desc">Download your PDF, Word or Excel file. Open the .ics schedule in Google Calendar. Save events to VORA Calendar. Done.</div>
+      </div>
+    </div>
+  </div>
+</section>
 
-  <div class="steps">
-    <div class="step">
-      <div class="step-title">Sign up free</div>
-      <div class="step-desc">Enter your name, email and mobile. Verify your email and get 30 days of full access — no credit card needed.</div>
-    </div>
-    <div class="step">
-      <div class="step-title">Choose a tool</div>
-      <div class="step-desc">Paste chat text, upload a photo, or describe your day. VORA uses Claude AI to process your input instantly.</div>
-    </div>
-    <div class="step">
-      <div class="step-title">Get results</div>
-      <div class="step-desc">Tasks extracted, documents scanned, schedule built. Download files or save to your VORA Calendar in one tap.</div>
-    </div>
-    <div class="step">
-      <div class="step-title">Stay organised</div>
-      <div class="step-desc">Everything saved in your personal Calendar. Set reminders, view active tasks and completed items — all in one place.</div>
+<div class="divider"></div>
+
+<!-- Blog / Articles -->
+<section class="section" id="blog">
+  <div class="wrap">
+    <div class="sec-label">Productivity articles</div>
+    <h2 class="sec-title">Learn how AI can help<br/>you work smarter.</h2>
+    <p class="sec-sub">Practical guides on using AI tools to save time, reduce mental load and stay organised at work and in life.</p>
+
+    <div class="blog-grid">
+
+      <!-- Article 1 -->
+      <div class="blog-card">
+        <div class="blog-header">
+          <div class="blog-cat">Chat &amp; Communication</div>
+          <div class="blog-title">How to extract tasks from WhatsApp and email chats using AI</div>
+          <div class="blog-excerpt">Most working professionals receive 50-100 messages per day across WhatsApp groups, email threads and team chats. Hidden inside these conversations are tasks, deadlines and commitments that are easy to miss — and costly when forgotten.</div>
+        </div>
+        <div class="blog-body">
+          <p>The traditional approach is to manually read through every message, highlight important points and transfer them to a to-do list. This typically takes 20-30 minutes per day and is prone to human error — especially when messages come in rapidly during meetings or travel.</p>
+          <p>AI-powered chat analysis changes this completely. By pasting a conversation into VORA's Chat Analyser, the AI identifies every action item, deadline and commitment in seconds — regardless of how casually or indirectly it was mentioned in the chat.</p>
+        </div>
+        <button class="blog-read-more" onclick="toggleBlog(this)">Read full article ↓</button>
+        <div class="blog-full">
+          <h3>What kinds of tasks does AI detect?</h3>
+          <p>Modern AI language models understand context and intent, not just keywords. This means VORA can detect tasks even when they are phrased casually or indirectly:</p>
+          <ul>
+            <li><strong>Direct assignments:</strong> "Priya, please send the report by Friday evening"</li>
+            <li><strong>Meeting requests:</strong> "Can we call Monday at 11am to discuss the proposal?"</li>
+            <li><strong>Implicit deadlines:</strong> "The client presentation is next Wednesday"</li>
+            <li><strong>Follow-ups:</strong> "Let me know once the budget is approved"</li>
+            <li><strong>Commitments:</strong> "I'll get back to you by tomorrow morning"</li>
+          </ul>
+          <h3>How to use VORA's Chat Analyser</h3>
+          <p>Open WhatsApp Web or your email client, select the conversation, copy all the text, and paste it into VORA's Chat screen. The AI processes the text and shows you a clean list of extracted items with dates, priority levels and the person who assigned each task.</p>
+          <p>You can then select multiple items and save them to your VORA Calendar with their correct dates and times. For items you want in Google Calendar, use the Schedule screen to build a time-blocked plan and download the .ics file.</p>
+          <h3>Screenshot analysis</h3>
+          <p>If you are on mobile and cannot easily copy text, VORA also accepts screenshots. Take a screenshot of your WhatsApp chat, upload it in the Chat screen, and the AI will read the image and extract tasks the same way. This works on printed messages, forwarded screenshots and even group chat summaries.</p>
+          <p>The result is a significant reduction in the time spent reading and re-reading messages to figure out what you need to do — letting you focus on actually doing the work.</p>
+        </div>
+      </div>
+
+      <!-- Article 2 -->
+      <div class="blog-card">
+        <div class="blog-header">
+          <div class="blog-cat">Document Management</div>
+          <div class="blog-title">Scan any document with your phone and convert it to Word, PDF or Excel</div>
+          <div class="blog-excerpt">Paper documents remain common in Indian workplaces — contracts, forms, handwritten notes, meeting minutes and receipts. Converting these to digital formats used to require a flatbed scanner or a dedicated scanning app. AI changes that entirely.</div>
+        </div>
+        <div class="blog-body">
+          <p>With VORA's document scanner, you simply photograph any document with your phone camera and the AI extracts all the text using optical character recognition (OCR). Within seconds you have the full text ready to download as a PDF with the original image, a Word file for editing, or an Excel spreadsheet for structured data.</p>
+          <p>This is particularly useful for professionals who receive printed reports, attend meetings with physical handouts, or need to digitise old records without access to a scanner.</p>
+        </div>
+        <button class="blog-read-more" onclick="toggleBlog(this)">Read full article ↓</button>
+        <div class="blog-full">
+          <h3>What documents work best?</h3>
+          <p>VORA's AI-OCR performs well on a wide variety of document types:</p>
+          <ul>
+            <li><strong>Printed documents:</strong> Reports, letters, invoices, forms — anything with typed text</li>
+            <li><strong>Handwritten notes:</strong> Meeting notes, personal journals, lecture notes (clear handwriting gives best results)</li>
+            <li><strong>Whiteboards:</strong> Brainstorming sessions, diagrams with text, flow charts</li>
+            <li><strong>Receipts and bills:</strong> Extract line items for expense tracking</li>
+            <li><strong>Business cards:</strong> Extract name, phone number and email</li>
+          </ul>
+          <h3>Tips for best results</h3>
+          <p>For the most accurate text extraction, photograph the document in good lighting with the camera held flat above the page. Avoid shadows, glare from overhead lights, and ensure the full document is within the frame. A distance of 30-40cm from the page works well for A4 documents on most phone cameras.</p>
+          <h3>Saving original scans</h3>
+          <p>In addition to extracted text, VORA allows you to save the original scan as a PDF — meaning the actual photograph of the document is embedded in a PDF file without any changes. This is useful when you need to share the original document digitally while retaining its appearance exactly as printed or handwritten.</p>
+          <h3>Privacy and security</h3>
+          <p>Images uploaded to VORA are processed in your browser session and are not permanently stored on any server. Basic plan users should download their files before closing the app, as session-only storage means files are cleared when the session ends. Premium plan users have permanent storage for their scan history.</p>
+        </div>
+      </div>
+
+      <!-- Article 3 -->
+      <div class="blog-card">
+        <div class="blog-header">
+          <div class="blog-cat">Time Management</div>
+          <div class="blog-title">How AI builds a realistic time-blocked schedule for your workday</div>
+          <div class="blog-excerpt">Time blocking — allocating specific time slots to specific tasks — is one of the most effective productivity techniques recommended by researchers and business leaders. The challenge is that building a good time-blocked schedule manually takes time and mental effort that most people do not have first thing in the morning.</div>
+        </div>
+        <div class="blog-body">
+          <p>VORA's Smart Scheduler solves this by letting you describe your tasks in plain language and having AI build a realistic, time-blocked schedule in seconds. The AI accounts for task complexity, includes breaks, and arranges similar tasks together to minimise context switching.</p>
+          <p>The output is a detailed day plan with specific time slots for each task, which you can download as a .ics calendar file and open directly in Google Calendar, Apple Calendar or Microsoft Outlook.</p>
+        </div>
+        <button class="blog-read-more" onclick="toggleBlog(this)">Read full article ↓</button>
+        <div class="blog-full">
+          <h3>What makes a good AI-generated schedule?</h3>
+          <p>The quality of your schedule depends on the detail you provide. Instead of simply listing tasks, include approximate durations, any fixed time commitments (calls, meetings) and your preferred start time. The more context you give, the more realistic the output:</p>
+          <ul>
+            <li><strong>Less specific:</strong> "Write report, attend team meeting, reply emails"</li>
+            <li><strong>More specific:</strong> "Write Q1 sales report (2-3 hours), team meeting at 3pm (1 hour), reply urgent emails (30 min), review presentation draft (45 min), start at 9am"</li>
+          </ul>
+          <h3>Syncing with Google Calendar</h3>
+          <p>After VORA generates your schedule, tap the Download .ics button. This creates a standard calendar file that contains all your time blocks as individual events. On Android, tap the downloaded file and it will ask which calendar app to open it with — select Google Calendar. On iPhone, the file opens in Apple Calendar automatically.</p>
+          <p>Each task appears as a separate event in your calendar with its start time, end time and description — giving you a visual overview of your day alongside any existing appointments.</p>
+          <h3>Using chat tasks in the scheduler</h3>
+          <p>One of the most powerful workflows in VORA is combining the Chat Analyser with the Scheduler. First, extract tasks from your WhatsApp or email using the Chat screen. Then tap "Open Schedule" to send the selected tasks directly to the Schedule screen pre-filled and ready to build. This takes your scattered chat commitments and turns them into a structured, timed day plan in under a minute.</p>
+        </div>
+      </div>
+
+      <!-- Article 4 -->
+      <div class="blog-card">
+        <div class="blog-header">
+          <div class="blog-cat">Productivity</div>
+          <div class="blog-title">5 ways busy professionals in India are using AI assistants to save time every day</div>
+          <div class="blog-excerpt">Artificial intelligence tools have moved from being interesting novelties to genuine time-savers for working professionals across industries. Here are five practical ways people are using AI personal assistants to reduce workload and stay on top of responsibilities.</div>
+        </div>
+        <div class="blog-body">
+          <p>Whether you are in sales, operations, education, healthcare or any other field, the common thread is the same — too much information coming in, too little time to process it, and the constant risk of missing something important. AI assistants address each of these pain points directly.</p>
+        </div>
+        <button class="blog-read-more" onclick="toggleBlog(this)">Read full article ↓</button>
+        <div class="blog-full">
+          <h3>1. Extracting action items from group chats</h3>
+          <p>Sales teams, project managers and business owners often have multiple WhatsApp groups running simultaneously. Important instructions, deadlines and commitments get buried under dozens of messages within minutes. Using VORA's Chat Analyser to scan group conversations at the start and end of the workday ensures nothing is missed — even in high-volume groups.</p>
+          <h3>2. Preparing for client meetings in 30 seconds</h3>
+          <p>Before any client call or meeting, professionals use VORA's Topic Brief feature to get a quick summary of the company, industry or topic they are about to discuss. Entering the client's company name gives a current, factual brief covering recent news, business focus and relevant background — all in under 30 seconds. This replaces 15-20 minutes of manual research.</p>
+          <h3>3. Digitising paper documents on the go</h3>
+          <p>Field sales executives, teachers and healthcare workers regularly encounter paper forms, reports and documents that need to be shared digitally. Instead of carrying a scanner or returning to the office, they photograph documents with their phone and use VORA to convert them to PDF or Word format instantly — then share via email or WhatsApp.</p>
+          <h3>4. Building a daily plan from scattered tasks</h3>
+          <p>Rather than manually planning their day in a diary or planner, busy professionals describe their tasks to VORA in the morning and receive a complete time-blocked schedule. The AI decides the optimal order, allocates realistic time slots and adds breaks — saving 20-30 minutes of planning time and reducing decision fatigue at the start of the day.</p>
+          <h3>5. Writing personalised reminders for important events</h3>
+          <p>Generic calendar reminders say "Meeting at 3pm." VORA's Smart Reminder writes a contextual note specific to your event — who it is with, what to prepare, what to bring, and why it matters. This means when the reminder fires, it actually helps you prepare rather than just alerting you that something is happening.</p>
+          <p>These five uses represent the core of what AI personal assistants offer working professionals today — not replacement of human judgment, but a significant reduction in the time and mental energy spent on routine information processing tasks.</p>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -222,63 +381,129 @@ footer{border-top:0.5px solid var(--border);padding:40px 24px;text-align:center;
 
 <!-- Pricing -->
 <section class="section" id="pricing">
-  <div class="section-label">Pricing</div>
-  <h2 class="section-title">Simple, honest pricing.</h2>
-  <p class="section-sub">Start free for 30 days. No credit card required. Upgrade anytime.</p>
-
-  <div class="pricing-grid">
-    <div class="plan">
-      <div class="plan-name">Free Trial</div>
-      <div class="plan-price">₹0<span>/month</span></div>
-      <div class="plan-period">30 days — no card needed</div>
-      <ul class="plan-features">
-        <li>All 5 AI features</li>
-        <li>Chat analyser</li>
-        <li>Scan to PDF/Word/Excel</li>
-        <li>Smart scheduler + .ics</li>
-        <li>Smart reminders</li>
-        <li>VORA Calendar (1 day retention)</li>
-      </ul>
-      <a href="/" class="plan-cta plan-cta-secondary">Start free →</a>
-    </div>
-    <div class="plan featured">
-      <div class="plan-badge">MOST POPULAR</div>
-      <div class="plan-name">Basic</div>
-      <div class="plan-price">₹25<span>/month</span></div>
-      <div class="plan-period">Everything in free, plus</div>
-      <ul class="plan-features">
-        <li>All 5 AI features unlimited</li>
-        <li>Calendar — 3 day retention</li>
-        <li>Topic Brief AI search</li>
-        <li>Priority support</li>
-      </ul>
-      <a href="/cdn-cgi/l/email-protection#dbbaabbea3b7b4bcb2b8e9ebe9ee9bbcb6bab2b7f5b8b4b6e4a8aeb9b1beb8afe688aeb9a8b8a9b2b9befb99baa8b2b8fb8bb7bab5" class="plan-cta plan-cta-primary">Subscribe — ₹25/mo</a>
-    </div>
-    <div class="plan">
-      <div class="plan-name">Premium</div>
-      <div class="plan-price">₹99<span>/month</span></div>
-      <div class="plan-period">Everything in Basic, plus</div>
-      <ul class="plan-features">
-        <li>Calendar — 7 day retention</li>
-        <li>List + Month calendar toggle</li>
-        <li>6 months future view</li>
-        <li>Permanent scan storage</li>
-        <li>Early access to new features</li>
-      </ul>
-      <a href="/cdn-cgi/l/email-protection#1c7d6c796470737b757f2e2c2e295c7b717d7570327f7371236f697e76797f68214f697e6f7f6e757e793c4c6e79717569713c4c707d72" class="plan-cta plan-cta-secondary">Subscribe — ₹99/mo</a>
+  <div class="wrap">
+    <div class="sec-label">Pricing</div>
+    <h2 class="sec-title">Simple, transparent pricing.<br/>No surprises.</h2>
+    <p class="sec-sub">Start completely free for 30 days. No credit card required. Upgrade by contacting us — we activate your plan within 2 business days after payment.</p>
+    <div class="price-grid">
+      <div class="plan">
+        <div class="plan-name">Free Trial</div>
+        <div class="plan-price">₹0<span>/month</span></div>
+        <div class="plan-desc">30 days · No card needed</div>
+        <ul class="plan-feats">
+          <li>Chat Analyser — unlimited</li>
+          <li>Scan to PDF, Word, Excel</li>
+          <li>Smart Scheduler + .ics download</li>
+          <li>Smart Reminders</li>
+          <li>VORA Calendar (1 day retention)</li>
+          <li>Topic Brief (registered users)</li>
+        </ul>
+        <a href="/" class="plan-btn plan-btn-s">Start free →</a>
+      </div>
+      <div class="plan pop">
+        <div class="plan-badge">MOST POPULAR</div>
+        <div class="plan-name">Basic</div>
+        <div class="plan-price">₹25<span>/month</span></div>
+        <div class="plan-desc">Everything in free, plus</div>
+        <ul class="plan-feats">
+          <li>All 5 AI features unlimited</li>
+          <li>Calendar — 3 day retention</li>
+          <li>Topic Brief AI search</li>
+          <li>Priority email support</li>
+          <li>Session document storage</li>
+        </ul>
+        <a href="mailto:apexlogic2025@gmail.com?subject=Subscribe Basic Plan - VORA" class="plan-btn plan-btn-p">Subscribe — ₹25/month</a>
+      </div>
+      <div class="plan">
+        <div class="plan-name">Premium</div>
+        <div class="plan-price">₹99<span>/month</span></div>
+        <div class="plan-desc">Everything in Basic, plus</div>
+        <ul class="plan-feats">
+          <li>Calendar — 7 day retention</li>
+          <li>Monthly calendar grid view</li>
+          <li>6 months future planning view</li>
+          <li>Permanent scan file storage</li>
+          <li>Early access to new features</li>
+          <li>Direct WhatsApp support</li>
+        </ul>
+        <a href="mailto:apexlogic2025@gmail.com?subject=Subscribe Premium Plan - VORA" class="plan-btn plan-btn-s">Subscribe — ₹99/month</a>
+      </div>
     </div>
   </div>
 </section>
 
 <div class="divider"></div>
 
-<!-- Footer -->
+<!-- FAQ -->
+<section class="section" id="faq">
+  <div class="wrap">
+    <div class="sec-label">Frequently asked questions</div>
+    <h2 class="sec-title">Common questions<br/>about VORA.</h2>
+    <div class="faq">
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Do I need to download an app? <span>+</span></div>
+        <div class="faq-a">No. VORA runs entirely in your web browser — Chrome, Safari or Firefox on any device. There is nothing to install. On Android, you can add it to your home screen from the browser menu for an app-like experience.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Is my data safe? Are my chats stored? <span>+</span></div>
+        <div class="faq-a">Your chat text and uploaded documents are processed in your browser session and sent to the AI model for analysis only. They are not stored permanently on our servers. Your account details (name, email, mobile) are stored securely in Firebase. Scanned files are session-only for Basic plan users and must be downloaded before closing the browser.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Which AI model does VORA use? <span>+</span></div>
+        <div class="faq-a">VORA uses Claude by Anthropic — one of the most capable and safety-focused AI models available. Claude powers the chat analysis, document OCR, scheduling, topic search and reminder writing features.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">How do I pay for a subscription? <span>+</span></div>
+        <div class="faq-a">Send an email to apexlogic2025@gmail.com or ceo@apexlogic.in with your registered email address and chosen plan. We will send you payment details (UPI). Once payment is confirmed, your plan is activated within 2 business days. No automatic renewals — we contact you before each renewal period.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Does the .ics file work with Google Calendar on Android? <span>+</span></div>
+        <div class="faq-a">Yes. Download the .ics file on your Android phone and tap it — Android will ask which app to open it with. Select Google Calendar and all events will be imported automatically. On iPhone, the file opens in Apple Calendar directly. You can also import the file into Outlook by opening it on your computer.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Can VORA read Malayalam, Hindi or other Indian languages? <span>+</span></div>
+        <div class="faq-a">VORA works best with English text at this time. The AI can often understand simple Hindi or transliterated regional language content in chats, but OCR accuracy for non-English scripts in scanned documents may vary. Full regional language support is on our roadmap.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Who built VORA? <span>+</span></div>
+        <div class="faq-a">VORA is built by Apexlogic, a technology company based in India. VORA is founded and led by Madhuri Shukla, CEO and Co-founder. For inquiries contact apexlogic2025@gmail.com or ceo@apexlogic.in.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
 <footer>
-  <div class="footer-logo">VORA</div>
-  <div class="footer-tagline">AI Personal Assistant by Apexlogic</div>
-  <div class="footer-links">
-    <a href="/">Launch App</a>
-    <a href="#features">Features</a>
-    <a href="#pricing">Pricing</a>
-    <a href="/privacy.html">Privacy Policy</a>
-    <a href="/terms.html">Terms of Use</a>
+  <div class="wrap">
+    <div class="foot-logo">VORA</div>
+    <div class="foot-tag">AI Personal Assistant by Apexlogic · Built in India</div>
+    <div class="foot-links">
+      <a href="/">Launch App</a>
+      <a href="#features">Features</a>
+      <a href="#blog">Articles</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+      <a href="/privacy.html">Privacy Policy</a>
+      <a href="/terms.html">Terms of Use</a>
+      <a href="mailto:apexlogic2025@gmail.com">Contact Us</a>
+    </div>
+    <div class="foot-copy">© 2026 Apexlogic · VORA uses Claude AI by Anthropic · All rights reserved</div>
+  </div>
+</footer>
+
+<script>
+function toggleBlog(btn){
+  var full=btn.nextElementSibling;
+  var open=full.classList.toggle('open');
+  btn.textContent=open?'Read less ↑':'Read full article ↓';
+}
+function toggleFaq(el){
+  var ans=el.nextElementSibling;
+  var open=ans.classList.toggle('open');
+  el.classList.toggle('open',open);
+}
+</script>
+
+</body>
+</html>
